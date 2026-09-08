@@ -316,28 +316,26 @@ export default function Sidebar({
         )}
 
         {miniStats.length > 0 && (
-          <div className="flex flex-col gap-3 rounded-2xl bg-gradient-to-br from-coral to-coral-dark p-4 text-white shadow-sm">
-            {miniStats.map((stat, i) => {
+          <div className="flex flex-col gap-1">
+            {miniStats.map((stat) => {
               const content = (
                 <>
-                  <span className="text-xs text-white/70">{stat.label}</span>
-                  <span className="text-lg font-bold">{stat.value}</span>
+                  <span className="text-xs font-semibold text-ink">{stat.label}</span>
+                  <span className="text-base font-extrabold text-ink">{stat.value}</span>
                 </>
               );
               return stat.href ? (
                 <Link
                   key={stat.label}
                   href={stat.href}
-                  className={`flex items-center justify-between transition-opacity hover:opacity-80 ${
-                    i > 0 ? "border-t border-white/15 pt-3" : ""
-                  }`}
+                  className="flex items-center justify-between rounded-lg px-2 py-1.5 transition-colors hover:bg-ink/5"
                 >
                   {content}
                 </Link>
               ) : (
                 <div
                   key={stat.label}
-                  className={`flex items-center justify-between ${i > 0 ? "border-t border-white/15 pt-3" : ""}`}
+                  className="flex items-center justify-between rounded-lg px-2 py-1.5"
                 >
                   {content}
                 </div>

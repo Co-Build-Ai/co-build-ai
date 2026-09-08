@@ -151,11 +151,11 @@ export default function QuickMatch({
 
   if (status === "idle") {
     return (
-      <div className="rounded-2xl bg-blue-200 p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(96,165,250,0.6),0_4px_14px_rgba(59,130,246,0.15),0_28px_55px_rgba(59,130,246,0.25)] transition-all [transform-style:preserve-3d] hover:[transform:perspective(900px)_rotateX(2deg)_translateY(-4px)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(96,165,250,0.6),0_6px_18px_rgba(59,130,246,0.2),0_36px_70px_rgba(59,130,246,0.3)]">
-        <p className="text-xs font-extrabold uppercase tracking-wide text-blue-900">
+      <div className="rounded-2xl border border-blue-300/60 bg-blue-200 p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(96,165,250,0.6),0_4px_14px_rgba(59,130,246,0.15),0_28px_55px_rgba(59,130,246,0.25)] transition-all [transform-style:preserve-3d] hover:[transform:perspective(900px)_rotateX(2deg)_translateY(-4px)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(96,165,250,0.6),0_6px_18px_rgba(59,130,246,0.2),0_36px_70px_rgba(59,130,246,0.3)]">
+        <p className="inline-flex items-center rounded-full bg-ink px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_3px_0_0_#000000,0_8px_16px_rgba(0,0,0,0.35)]">
           Hızlı Eşleştirme
         </p>
-        <p className="mt-1 text-sm text-blue-800">
+        <p className="mt-1 text-sm text-ink">
           Aklındaki projeyi kısaca anlat, AI PRD&apos;ye çevirsin ve sana en uygun kayıtlı
           yazılımcıları puanlarına göre sıralasın.
         </p>
@@ -178,9 +178,9 @@ export default function QuickMatch({
 
   if (status === "generating") {
     return (
-      <div className="flex items-center gap-3 rounded-2xl bg-blue-200 p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(96,165,250,0.6),0_4px_14px_rgba(59,130,246,0.15),0_28px_55px_rgba(59,130,246,0.25)]">
+      <div className="flex items-center gap-3 rounded-2xl border border-blue-300/60 bg-blue-200 p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(96,165,250,0.6),0_4px_14px_rgba(59,130,246,0.15),0_28px_55px_rgba(59,130,246,0.25)]">
         <span className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-blue-900 border-t-transparent" />
-        <p className="text-sm text-blue-800">
+        <p className="text-sm text-ink">
           AI fikrini analiz ediyor, bu birkaç dakika sürebilir...
         </p>
       </div>
@@ -189,27 +189,27 @@ export default function QuickMatch({
 
   if (status === "error") {
     return (
-      <div className="rounded-2xl bg-blue-200 p-6 text-sm text-blue-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(96,165,250,0.6),0_4px_14px_rgba(59,130,246,0.15),0_28px_55px_rgba(59,130,246,0.25)]">
+      <div className="rounded-2xl border border-blue-300/60 bg-blue-200 p-6 text-sm text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(96,165,250,0.6),0_4px_14px_rgba(59,130,246,0.15),0_28px_55px_rgba(59,130,246,0.25)]">
         Bir şeyler ters gitti, tekrar dener misin?
       </div>
     );
   }
 
   return (
-    <div className="rounded-2xl bg-blue-200 p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(96,165,250,0.6),0_4px_14px_rgba(59,130,246,0.15),0_28px_55px_rgba(59,130,246,0.25)] transition-all [transform-style:preserve-3d] hover:[transform:perspective(900px)_rotateX(2deg)_translateY(-4px)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(96,165,250,0.6),0_6px_18px_rgba(59,130,246,0.2),0_36px_70px_rgba(59,130,246,0.3)]">
+    <div className="rounded-2xl border border-blue-300/60 bg-blue-200 p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(96,165,250,0.6),0_4px_14px_rgba(59,130,246,0.15),0_28px_55px_rgba(59,130,246,0.25)] transition-all [transform-style:preserve-3d] hover:[transform:perspective(900px)_rotateX(2deg)_translateY(-4px)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(96,165,250,0.6),0_6px_18px_rgba(59,130,246,0.2),0_36px_70px_rgba(59,130,246,0.3)]">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-extrabold uppercase tracking-wide text-blue-900">
+        <p className="inline-flex items-center rounded-full bg-ink px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_3px_0_0_#000000,0_8px_16px_rgba(0,0,0,0.35)]">
           Sana Uygun Yazılımcılar
         </p>
         {projectId && (
-          <a href={`/proje/${projectId}`} className="text-xs font-semibold text-blue-800 hover:underline">
+          <a href={`/proje/${projectId}`} className="text-xs font-semibold text-ink hover:underline">
             PRD&apos;yi Gör →
           </a>
         )}
       </div>
 
       {matches.length === 0 ? (
-        <p className="mt-3 text-sm text-blue-800">Şu an eşleşen kayıtlı bir yazılımcı yok.</p>
+        <p className="mt-3 text-sm text-ink">Şu an eşleşen kayıtlı bir yazılımcı yok.</p>
       ) : (
         <div className="mt-4 flex flex-col gap-4">
           {matches.map((d) => (

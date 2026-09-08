@@ -45,11 +45,11 @@ export default function DeveloperMatchRow({
   }
 
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-blue-200 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(96,165,250,0.6),0_4px_14px_rgba(59,130,246,0.15),0_28px_55px_rgba(59,130,246,0.25)]">
+    <div className="flex items-center gap-3 rounded-xl border border-blue-300/60 bg-blue-200 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(96,165,250,0.6),0_4px_14px_rgba(59,130,246,0.15),0_28px_55px_rgba(59,130,246,0.25)]">
       <Avatar name={developer.fullName} role="developer" size="sm" />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <p className="truncate text-sm font-bold text-blue-900">{developer.fullName ?? "İsimsiz"}</p>
+          <p className="truncate text-sm font-bold text-ink">{developer.fullName ?? "İsimsiz"}</p>
           {developer.availability !== undefined && (
             <AvailabilityBadge availability={developer.availability ?? null} />
           )}
@@ -65,7 +65,7 @@ export default function DeveloperMatchRow({
         title={starred ? "Yıldızı kaldır" : "Yıldızla"}
         className="shrink-0 disabled:opacity-50"
       >
-        <Star size={18} className={starred ? "fill-coral text-coral" : "text-blue-900/25 hover:text-coral"} />
+        <Star size={18} className={starred ? "fill-coral text-coral" : "text-ink/25 hover:text-coral"} />
       </button>
     </div>
   );
