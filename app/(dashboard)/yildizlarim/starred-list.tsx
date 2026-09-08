@@ -51,7 +51,7 @@ export default function StarredList({
   return (
     <div className="mt-6 flex flex-col gap-4">
       {developers.map((dev) => (
-        <div key={dev.id} className="rounded-xl bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.9),inset_0_-1px_0_rgba(17,24,39,0.05),0_2px_8px_rgba(17,24,39,0.05),0_16px_40px_rgba(17,24,39,0.10)] p-6">
+        <div key={dev.id} className="rounded-xl border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] p-6">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <Avatar name={dev.full_name} role="developer" />

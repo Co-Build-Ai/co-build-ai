@@ -12,7 +12,7 @@ export default function ProjectFeed({ projects }: { projects: Project[] }) {
   if (projects.length === 0) return null;
 
   return (
-    <div className="rounded-2xl bg-white p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),inset_0_-1px_0_rgba(17,24,39,0.05),0_2px_8px_rgba(17,24,39,0.05),0_16px_40px_rgba(17,24,39,0.10)]">
+    <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]">
       <p className="font-mono text-[11px] font-semibold uppercase tracking-wide text-ink-soft">
         🌊 Fikirler Akışı
       </p>

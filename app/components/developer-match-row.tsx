@@ -45,7 +45,7 @@ export default function DeveloperMatchRow({
   }
 
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-blue-300/60 bg-blue-200 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(96,165,250,0.6),0_4px_14px_rgba(59,130,246,0.15),0_28px_55px_rgba(59,130,246,0.25)]">
+    <div className="flex items-center gap-3 rounded-xl bg-blue-50 p-4">
       <Avatar name={developer.fullName} role="developer" size="sm" />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">

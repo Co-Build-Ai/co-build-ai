@@ -38,7 +38,6 @@ const SETTINGS_SUB_ITEMS = [
   { href: "/ayarlar/guvenlik", label: "Güvenlik" },
   { href: "/ayarlar/bildirimler", label: "Bildirimler" },
   { href: "/ayarlar/tercihler", label: "Tercihler" },
-  { href: "/ayarlar/tehlikeli-bolge", label: "Tehlikeli Bölge" },
 ];
 
 export default function Sidebar({
@@ -46,6 +45,7 @@ export default function Sidebar({
   userType,
   isDual,
   userName,
+  avatarUrl,
   miniStats,
   ratingAvg,
   ratingCount,
@@ -55,6 +55,7 @@ export default function Sidebar({
   userType: "founder" | "developer" | null;
   isDual: boolean;
   userName: string | null;
+  avatarUrl?: string | null;
   miniStats: { label: string; value: string | number; href?: string }[];
   ratingAvg: number | null;
   ratingCount: number;
@@ -318,7 +319,7 @@ export default function Sidebar({
           href="/ayarlar"
           className="mt-1 flex items-center justify-center gap-2.5 rounded-lg px-1 py-2 transition-colors hover:bg-ink/5 md:justify-start"
         >
-          <Avatar name={userName} role={userType === "founder" ? "founder" : "developer"} size="sm" />
+          <Avatar name={userName} role={userType === "founder" ? "founder" : "developer"} size="sm" avatarUrl={avatarUrl} />
           <div className={`min-w-0 ${blockClass}`}>
             <p className="truncate text-sm font-bold text-ink">{userName ?? "Kullanıcı"}</p>
             <p className="text-xs text-ink">

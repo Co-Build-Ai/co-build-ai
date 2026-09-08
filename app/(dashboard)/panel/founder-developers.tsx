@@ -104,7 +104,7 @@ export default function FounderDevelopers({ developers }: { developers: Develope
           {filtered.map((dev) => (
             <div
               key={dev.id}
-              className="rounded-2xl border border-blue-300/60 bg-blue-200 p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(96,165,250,0.6),0_4px_14px_rgba(59,130,246,0.15),0_28px_55px_rgba(59,130,246,0.25)] transition-all [transform-style:preserve-3d] hover:[transform:perspective(900px)_rotateX(2deg)_translateY(-4px)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(96,165,250,0.6),0_6px_18px_rgba(59,130,246,0.2),0_36px_70px_rgba(59,130,246,0.3)]"
+              className="rounded-xl border border-stone-200 bg-white p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] transition-all [transform-style:preserve-3d] hover:[transform:perspective(900px)_rotateX(2deg)_translateY(-4px)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_20px_rgba(17,24,39,0.16)]"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">

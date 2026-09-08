@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 
@@ -19,11 +19,40 @@ export default function EditProfile({
 }) {
   const router = useRouter();
   const supabase = createClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [editing, setEditing] = useState(false);
   const [bio, setBio] = useState(initialBio ?? "");
   const [skillsText, setSkillsText] = useState((initialSkills ?? []).join(", "));
   const [cvUrl, setCvUrl] = useState(initialCvUrl ?? "");
+  const [cvFileName, setCvFileName] = useState<string | null>(null);
+  const [uploadingCv, setUploadingCv] = useState(false);
+  const [cvError, setCvError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  async function handleCvFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingCv(true);
+    setCvError(null);
+
+    const ext = file.name.split(".").pop() ?? "pdf";
+    const path = `${userId}/cv.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("cvs")
+      .upload(path, file, { upsert: true, cacheControl: "3600" });
+
+    if (uploadError) {
+      setCvError("CV yüklenemedi, tekrar dener misin?");
+      setUploadingCv(false);
+      return;
+    }
+
+    const { data } = supabase.storage.from("cvs").getPublicUrl(path);
+    setCvUrl(`${data.publicUrl}?t=${Date.now()}`);
+    setCvFileName(file.name);
+    setUploadingCv(false);
+  }
 
   async function handleSave() {
     setSaving(true);
@@ -63,7 +92,7 @@ export default function EditProfile({
 
   if (!editing) {
     return (
-      <div className="mt-8 rounded-xl bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.9),inset_0_-1px_0_rgba(17,24,39,0.05),0_2px_8px_rgba(17,24,39,0.05),0_16px_40px_rgba(17,24,39,0.10)] p-8">
+      <div className="mt-8 rounded-xl border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] p-8">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-ink">
             Hakkımda
@@ -103,7 +132,7 @@ export default function EditProfile({
               CV&apos;yi Görüntüle →
             </a>
           ) : (
-            <p className="text-xs text-ink-soft">Henüz CV eklenmedi.</p>
+            <p className="text-xs text-ink-soft">Henüz CV yüklenmedi.</p>
           )}
         </div>
       </div>
@@ -141,15 +170,39 @@ export default function EditProfile({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-ink">CV Linki</label>
-          <input
-            type="url"
-            value={cvUrl}
-            onChange={(e) => setCvUrl(e.target.value)}
-            placeholder="örn. Google Drive, LinkedIn veya kişisel sitendeki CV linkin"
-            className="mt-1 w-full rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-4 py-2.5 text-sm text-ink outline-none focus:ring-2 focus:ring-coral/30"
-          />
-          <p className="mt-1 text-xs text-ink-soft">CV dosyanı bir yere yükleyip linkini buraya yapıştır.</p>
+          <label className="block text-sm font-medium text-ink">CV Yükle</label>
+          <div className="mt-1 flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingCv}
+              className="rounded-full bg-ink/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(17,24,39,0.06)] active:shadow-[inset_0_2px_4px_rgba(17,24,39,0.10)] active:translate-y-px px-5 py-2 text-sm font-semibold text-ink-soft hover:bg-ink/10 hover:text-ink disabled:opacity-50"
+            >
+              {uploadingCv ? "Yükleniyor..." : "Dosya Seç"}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.doc,.docx"
+              onChange={handleCvFileChange}
+              className="hidden"
+            />
+            {cvFileName ? (
+              <span className="truncate text-xs text-ink-soft">{cvFileName}</span>
+            ) : cvUrl ? (
+              <a
+                href={cvUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="truncate text-xs font-semibold text-coral-dark hover:underline"
+              >
+                Mevcut CV&apos;yi görüntüle →
+              </a>
+            ) : (
+              <span className="text-xs text-ink-soft">PDF, DOC veya DOCX</span>
+            )}
+          </div>
+          {cvError && <p className="mt-1 text-xs text-coral-dark">{cvError}</p>}
         </div>
 
         <div className="flex gap-3">

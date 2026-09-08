@@ -14,18 +14,19 @@ const PAGE_TITLES: Record<string, string> = {
   "/ayarlar/guvenlik": "Ayarlar — Güvenlik",
   "/ayarlar/bildirimler": "Ayarlar — Bildirimler",
   "/ayarlar/tercihler": "Ayarlar — Tercihler",
-  "/ayarlar/tehlikeli-bolge": "Ayarlar — Tehlikeli Bölge",
 };
 
 export default function Topbar({
   userId,
   userName,
   userType,
+  avatarUrl,
   notificationsEnabled,
 }: {
   userId: string;
   userName: string | null;
   userType: "founder" | "developer" | null;
+  avatarUrl?: string | null;
   notificationsEnabled: boolean;
 }) {
   const pathname = usePathname();
@@ -39,7 +40,7 @@ export default function Topbar({
         <MessageBell userId={userId} />
         <NotificationBell userId={userId} enabled={notificationsEnabled} />
         <Link href="/ayarlar" className="flex items-center gap-2 rounded-full transition-opacity hover:opacity-80">
-          <Avatar name={userName} role={userType === "founder" ? "founder" : "developer"} size="sm" />
+          <Avatar name={userName} role={userType === "founder" ? "founder" : "developer"} size="sm" avatarUrl={avatarUrl} />
           <span className="hidden text-sm font-medium text-ink sm:inline">
             {userName ?? "Profilim"}
           </span>

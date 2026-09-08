@@ -21,7 +21,7 @@ export default async function DashboardLayout({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("user_type, active_role, full_name, notifications_enabled, availability")
+    .select("user_type, active_role, full_name, avatar_url, notifications_enabled, availability")
     .eq("id", user.id)
     .single();
 
@@ -70,8 +70,8 @@ export default async function DashboardLayout({
       .reduce((sum, o) => sum + (o.proposed_amount ?? 0), 0);
 
     miniStats = [
-      { label: "Kabul Edilen Teklifler", value: acceptedOffers.length },
-      { label: "Kazanılan Tahmini Pay", value: `%${equityShare}` },
+      { label: "Kabul Edilen Teklifler", value: acceptedOffers.length, href: "/projelerim/aktif" },
+      { label: "Kazanılan Tahmini Pay", value: `%${equityShare}`, href: "/projelerim/aktif" },
     ];
   }
 
@@ -82,6 +82,7 @@ export default async function DashboardLayout({
         userType={userType}
         isDual={rawUserType === "both"}
         userName={profile?.full_name ?? null}
+        avatarUrl={profile?.avatar_url ?? null}
         miniStats={miniStats}
         ratingAvg={ratingAvg}
         ratingCount={ratingCount}
@@ -92,6 +93,7 @@ export default async function DashboardLayout({
           userId={user.id}
           userName={profile?.full_name ?? null}
           userType={userType}
+          avatarUrl={profile?.avatar_url ?? null}
           notificationsEnabled={profile?.notifications_enabled ?? true}
         />
         <main className="flex-1 overflow-y-auto px-6 py-8 sm:px-10">{children}</main>

@@ -14,8 +14,8 @@ export default function TrendingWidget({
   return (
     <div className="flex flex-col gap-6">
       {trendingProjects.length > 0 && (
-        <div className="rounded-2xl border border-blue-300/60 bg-blue-200 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(96,165,250,0.6),0_4px_14px_rgba(59,130,246,0.15),0_28px_55px_rgba(59,130,246,0.25)]">
-          <p className="inline-flex items-center rounded-full bg-ink px-3 py-1 text-[11px] font-extrabold uppercase tracking-wide text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_3px_0_0_#000000,0_8px_16px_rgba(0,0,0,0.35)]">
+        <div className="rounded-xl border border-stone-200 bg-white p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]">
+          <p className="text-[11px] font-extrabold uppercase tracking-wide text-ink">
             Öne Çıkan Projeler
           </p>
           <div className="mt-4 flex flex-col gap-4">
@@ -35,8 +35,8 @@ export default function TrendingWidget({
       )}
 
       {trendingDevelopers.length > 0 && (
-        <div className="rounded-2xl border border-blue-300/60 bg-blue-200 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(96,165,250,0.6),0_4px_14px_rgba(59,130,246,0.15),0_28px_55px_rgba(59,130,246,0.25)]">
-          <p className="inline-flex items-center rounded-full bg-ink px-3 py-1 text-[11px] font-extrabold uppercase tracking-wide text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_3px_0_0_#000000,0_8px_16px_rgba(0,0,0,0.35)]">
+        <div className="rounded-xl border border-stone-200 bg-white p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]">
+          <p className="text-[11px] font-extrabold uppercase tracking-wide text-ink">
             En Aktif Yazılımcılar
           </p>
           <div className="mt-4 flex flex-col gap-4">
