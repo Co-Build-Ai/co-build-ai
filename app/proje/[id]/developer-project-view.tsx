@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import ChatBox from "@/app/components/chat-box";
 import Avatar from "@/app/components/avatar";
 import RatingStars from "@/app/components/rating-stars";
 import RateOfferForm from "@/app/components/rate-offer-form";
+import GithubRepoBadge from "@/app/components/github-repo-badge";
 
 type PaymentType = "fixed" | "equity";
 type ProjectPaymentType = PaymentType | "flexible";
@@ -19,6 +21,9 @@ type Offer = {
   status: "pending" | "accepted" | "rejected";
   completed_at: string | null;
   alreadyRatedByMe: boolean;
+  removal_requested_by_founder_at: string | null;
+  removal_approved_by_developer_at: string | null;
+  github_repo_url: string | null;
 };
 
 export default function DeveloperProjectView({
@@ -187,6 +192,7 @@ function OfferSection({
   projectPaymentType: ProjectPaymentType | null;
   initialOffer: Offer | null;
 }) {
+  const router = useRouter();
   const supabase = createClient();
   const [offer, setOffer] = useState(initialOffer);
   const [saving, setSaving] = useState(false);
@@ -196,6 +202,10 @@ function OfferSection({
   );
   const [proposedAmount, setProposedAmount] = useState("");
   const [proofLink, setProofLink] = useState("");
+  const [repoUrl, setRepoUrl] = useState(initialOffer?.github_repo_url ?? "");
+  const [editingRepo, setEditingRepo] = useState(false);
+  const [savingRepo, setSavingRepo] = useState(false);
+  const [repoError, setRepoError] = useState<string | null>(null);
 
   // Founder tek bir tipe sabitlediyse, teklifin tipi de onu takip eder
   const typeIsChoosable = projectPaymentType === "flexible" || !projectPaymentType;
@@ -220,6 +230,61 @@ function OfferSection({
 
     setSaving(false);
     if (data) setOffer(data as Offer);
+  }
+
+  // offers/projects üzerindeki RLS politikaları bu güncellemeleri sadece proje
+  // sahibine (founder) izin veriyor; geliştirici tarafından yapılan onay/red bu
+  // yüzden service role ile çalışan bir API route üzerinden yürütülüyor.
+  async function handleApproveRemoval() {
+    if (!offer) return;
+    setSaving(true);
+    const res = await fetch("/api/kaldirma-onayla", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ offerId: offer.id, action: "approve" }),
+    });
+    if (res.ok) {
+      setOffer((prev) =>
+        prev ? { ...prev, removal_approved_by_developer_at: new Date().toISOString() } : prev
+      );
+      router.refresh();
+    }
+    setSaving(false);
+  }
+
+  async function handleRejectRemoval() {
+    if (!offer) return;
+    setSaving(true);
+    const res = await fetch("/api/kaldirma-onayla", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ offerId: offer.id, action: "reject" }),
+    });
+    if (res.ok) {
+      setOffer((prev) => (prev ? { ...prev, removal_requested_by_founder_at: null } : prev));
+    }
+    setSaving(false);
+  }
+
+  // offers üzerinde UPDATE yalnızca founder'a açık olduğu için, bu da service
+  // role ile çalışan API route üzerinden yürütülüyor (bkz. kaldirma-onayla).
+  async function handleSaveRepo() {
+    if (!offer) return;
+    setSavingRepo(true);
+    setRepoError(null);
+    const res = await fetch("/api/repo-baglama", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ offerId: offer.id, repoUrl }),
+    });
+    if (res.ok) {
+      setOffer((prev) => (prev ? { ...prev, github_repo_url: repoUrl.trim() || null } : prev));
+      setEditingRepo(false);
+    } else {
+      const data = await res.json().catch(() => null);
+      setRepoError(data?.error ?? "Repo kaydedilemedi.");
+    }
+    setSavingRepo(false);
   }
 
   if (offer) {
@@ -261,6 +326,60 @@ function OfferSection({
           </a>
         )}
 
+        {offer.status === "accepted" && (
+          <div className="mt-4 rounded-lg bg-ink/5 p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-ink">GitHub Reposu</p>
+              {!editingRepo && (
+                <button
+                  onClick={() => setEditingRepo(true)}
+                  className="text-xs font-semibold text-coral-dark hover:underline"
+                >
+                  {offer.github_repo_url ? "Düzenle" : "+ Bağla"}
+                </button>
+              )}
+            </div>
+
+            {editingRepo ? (
+              <div className="mt-2 flex flex-col gap-2">
+                <input
+                  type="text"
+                  placeholder="https://github.com/kullanici/repo"
+                  value={repoUrl}
+                  onChange={(e) => setRepoUrl(e.target.value)}
+                  className="rounded-lg bg-white shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-coral/30"
+                />
+                {repoError && <p className="text-xs text-coral-dark">{repoError}</p>}
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleSaveRepo}
+                    disabled={savingRepo}
+                    className="rounded-full bg-coral px-4 py-1.5 text-xs font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_3px_0_0_var(--color-coral-dark),0_6px_14px_rgba(239,68,104,0.30)] disabled:opacity-50"
+                  >
+                    {savingRepo ? "Kaydediliyor..." : "Kaydet"}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setEditingRepo(false);
+                      setRepoUrl(offer.github_repo_url ?? "");
+                      setRepoError(null);
+                    }}
+                    className="text-xs font-semibold text-ink-soft hover:text-ink"
+                  >
+                    Vazgeç
+                  </button>
+                </div>
+              </div>
+            ) : offer.github_repo_url ? (
+              <GithubRepoBadge repoUrl={offer.github_repo_url} />
+            ) : (
+              <p className="mt-1 text-xs text-ink-soft">
+                Projeye başladığında reponu buraya bağlayarak ilerlemeni fikir sahibiyle paylaşabilirsin.
+              </p>
+            )}
+          </div>
+        )}
+
         {offer.completed_at && (
           <RateOfferForm
             offerId={offer.id}
@@ -270,6 +389,32 @@ function OfferSection({
             alreadyRated={offer.alreadyRatedByMe}
           />
         )}
+
+        {offer.status === "accepted" &&
+          offer.removal_requested_by_founder_at &&
+          !offer.removal_approved_by_developer_at && (
+            <div className="mt-4 rounded-lg border border-coral/30 bg-coral/5 p-4">
+              <p className="text-sm text-ink">
+                Fikir sahibi bu projeyi kaldırmak istiyor. Onaylarsan proje taslağa alınacak.
+              </p>
+              <div className="mt-3 flex gap-3">
+                <button
+                  onClick={handleApproveRemoval}
+                  disabled={saving}
+                  className="rounded-full bg-coral px-5 py-2 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_0_0_var(--color-coral-dark),0_10px_20px_rgba(239,68,104,0.35)] transition-all hover:brightness-105 active:translate-y-1 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(239,68,104,0.30)] disabled:opacity-50"
+                >
+                  Onayla
+                </button>
+                <button
+                  onClick={handleRejectRemoval}
+                  disabled={saving}
+                  className="rounded-full bg-ink/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(17,24,39,0.06)] active:shadow-[inset_0_2px_4px_rgba(17,24,39,0.10)] active:translate-y-px px-5 py-2.5 text-sm font-semibold text-ink-soft hover:bg-ink/10 hover:text-ink disabled:opacity-50"
+                >
+                  Reddet
+                </button>
+              </div>
+            </div>
+          )}
 
         <ChatBox
           offerId={offer.id}

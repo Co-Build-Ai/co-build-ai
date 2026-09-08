@@ -38,10 +38,16 @@ export default async function UzerindeCalistiklarim() {
   let founders: { id: string; full_name: string | null }[] = [];
 
   if (projectIds.length > 0) {
+    // Sadece hala yayında olan projeler gösterilir — bir proje taslağa geri
+    // alındığında (kaldırma akışı) burada görünmemeli. Zaten RLS de artık
+    // founder olmayan birine draft bir projeyi göstermiyor; bunu burada da
+    // açıkça filtreleyip "Bilinmeyen Proje" gibi yarım kart göstermek yerine
+    // o teklifi listeden tamamen çıkarıyoruz.
     const { data: projectsData } = await supabase
       .from("projects")
       .select("id, title, founder_id")
-      .in("id", projectIds);
+      .in("id", projectIds)
+      .eq("status", "published");
     projects = projectsData ?? [];
 
     const founderIds = [...new Set(projects.map((p) => p.founder_id))];
@@ -54,11 +60,13 @@ export default async function UzerindeCalistiklarim() {
     }
   }
 
-  const items = (offers ?? []).map((o) => {
-    const project = projects.find((p) => p.id === o.project_id);
-    const founder = project ? founders.find((f) => f.id === project.founder_id) : null;
-    return { ...o, project, founder };
-  });
+  const items = (offers ?? [])
+    .map((o) => {
+      const project = projects.find((p) => p.id === o.project_id);
+      const founder = project ? founders.find((f) => f.id === project.founder_id) : null;
+      return { ...o, project, founder };
+    })
+    .filter((item) => item.project);
 
   return (
     <div>

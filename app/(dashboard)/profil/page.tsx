@@ -6,6 +6,7 @@ import FounderProjects from "./founder-projects";
 import Avatar from "@/app/components/avatar";
 import StatCircle from "@/app/components/stat-circle";
 import { getActiveRole } from "@/app/lib/roles";
+import BadgesSection, { type Badge } from "@/app/components/badges-section";
 
 const STATUS_LABELS: Record<string, string> = {
   pending: "Bekliyor",
@@ -35,6 +36,7 @@ export default async function Profil() {
   let myProjects: any[] = [];
   let recentOffers: any[] = [];
   let totalOfferCount = 0;
+  let badges: Badge[] = [];
 
   if (activeRole === "founder") {
     const { data } = await supabase
@@ -86,6 +88,13 @@ export default async function Profil() {
       if (stats.hasAccepted) progress = 100;
       return { ...p, offerCount: stats.total, progress };
     });
+
+    const publishedCount = projectsRaw.filter((p) => p.status === "published").length;
+    badges = [
+      { id: "first-idea", label: "İlk Fikrini Girdi", icon: "Lightbulb", earned: projectsRaw.length >= 1 },
+      { id: "first-publish", label: "İlk Yayın", icon: "Rocket", earned: publishedCount >= 1 },
+      { id: "first-offer", label: "İlk Teklif Aldı", icon: "Inbox", earned: totalOfferCount >= 1 },
+    ];
   }
 
   let portfolioItems: any[] = [];
@@ -115,6 +124,13 @@ export default async function Profil() {
       ...o,
       projectTitle: offerProjects?.find((p) => p.id === o.project_id)?.title ?? null,
     }));
+
+    const acceptedOffers = rawOffers.filter((o) => o.status === "accepted");
+    badges = [
+      { id: "first-offer-sent", label: "İlk Teklifini Verdi", icon: "Send", earned: rawOffers.length >= 1 },
+      { id: "first-accepted", label: "İlk Kabul", icon: "CheckCircle", earned: acceptedOffers.length >= 1 },
+      { id: "portfolio-started", label: "Portfolyo Kurdu", icon: "Briefcase", earned: portfolioItems.length >= 1 },
+    ];
   }
 
   return (
@@ -158,6 +174,8 @@ export default async function Profil() {
             </a>
           )}
         </div>
+
+        <BadgesSection badges={badges} />
 
         {activeRole === "founder" && (
           <>

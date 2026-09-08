@@ -6,13 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   Compass,
   User,
-  Lightbulb,
   Settings,
-  Rocket,
-  Inbox,
-  Send,
-  CheckCircle,
-  Briefcase,
   PanelLeftClose,
   PanelLeftOpen,
   FolderKanban,
@@ -47,28 +41,11 @@ const SETTINGS_SUB_ITEMS = [
   { href: "/ayarlar/tehlikeli-bolge", label: "Tehlikeli Bölge" },
 ];
 
-const BADGE_ICONS = {
-  Lightbulb,
-  Rocket,
-  Inbox,
-  Send,
-  CheckCircle,
-  Briefcase,
-};
-
-export type Badge = {
-  id: string;
-  label: string;
-  icon: keyof typeof BADGE_ICONS;
-  earned: boolean;
-};
-
 export default function Sidebar({
   userId,
   userType,
   isDual,
   userName,
-  badges,
   miniStats,
   ratingAvg,
   ratingCount,
@@ -78,7 +55,6 @@ export default function Sidebar({
   userType: "founder" | "developer" | null;
   isDual: boolean;
   userName: string | null;
-  badges: Badge[];
   miniStats: { label: string; value: string | number; href?: string }[];
   ratingAvg: number | null;
   ratingCount: number;
@@ -115,7 +91,7 @@ export default function Sidebar({
   const groupLabelClass = collapsed ? "hidden" : "hidden px-3 md:block";
 
   return (
-    <aside className={`flex shrink-0 flex-col border-r border-ink/10 bg-sidebar py-6 ${collapsed ? "w-16" : "w-16 md:w-64"}`}>
+    <aside className={`flex shrink-0 flex-col overflow-y-auto border-r border-ink/10 bg-sidebar py-6 ${collapsed ? "w-16" : "w-16 md:w-64"}`}>
       <div className="mb-6 flex items-center justify-between px-3 md:px-5">
         <Link href="/panel" className={blockClass}>
           <span className="text-lg font-bold text-ink">Co-Build AI</span>
@@ -173,6 +149,35 @@ export default function Sidebar({
               <Star size={20} className="shrink-0" />
               <span className={labelClass}>Yıldızlılarım</span>
             </Link>
+          )}
+        </div>
+
+        {/* Mini istatistikler (Analiz Edilen Fikirler / Gelen Teklifler vb.) — üst kısımda */}
+        <div className={`flex-col gap-4 px-1 md:px-3 ${collapsed ? "hidden" : "hidden md:flex"}`}>
+          {miniStats.length > 0 && (
+            <div className="flex flex-col gap-1">
+              {miniStats.map((stat) => {
+                const content = (
+                  <>
+                    <span className="text-xs font-semibold text-ink">{stat.label}</span>
+                    <span className="text-base font-extrabold text-ink">{stat.value}</span>
+                  </>
+                );
+                return stat.href ? (
+                  <Link
+                    key={stat.label}
+                    href={stat.href}
+                    className="flex items-center justify-between rounded-lg px-2 py-1.5 transition-colors hover:bg-ink/5"
+                  >
+                    {content}
+                  </Link>
+                ) : (
+                  <div key={stat.label} className="flex items-center justify-between rounded-lg px-2 py-1.5">
+                    {content}
+                  </div>
+                );
+              })}
+            </div>
           )}
         </div>
 
@@ -305,61 +310,13 @@ export default function Sidebar({
         </div>
       </nav>
 
-      {/* Rozetler, mini istatistikler — sadece genişletilmiş sidebar'da */}
-      <div className={`mt-6 flex-1 flex-col gap-4 overflow-y-auto px-3 pt-2 ${collapsed ? "hidden" : "hidden md:flex"}`}>
-        {badges.length > 0 && (
-          <div className="flex gap-1.5">
-            {badges.map((badge) => {
-              const Icon = BADGE_ICONS[badge.icon];
-              return (
-                <div key={badge.id} title={badge.label}>
-                  <div
-                    className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                      badge.earned ? "bg-periwinkle/30 text-periwinkle-dark" : "bg-ink/5 text-ink-soft/40"
-                    }`}
-                  >
-                    <Icon size={14} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {miniStats.length > 0 && (
-          <div className="flex flex-col gap-1">
-            {miniStats.map((stat) => {
-              const content = (
-                <>
-                  <span className="text-xs font-semibold text-ink">{stat.label}</span>
-                  <span className="text-base font-extrabold text-ink">{stat.value}</span>
-                </>
-              );
-              return stat.href ? (
-                <Link
-                  key={stat.label}
-                  href={stat.href}
-                  className="flex items-center justify-between rounded-lg px-2 py-1.5 transition-colors hover:bg-ink/5"
-                >
-                  {content}
-                </Link>
-              ) : (
-                <div
-                  key={stat.label}
-                  className="flex items-center justify-between rounded-lg px-2 py-1.5"
-                >
-                  {content}
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+      <div className="flex-1" />
 
       <div className="border-t border-ink/10 px-2 pt-3 md:px-3">
+        <LogoutButton collapsed={collapsed} />
         <Link
           href="/ayarlar"
-          className="flex items-center justify-center gap-2.5 rounded-lg px-1 py-2 transition-colors hover:bg-ink/5 md:justify-start"
+          className="mt-1 flex items-center justify-center gap-2.5 rounded-lg px-1 py-2 transition-colors hover:bg-ink/5 md:justify-start"
         >
           <Avatar name={userName} role={userType === "founder" ? "founder" : "developer"} size="sm" />
           <div className={`min-w-0 ${blockClass}`}>
@@ -375,7 +332,6 @@ export default function Sidebar({
             <RatingStars average={ratingAvg} count={ratingCount} />
           </div>
         </Link>
-        <LogoutButton collapsed={collapsed} />
       </div>
     </aside>
   );
