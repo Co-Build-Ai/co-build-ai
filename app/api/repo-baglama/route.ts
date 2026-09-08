@@ -36,7 +36,7 @@ export async function POST(request: Request) {
   // doğrulanarak yapılıyor.
   const { data: offer } = await admin
     .from("offers")
-    .select("id, developer_id, status")
+    .select("id, project_id, developer_id, status, github_repo_url")
     .eq("id", offerId)
     .maybeSingle();
 
@@ -55,6 +55,24 @@ export async function POST(request: Request) {
     .from("offers")
     .update({ github_repo_url: trimmedUrl || null })
     .eq("id", offerId);
+
+  // Yeni bir repo bağlandığında (boş bırakma/silme değil) fikir sahibine haber ver.
+  if (trimmedUrl && trimmedUrl !== offer.github_repo_url) {
+    const { data: project } = await admin
+      .from("projects")
+      .select("founder_id, title")
+      .eq("id", offer.project_id)
+      .maybeSingle();
+
+    if (project) {
+      await admin.from("notifications").insert({
+        user_id: project.founder_id,
+        project_id: offer.project_id,
+        type: "repo_linked",
+        message: `"${project.title}" projesi için bir GitHub reposu bağlandı.`,
+      });
+    }
+  }
 
   return NextResponse.json({ success: true });
 }

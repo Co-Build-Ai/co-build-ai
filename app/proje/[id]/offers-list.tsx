@@ -7,6 +7,7 @@ import Avatar from "@/app/components/avatar";
 import RatingStars from "@/app/components/rating-stars";
 import RateOfferForm from "@/app/components/rate-offer-form";
 import AvailabilityBadge from "@/app/components/availability-badge";
+import GithubRepoBadge from "@/app/components/github-repo-badge";
 
 type Offer = {
   id: string;
@@ -17,6 +18,7 @@ type Offer = {
   payment_type: "fixed" | "equity" | null;
   status: "pending" | "accepted" | "rejected";
   completed_at: string | null;
+  github_repo_url: string | null;
   developer: {
     full_name: string | null;
     bio: string | null;
@@ -178,6 +180,19 @@ export default function OffersList({
                 >
                   Reddet
                 </button>
+              </div>
+            )}
+
+            {offer.status === "accepted" && (
+              <div className="mt-4 rounded-lg bg-ink/5 p-4">
+                <p className="text-sm font-semibold text-ink">GitHub Reposu</p>
+                {offer.github_repo_url ? (
+                  <GithubRepoBadge repoUrl={offer.github_repo_url} />
+                ) : (
+                  <p className="mt-1 text-xs text-ink-soft">
+                    Yazılımcı henüz bir repo bağlamadı.
+                  </p>
+                )}
               </div>
             )}
 
