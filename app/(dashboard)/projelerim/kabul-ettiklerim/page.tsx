@@ -22,10 +22,14 @@ export default async function KabulEttiklerim() {
     redirect("/panel");
   }
 
+  // Sadece hala yayında olan projelerin teklifleri gösterilir — bir proje
+  // taslağa geri alındığında (kaldırma akışı) o projeye ait teklif burada
+  // görünmemeli.
   const { data: myProjects } = await supabase
     .from("projects")
     .select("id, title")
-    .eq("founder_id", user.id);
+    .eq("founder_id", user.id)
+    .eq("status", "published");
 
   const projectIds = (myProjects ?? []).map((p) => p.id);
 

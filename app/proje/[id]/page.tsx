@@ -6,6 +6,7 @@ import { createClient } from "@/utils/supabase/server";
 import { PublishForm, PaymentEditor } from "./payment-section";
 import DeveloperProjectView from "./developer-project-view";
 import OffersList from "./offers-list";
+import UnpublishProject from "./unpublish-project";
 
 type OfferRow = {
   id: string;
@@ -16,6 +17,9 @@ type OfferRow = {
   status: "pending" | "accepted" | "rejected";
   completed_at: string | null;
   developer_id: string;
+  removal_requested_by_founder_at: string | null;
+  removal_approved_by_developer_at: string | null;
+  github_repo_url: string | null;
 };
 
 async function fetchRatingSummary(
@@ -278,6 +282,23 @@ export default async function ProjeDetay({
                       projectId={project.id}
                       initialPaymentType={project.payment_type}
                       initialPaymentAmount={project.payment_amount}
+                    />
+                    <UnpublishProject
+                      projectId={project.id}
+                      projectTitle={project.title}
+                      acceptedOffer={
+                        (() => {
+                          const accepted = offers.find((o) => o.status === "accepted");
+                          return accepted
+                            ? {
+                                id: accepted.id,
+                                developerId: accepted.developer_id,
+                                removalRequestedByFounderAt: accepted.removal_requested_by_founder_at,
+                                removalApprovedByDeveloperAt: accepted.removal_approved_by_developer_at,
+                              }
+                            : null;
+                        })()
+                      }
                     />
                     <OffersList
                       projectId={project.id}

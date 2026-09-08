@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import Avatar from "@/app/components/avatar";
+import GithubRepoBadge from "@/app/components/github-repo-badge";
 
 export default async function YururluktekiProjelerim() {
   const supabase = await createClient();
@@ -24,10 +25,13 @@ export default async function YururluktekiProjelerim() {
     redirect("/panel");
   }
 
+  // Sadece hala yayında olan projeler "yürürlükte" sayılır — bir proje
+  // taslağa geri alındığında (kaldırma akışı) burada görünmemeli.
   const { data: myProjects } = await supabase
     .from("projects")
     .select("id, title")
-    .eq("founder_id", user.id);
+    .eq("founder_id", user.id)
+    .eq("status", "published");
 
   const projectIds = (myProjects ?? []).map((p) => p.id);
 
@@ -37,12 +41,13 @@ export default async function YururluktekiProjelerim() {
     developer_id: string;
     payment_type: "fixed" | "equity" | null;
     proposed_amount: number | null;
+    github_repo_url: string | null;
   }[] = [];
 
   if (projectIds.length > 0) {
     const { data } = await supabase
       .from("offers")
-      .select("id, project_id, developer_id, payment_type, proposed_amount")
+      .select("id, project_id, developer_id, payment_type, proposed_amount, github_repo_url")
       .in("project_id", projectIds)
       .eq("status", "accepted")
       .is("completed_at", null);
@@ -79,14 +84,16 @@ export default async function YururluktekiProjelerim() {
       ) : (
         <div className="mt-6 flex flex-col gap-4">
           {items.map((item) => (
-            <a
+            <div
               key={item.id}
-              href={item.project ? `/proje/${item.project.id}` : "#"}
-              className="block rounded-xl bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.9),inset_0_-1px_0_rgba(17,24,39,0.05),0_2px_8px_rgba(17,24,39,0.05),0_16px_40px_rgba(17,24,39,0.10)] p-6 transition-all [transform-style:preserve-3d] hover:[transform:perspective(900px)_rotateX(2deg)_translateY(-4px)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.9),inset_0_-1px_0_rgba(17,24,39,0.05),0_4px_14px_rgba(17,24,39,0.08),0_28px_60px_rgba(17,24,39,0.16)]"
+              className="rounded-xl bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.9),inset_0_-1px_0_rgba(17,24,39,0.05),0_2px_8px_rgba(17,24,39,0.05),0_16px_40px_rgba(17,24,39,0.10)] p-6 transition-all [transform-style:preserve-3d] hover:[transform:perspective(900px)_rotateX(2deg)_translateY(-4px)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.9),inset_0_-1px_0_rgba(17,24,39,0.05),0_4px_14px_rgba(17,24,39,0.08),0_28px_60px_rgba(17,24,39,0.16)]"
             >
-              <h3 className="text-lg font-bold text-ink">
+              <a
+                href={item.project ? `/proje/${item.project.id}` : "#"}
+                className="block text-lg font-bold text-ink hover:text-coral-dark"
+              >
                 {item.project?.title ?? "Bilinmeyen Proje"}
-              </h3>
+              </a>
               <div className="mt-2 flex items-center gap-2">
                 <Avatar name={item.developer?.full_name ?? null} role="developer" size="sm" />
                 <span className="text-xs text-ink-soft">
@@ -102,7 +109,8 @@ export default async function YururluktekiProjelerim() {
                     : ""}
                 </p>
               )}
-            </a>
+              {item.github_repo_url && <GithubRepoBadge repoUrl={item.github_repo_url} />}
+            </div>
           ))}
         </div>
       )}
