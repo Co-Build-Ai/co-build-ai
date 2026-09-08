@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import Avatar from "@/app/components/avatar";
+import { getActiveRole } from "@/app/lib/roles";
 
 export default async function UzerindeCalistiklarim() {
   const supabase = await createClient();
@@ -15,12 +16,12 @@ export default async function UzerindeCalistiklarim() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("user_type")
+    .select("user_type, active_role")
     .eq("id", user.id)
     .single();
 
-  // Sadece yazılımcılar bu sayfayı görebilir
-  if (profile?.user_type !== "developer") {
+  // Sadece şu an developer modunda olanlar bu sayfayı görebilir
+  if (getActiveRole(profile?.user_type, profile?.active_role) !== "developer") {
     redirect("/panel");
   }
 

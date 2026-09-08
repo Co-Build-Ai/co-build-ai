@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import { getActiveRole } from "@/app/lib/roles";
 
 export default async function KabulEttiklerim() {
   const supabase = await createClient();
@@ -14,11 +15,11 @@ export default async function KabulEttiklerim() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("user_type")
+    .select("user_type, active_role")
     .eq("id", user.id)
     .single();
 
-  if (profile?.user_type !== "founder") {
+  if (getActiveRole(profile?.user_type, profile?.active_role) !== "founder") {
     redirect("/panel");
   }
 

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import Sidebar, { type Badge } from "@/app/components/sidebar";
 import Topbar from "@/app/components/topbar";
+import { getActiveRole } from "@/app/lib/roles";
 
 export default async function DashboardLayout({
   children,
@@ -20,11 +21,12 @@ export default async function DashboardLayout({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("user_type, full_name, notifications_enabled, availability")
+    .select("user_type, active_role, full_name, notifications_enabled, availability")
     .eq("id", user.id)
     .single();
 
-  const userType = profile?.user_type ?? null;
+  const rawUserType = profile?.user_type ?? null;
+  const userType = getActiveRole(rawUserType, profile?.active_role);
 
   let badges: Badge[] = [];
   let miniStats: { label: string; value: string | number; href?: string }[] = [];
@@ -96,7 +98,9 @@ export default async function DashboardLayout({
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar
+        userId={user.id}
         userType={userType}
+        isDual={rawUserType === "both"}
         userName={profile?.full_name ?? null}
         badges={badges}
         miniStats={miniStats}

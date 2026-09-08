@@ -13,12 +13,12 @@ export default function KayitOl() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [userType, setUserType] = useState<"founder" | "developer">("founder");
+  const [userType, setUserType] = useState<"founder" | "developer" | "both">("founder");
     const [termsAccepted, setTermsAccepted] = useState(false);
   
   useEffect(() => {
     const tip = searchParams.get("tip");
-    if (tip === "developer" || tip === "founder") {
+    if (tip === "developer" || tip === "founder" || tip === "both") {
       setUserType(tip);
     }
   }, [searchParams]);
@@ -59,6 +59,7 @@ export default function KayitOl() {
         const { error: profileError } = await supabase.from("profiles").insert({
       id: authData.user.id,
       user_type: userType,
+      active_role: userType === "both" ? "founder" : null,
       full_name: fullName,
       terms_accepted_at: new Date().toISOString(),
     });
@@ -88,7 +89,7 @@ export default function KayitOl() {
             <label className="block text-sm font-medium text-ink">
               Ben bir...
             </label>
-            <div className="mt-2 grid grid-cols-2 gap-3">
+            <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-3">
               <button
                 type="button"
                 onClick={() => setUserType("founder")}
@@ -110,6 +111,17 @@ export default function KayitOl() {
                 }`}
               >
                 Yazılımcıyım
+              </button>
+              <button
+                type="button"
+                onClick={() => setUserType("both")}
+                className={`rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-colors ${
+                  userType === "both"
+                    ? "border-ink bg-ink/10 text-ink"
+                    : "border-ink/10 text-ink-soft"
+                }`}
+              >
+                İkisi de — Ortak Arıyorum
               </button>
             </div>
           </div>

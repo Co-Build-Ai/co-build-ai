@@ -6,6 +6,7 @@ import { createClient } from "@/utils/supabase/server";
 import { PublishForm, PaymentEditor } from "./payment-section";
 import DeveloperProjectView from "./developer-project-view";
 import OffersList from "./offers-list";
+import { canActAsDeveloper } from "@/app/lib/roles";
 
 type OfferRow = {
   id: string;
@@ -107,8 +108,8 @@ export default async function ProjeDetay({
       .eq("id", user.id)
       .single();
 
-    // Sadece yazılımcılar başkasının projesini görüntüleyebilir
-    if (profile?.user_type !== "developer") {
+    // Sadece yazılımcılar (veya dual hesaplar) başkasının projesini görüntüleyebilir
+    if (!canActAsDeveloper(profile?.user_type)) {
       redirect("/panel");
     }
 

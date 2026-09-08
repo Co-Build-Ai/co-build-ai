@@ -9,6 +9,7 @@ import FounderDevelopers from "./founder-developers";
 import CancelProcessingProject from "./cancel-processing-project";
 import DeveloperFeed from "@/app/components/developer-feed";
 import ProjectFeed from "@/app/components/project-feed";
+import { getActiveRole } from "@/app/lib/roles";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -35,14 +36,17 @@ export default async function Panel() {
     .eq("id", user.id)
     .single();
 
+  const activeRole = getActiveRole(profile?.user_type, profile?.active_role);
+
   let projects: any[] = [];
   let developers: any[] = [];
 
-  if (profile?.user_type === "developer") {
+  if (activeRole === "developer") {
     const { data } = await supabase
       .from("projects")
       .select("*")
       .eq("status", "published")
+      .neq("founder_id", user.id)
       .order("created_at", { ascending: false });
 
     if (data && data.length > 0) {
@@ -70,11 +74,12 @@ export default async function Panel() {
         };
       });
     }
-  } else if (profile?.user_type === "founder") {
+  } else if (activeRole === "founder") {
     const { data } = await supabase
       .from("profiles")
       .select("*")
-      .eq("user_type", "developer")
+      .in("user_type", ["developer", "both"])
+      .neq("id", user.id)
       .order("created_at", { ascending: false });
     const devsRaw = data ?? [];
 
@@ -106,7 +111,7 @@ export default async function Panel() {
   }
 
   let starredIds: string[] = [];
-  if (profile?.user_type === "founder") {
+  if (activeRole === "founder") {
     const { data: starredData } = await supabase
       .from("starred_developers")
       .select("developer_id")
@@ -115,7 +120,7 @@ export default async function Panel() {
   }
 
   let processingProjects: any[] = [];
-  if (profile?.user_type === "founder") {
+  if (activeRole === "founder") {
     const { data } = await supabase
       .from("projects")
       .select("id, title")
@@ -178,7 +183,7 @@ export default async function Panel() {
   }
 
   const profileIncomplete =
-    profile?.user_type === "developer" &&
+    activeRole === "developer" &&
     (!profile?.bio || !profile?.skills || profile.skills.length === 0 || !profile?.cv_url);
 
   return (
@@ -229,22 +234,22 @@ export default async function Panel() {
               !
             </h1>
             <p className="mt-1 text-sm text-ink-soft">
-              {profile?.user_type === "founder"
+              {activeRole === "founder"
                 ? "Projene uygun yazılımcıları keşfet."
                 : "Sana uygun yayınlanmış projeleri keşfet."}
             </p>
           </div>
 
-          {profile?.user_type === "developer" ? (
+          {activeRole === "developer" ? (
             <StatPill value={projects.length} label="Yayınlanmış Proje" tone="lime" />
           ) : (
             <StatPill value={developers.length} label="Kayıtlı Yazılımcı" tone="lime" />
           )}
         </div>
 
-        {profile?.user_type === "developer" && <DeveloperProjects projects={projects} />}
+        {activeRole === "developer" && <DeveloperProjects projects={projects} />}
 
-        {profile?.user_type === "founder" && (
+        {activeRole === "founder" && (
           <div className="mt-8">
             <div className="grid gap-4 sm:grid-cols-2">
               <QuickMatch userId={user.id} developers={developers} starredIds={starredIds} />
@@ -257,7 +262,7 @@ export default async function Panel() {
 
       <div className="hidden w-72 shrink-0 flex-col gap-6 lg:flex">
         <TrendingWidget trendingProjects={trendingProjects} trendingDevelopers={trendingDevelopers} />
-        {profile?.user_type === "founder" ? (
+        {activeRole === "founder" ? (
           <DeveloperFeed developers={developers} />
         ) : (
           <ProjectFeed projects={projects} />

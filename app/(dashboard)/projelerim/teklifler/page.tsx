@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import { getActiveRole } from "@/app/lib/roles";
 
 const STATUS_LABELS: Record<string, string> = {
   pending: "Bekliyor",
@@ -20,12 +21,12 @@ export default async function Tekliflerim() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("user_type")
+    .select("user_type, active_role")
     .eq("id", user.id)
     .single();
 
-  // Sadece yazılımcılar bu sayfayı görebilir
-  if (profile?.user_type !== "developer") {
+  // Sadece şu an developer modunda olanlar bu sayfayı görebilir
+  if (getActiveRole(profile?.user_type, profile?.active_role) !== "developer") {
     redirect("/panel");
   }
 

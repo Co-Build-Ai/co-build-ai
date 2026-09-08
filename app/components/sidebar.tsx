@@ -23,6 +23,7 @@ import LogoutButton from "./logout-button";
 import Avatar from "./avatar";
 import RatingStars from "./rating-stars";
 import AvailabilityBadge from "./availability-badge";
+import RoleSwitcher from "./role-switcher";
 
 const NAV_ITEMS = [{ href: "/panel", label: "Keşfet", icon: Compass }];
 
@@ -63,7 +64,9 @@ export type Badge = {
 };
 
 export default function Sidebar({
+  userId,
   userType,
+  isDual,
   userName,
   badges,
   miniStats,
@@ -71,7 +74,9 @@ export default function Sidebar({
   ratingCount,
   availability,
 }: {
+  userId: string;
   userType: "founder" | "developer" | null;
+  isDual: boolean;
   userName: string | null;
   badges: Badge[];
   miniStats: { label: string; value: string | number; href?: string }[];
@@ -123,6 +128,12 @@ export default function Sidebar({
           {collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
         </button>
       </div>
+
+      {isDual && userType && (
+        <div className="mb-4 px-3 md:px-3">
+          <RoleSwitcher userId={userId} activeRole={userType} collapsed={collapsed} />
+        </div>
+      )}
 
       <nav className="flex flex-col gap-4 px-2 md:px-3">
         <div className="flex flex-col gap-1">

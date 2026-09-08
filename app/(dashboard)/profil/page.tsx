@@ -5,6 +5,7 @@ import PortfolioSection from "./portfolio-section";
 import FounderProjects from "./founder-projects";
 import Avatar from "@/app/components/avatar";
 import StatCircle from "@/app/components/stat-circle";
+import { getActiveRole } from "@/app/lib/roles";
 
 const STATUS_LABELS: Record<string, string> = {
   pending: "Bekliyor",
@@ -29,11 +30,13 @@ export default async function Profil() {
     .eq("id", user.id)
     .single();
 
+  const activeRole = getActiveRole(profile?.user_type, profile?.active_role);
+
   let myProjects: any[] = [];
   let recentOffers: any[] = [];
   let totalOfferCount = 0;
 
-  if (profile?.user_type === "founder") {
+  if (activeRole === "founder") {
     const { data } = await supabase
       .from("projects")
       .select("*")
@@ -87,7 +90,7 @@ export default async function Profil() {
 
   let portfolioItems: any[] = [];
   let myOffers: any[] = [];
-  if (profile?.user_type === "developer") {
+  if (activeRole === "developer") {
     const { data } = await supabase
       .from("portfolio_items")
       .select("*")
@@ -120,18 +123,18 @@ export default async function Profil() {
         <div className="flex flex-col items-center text-center">
           <Avatar
             name={profile?.full_name ?? null}
-            role={profile?.user_type === "founder" ? "founder" : "developer"}
+            role={activeRole === "founder" ? "founder" : "developer"}
             size="lg"
           />
           <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
             {profile?.full_name ?? "Profilim"}
           </h1>
           <p className="mt-2 text-sm text-ink-soft">
-            {profile?.user_type === "founder" ? "Fikir Sahibi" : "Yazılımcı"}
+            {activeRole === "founder" ? "Fikir Sahibi" : "Yazılımcı"}
           </p>
 
           <div className="mt-6 flex items-center gap-4">
-            {profile?.user_type === "founder" ? (
+            {activeRole === "founder" ? (
               <>
                 <StatCircle
                   value={myProjects.filter((p) => p.status === "published").length}
@@ -149,14 +152,14 @@ export default async function Profil() {
             )}
           </div>
 
-          {profile?.user_type === "founder" && (
+          {activeRole === "founder" && (
             <a href="/fikir-ekle" className="mt-6 inline-block rounded-full bg-coral px-8 py-3.5 text-base font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_0_0_var(--color-coral-dark),0_10px_20px_rgba(239,68,104,0.35)] transition-all hover:brightness-105 active:translate-y-1 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(239,68,104,0.30)]">
               + Yeni Fikir Ekle
             </a>
           )}
         </div>
 
-        {profile?.user_type === "founder" && (
+        {activeRole === "founder" && (
           <>
             <FounderProjects projects={myProjects} />
 
@@ -196,7 +199,7 @@ export default async function Profil() {
           </>
         )}
 
-        {profile?.user_type === "developer" && (
+        {activeRole === "developer" && (
           <EditProfile
             userId={user.id}
             fullName={profile?.full_name ?? null}
@@ -206,11 +209,11 @@ export default async function Profil() {
           />
         )}
 
-        {profile?.user_type === "developer" && (
+        {activeRole === "developer" && (
           <PortfolioSection userId={user.id} items={portfolioItems} />
         )}
 
-        {profile?.user_type === "developer" && myOffers.length > 0 && (
+        {activeRole === "developer" && myOffers.length > 0 && (
           <div className="mt-10">
             <h2 className="font-mono text-xs font-semibold uppercase tracking-wide text-ink-soft">
               Son Tekliflerim

@@ -20,19 +20,25 @@ export default async function TercihAyarlari() {
     .eq("id", user.id)
     .maybeSingle();
 
-  if (profile?.user_type === "founder") {
-    return (
-      <FounderDefaults
-        userId={user.id}
-        initialType={profile?.default_payment_type ?? null}
-        initialAmount={profile?.default_payment_amount ?? null}
-      />
-    );
+  const showFounder = profile?.user_type === "founder" || profile?.user_type === "both";
+  const showDeveloper = profile?.user_type === "developer" || profile?.user_type === "both";
+
+  if (!showFounder && !showDeveloper) {
+    return null;
   }
 
-  if (profile?.user_type === "developer") {
-    return <DeveloperAvailability userId={user.id} initialValue={profile?.availability ?? null} />;
-  }
-
-  return null;
+  return (
+    <div className="flex flex-col gap-8">
+      {showFounder && (
+        <FounderDefaults
+          userId={user.id}
+          initialType={profile?.default_payment_type ?? null}
+          initialAmount={profile?.default_payment_amount ?? null}
+        />
+      )}
+      {showDeveloper && (
+        <DeveloperAvailability userId={user.id} initialValue={profile?.availability ?? null} />
+      )}
+    </div>
+  );
 }
