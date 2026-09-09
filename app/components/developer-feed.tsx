@@ -22,7 +22,11 @@ export default function DeveloperFeed({ developers }: { developers: Developer[] 
       </p>
       <div className="mt-3 flex max-h-[520px] flex-col gap-2 overflow-y-auto pr-1">
         {developers.map((dev) => (
-          <div key={dev.id} className="rounded-xl bg-petal/60 p-3">
+          <a
+            key={dev.id}
+            href={`/yazilimci/${dev.id}`}
+            className="block rounded-xl bg-petal/60 p-3 transition-colors hover:bg-petal"
+          >
             <div className="flex items-center gap-2">
               <Avatar name={dev.full_name} role="developer" size="sm" />
               <div className="min-w-0 flex-1">
@@ -46,7 +50,7 @@ export default function DeveloperFeed({ developers }: { developers: Developer[] 
                 ))}
               </div>
             )}
-          </div>
+          </a>
         ))}
       </div>
     </div>

@@ -36,7 +36,24 @@ export default function FikirEkle() {
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const ideaHash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 
-    // 2. Adım: Fikri veritabanına kaydet (PRD henüz yok, arka planda üretilecek)
+    // 2. Adım: Aynı fikir (birebir aynı başlık + metin) bu kullanıcı tarafından
+    // daha önce eklenmiş mi kontrol et — yanlışlıkla iki kez gönderilirse
+    // (çift tıklama, sayfa yenileyip tekrar gönderme vb.) aynı proje için
+    // ikinci bir satır oluşturmak yerine mevcut olana yönlendiriyoruz.
+    const { data: existingProject } = await supabase
+      .from("projects")
+      .select("id")
+      .eq("founder_id", user.id)
+      .eq("idea_hash", ideaHash)
+      .maybeSingle();
+
+    if (existingProject) {
+      setLoading(false);
+      router.push(`/proje/${existingProject.id}`);
+      return;
+    }
+
+    // 3. Adım: Fikri veritabanına kaydet (PRD henüz yok, arka planda üretilecek)
     const { data: newProject, error: insertError } = await supabase
       .from("projects")
       .insert({
@@ -56,7 +73,7 @@ export default function FikirEkle() {
       return;
     }
 
-    // 3. Adım: AI servisine PRD üretimini arka planda başlat (cevabı beklemeden)
+    // 4. Adım: AI servisine PRD üretimini arka planda başlat (cevabı beklemeden)
     try {
       await fetch(`${process.env.NEXT_PUBLIC_AI_SERVICE_URL}/prd-uret-baslat`, {
         method: "POST",

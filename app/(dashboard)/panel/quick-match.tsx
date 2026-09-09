@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import DeveloperMatchRow from "@/app/components/developer-match-row";
 
@@ -30,6 +31,7 @@ export default function QuickMatch({
   developers: Developer[];
   starredIds: string[];
 }) {
+  const router = useRouter();
   const supabase = createClient();
   const [idea, setIdea] = useState("");
   const [status, setStatus] = useState<"idle" | "generating" | "done" | "error">("idle");
@@ -116,6 +118,20 @@ export default function QuickMatch({
     const ideaHash = Array.from(new Uint8Array(hashBuffer))
       .map((b) => b.toString(16).padStart(2, "0"))
       .join("");
+
+    // Aynı fikir daha önce eklenmişse (idea_hash eşleşiyorsa) ikinci bir
+    // proje satırı oluşturmak yerine mevcut olana yönlendir.
+    const { data: existingProject } = await supabase
+      .from("projects")
+      .select("id")
+      .eq("founder_id", userId)
+      .eq("idea_hash", ideaHash)
+      .maybeSingle();
+
+    if (existingProject) {
+      router.push(`/proje/${existingProject.id}`);
+      return;
+    }
 
     const { data: newProject, error } = await supabase
       .from("projects")

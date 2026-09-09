@@ -102,9 +102,10 @@ export default function FounderDevelopers({ developers }: { developers: Develope
       ) : (
         <div className="mt-6 flex flex-col gap-3">
           {filtered.map((dev) => (
-            <div
+            <a
               key={dev.id}
-              className="rounded-xl border border-stone-200 bg-white p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] transition-all [transform-style:preserve-3d] hover:[transform:perspective(900px)_rotateX(2deg)_translateY(-4px)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_20px_rgba(17,24,39,0.16)]"
+              href={`/yazilimci/${dev.id}`}
+              className="block rounded-xl border border-stone-200 bg-white p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] transition-all [transform-style:preserve-3d] hover:[transform:perspective(900px)_rotateX(2deg)_translateY(-4px)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_20px_rgba(17,24,39,0.16)]"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
@@ -133,7 +134,7 @@ export default function FounderDevelopers({ developers }: { developers: Develope
                   ))}
                 </div>
               )}
-            </div>
+            </a>
           ))}
         </div>
       )}

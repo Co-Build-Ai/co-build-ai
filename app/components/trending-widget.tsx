@@ -41,11 +41,15 @@ export default function TrendingWidget({
           </p>
           <div className="mt-4 flex flex-col gap-4">
             {trendingDevelopers.map((d) => (
-              <div key={d.id} className="flex items-center gap-2">
+              <a
+                key={d.id}
+                href={`/yazilimci/${d.id}`}
+                className="flex items-center gap-2 transition-opacity hover:opacity-70"
+              >
                 <Avatar name={d.full_name} role="developer" size="sm" />
                 <span className="min-w-0 flex-1 truncate text-sm text-ink">{d.full_name ?? "İsimsiz"}</span>
                 <span className="shrink-0 text-xs text-ink-soft">{d.acceptedCount} kabul</span>
-              </div>
+              </a>
             ))}
           </div>
         </div>

@@ -46,16 +46,18 @@ export default function DeveloperMatchRow({
 
   return (
     <div className="flex items-center gap-3 rounded-xl bg-blue-50 p-4">
-      <Avatar name={developer.fullName} role="developer" size="sm" />
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <p className="truncate text-sm font-bold text-ink">{developer.fullName ?? "İsimsiz"}</p>
-          {developer.availability !== undefined && (
-            <AvailabilityBadge availability={developer.availability ?? null} />
-          )}
+      <a href={`/yazilimci/${developer.id}`} className="flex min-w-0 flex-1 items-center gap-3">
+        <Avatar name={developer.fullName} role="developer" size="sm" />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <p className="truncate text-sm font-bold text-ink hover:underline">{developer.fullName ?? "İsimsiz"}</p>
+            {developer.availability !== undefined && (
+              <AvailabilityBadge availability={developer.availability ?? null} />
+            )}
+          </div>
+          <RatingStars average={developer.ratingAvg} count={developer.ratingCount} />
         </div>
-        <RatingStars average={developer.ratingAvg} count={developer.ratingCount} />
-      </div>
+      </a>
       <span className="shrink-0 rounded-full bg-periwinkle/30 px-2.5 py-0.5 text-xs font-bold text-periwinkle-dark">
         %{developer.matchScore}
       </span>
