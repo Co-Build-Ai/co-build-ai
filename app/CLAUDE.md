@@ -9,10 +9,12 @@ Proje sahibi (Esma) Python/ML deneyimli ama web geliştirmede yeni. Adım adım,
 ## Mimari (ÖNEMLİ — bilerek böyle kuruldu)
 - **Frontend + Backend (web):** Next.js 16 (App Router, TypeScript, Tailwind CSS v4) — bu bilgisayarda çalışıyor
 - **Veritabanı/Auth:** Supabase (PostgreSQL + RLS + Authentication)
-- **AI motoru:** AYRI bir Windows bilgisayarda çalışıyor — Ollama (llama3.1:8b, num_predict=2048) + LangChain + FastAPI, `co-build-ai-server` klasöründe, Python venv içinde
-- **İki bilgisayar arası bağlantı:** Aynı Wi-Fi/mobil hotspot ağında, yerel IP üzerinden (`.env.local`'de `NEXT_PUBLIC_AI_SERVICE_URL`). Bu IP her ağ değişiminde değişebilir, güncellenmesi gerekebilir.
-- **Neden yerel/açık kaynak AI?** KVKK uyumluluğu için — "veri yurtdışına çıkmıyor" iddiası, OpenAI/Gemini gibi dış API'ler yerine kendi sunucumuzda LLM çalıştırıyoruz.
-- **AI çağrısı ASENKRON çalışıyor:** Next.js, FastAPI'nin `/prd-uret-baslat` endpoint'ine istek atıp hemen döner, sonuç `job_store` (bellek içi) tutulur, Next.js tarafı `/prd-durum/{id}` ile periyodik sorgular (polling), sonuç gelince Supabase'e yazılır. Bunun sebebi: CPU'da model çalıştığı için PRD üretimi 1-5 dakika sürebiliyor, kullanıcıyı bloklamamak için arka plana alındı.
+- **AI motoru:** AYRI bir GPU'lu makinede çalışıyor — vLLM ile serve edilen `Qwen/Qwen2.5-32B-Instruct-AWQ` (AWQ quantization, `--max-model-len 4096 --gpu-memory-utilization 0.85`) + LangChain + FastAPI, `co-build-ai-server` klasöründe, Python venv içinde. (GÜNCELLEME: önceden Ollama + llama3.1:8b CPU üzerinde çalışıyordu, artık GPU'da vLLM+Qwen2.5-32B'ye geçildi — CPU/hız ile ilgili eski notlar artık geçerli değil.)
+- **Agentic RAG:** PRD üretimi artık tek seferlik prompt değil, kendi çıktısını denetleyip revize eden bir agent döngüsü (taslak → kendi kendine eleştiri → düzeltme → onay) — `co-build-ai-server` tarafında.
+- **Eşleştirme motoru:** Supabase pgvector ile embedding tabanlı semantik arama kullanıyor (önceki `required_skills` dizi kesişimi yöntemi yerine) — Founder'ın Keşfet ekranında canlıda çalışıyor.
+- **İki makine arası bağlantı:** Aynı Wi-Fi/mobil hotspot ağında, yerel IP üzerinden (`.env.local`'de `NEXT_PUBLIC_AI_SERVICE_URL`). Bu IP her ağ değişiminde değişebilir, güncellenmesi gerekebilir.
+- **Neden yerel/açık kaynak AI?** KVKK uyumluluğu için — "veri yurtdışına çıkmıyor" iddiası, OpenAI/Gemini gibi dış API'ler yerine kendi sunucumuzda (kendi GPU'muzda) açık kaynak LLM çalıştırıyoruz.
+- **AI çağrısı ASENKRON çalışıyor:** Next.js, FastAPI'nin `/prd-uret-baslat` endpoint'ine istek atıp hemen döner, sonuç `job_store` (bellek içi) tutulur, Next.js tarafı `/prd-durum/{id}` ile periyodik sorgular (polling), sonuç gelince Supabase'e yazılır. GPU'ya geçişle PRD üretim süresi büyük ölçüde kısaldı ama polling mimarisi olduğu gibi korundu (kullanıcıyı bloklamamak için).
 
 ## Tamamlanan Aşamalar (AŞAMA 1-17)
 1. Kurulum (Node.js, VS Code, Git)
@@ -49,7 +51,7 @@ Proje sahibi (Esma) Python/ML deneyimli ama web geliştirmede yeni. Adım adım,
 
 ## Bilinçli Olarak v2'ye Ertelenenler (ŞİMDİ EKLEMEYİN)
 - Gerçek para transferi / escrow YOK, teklif sistemi sadece niyet beyanı
-- Biyometrik KYC, Stripe/escrow ödeme, Pinecone vektör eşleştirme, NDA dijital imza, mobil uygulama
+- Biyometrik KYC, Stripe/escrow ödeme, NDA dijital imza, mobil uygulama
 - Patent veritabanı karşılaştırması
 - Tinder-tarzı kaydırma/swipe eşleştirme (bilerek vazgeçildi, liste bazlı kalındı)
 - GitHub commit'e göre otomatik milestone/ödeme tetikleme (sadece pasif repo linki gösterimi var)
@@ -57,7 +59,7 @@ Proje sahibi (Esma) Python/ML deneyimli ama web geliştirmede yeni. Adım adım,
 - Gerçek zamanlı rakip arama (dış API bağımlılığı olur, sadece modelin kendi bilgisiyle "benzer örnek" üretiliyor)
 
 ## Bilinen Riskler / Dikkat Edilmesi Gerekenler
-- İkinci bilgisayarda GPU yok (Intel Iris Xe, entegre), Ollama CPU'da çalışıyor — bu yüzden model boyutu ve prompt uzunluğu performansı doğrudan etkiliyor
+- (ESKİ RİSK, ARTIK GEÇERSİZ) İkinci bilgisayarda GPU yoktu, Ollama CPU'da çalışıyordu — artık ayrı bir GPU'lu makinede vLLM+Qwen2.5-32B-AWQ kullanılıyor, bu risk ortadan kalktı
 - Kod yapıştırılırken `<a` etiketlerinin başı sık sık kayboluyordu (kopyala-yapıştır sorunu) — Claude Code'da bu risk olmamalı çünkü artık dosyalar doğrudan düzenleniyor
 - `.env.local` içindeki `NEXT_PUBLIC_AI_SERVICE_URL`, ağ değişince güncellenmesi gerekiyor
 - Sunum için demo/simülasyon verisi (sahte yazılımcı profilleri + proje fikirleri) henüz eklenmedi, planlanıyor
