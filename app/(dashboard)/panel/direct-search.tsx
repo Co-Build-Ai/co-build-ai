@@ -76,7 +76,7 @@ export default function DirectSearch({
 
   return (
     <div className="rounded-xl border border-stone-200 bg-white p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]">
-      <p className="inline-flex items-center rounded-full bg-periwinkle-dark px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-white shadow-sm">
+      <p className="inline-flex items-center rounded-full bg-coral px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-white shadow-sm">
         Doğrudan Arama
       </p>
       <p className="mt-2 text-sm text-ink-soft">
@@ -88,12 +88,12 @@ export default function DirectSearch({
         onChange={(e) => setQuery(e.target.value)}
         rows={3}
         placeholder="Örn: React ve Node.js bilen, e-ticaret deneyimi olan bir backend geliştirici arıyorum..."
-        className="mt-3 w-full resize-none rounded-xl bg-petal px-4 py-2.5 text-sm text-ink outline-none focus:ring-2 focus:ring-periwinkle-dark/30"
+        className="mt-3 w-full resize-none rounded-xl bg-petal px-4 py-2.5 text-sm text-ink outline-none focus:ring-2 focus:ring-coral/30"
       />
       <button
         onClick={handleSearch}
         disabled={status === "loading"}
-        className="mt-3 rounded-full bg-periwinkle-dark px-6 py-2 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_0_0_#5b21b6,0_10px_20px_rgba(109,40,217,0.30)] transition-all hover:brightness-105 active:translate-y-1 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_#5b21b6,0_2px_6px_rgba(109,40,217,0.25)] disabled:opacity-50"
+        className="mt-3 rounded-full bg-coral px-6 py-2 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_0_0_var(--color-coral-dark),0_10px_20px_rgba(239,68,104,0.35)] transition-all hover:brightness-105 active:translate-y-1 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(239,68,104,0.30)] disabled:opacity-50"
       >
         {status === "loading" ? "Aranıyor..." : "Ara"}
       </button>
