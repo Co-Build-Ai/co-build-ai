@@ -115,19 +115,55 @@ export default async function KullaniciProfili({
     publishedProjects = data ?? [];
   }
 
-  // --- Sağ sidebar: benzer profiller + popüler beceriler (gerçek veriden) ---
+  // --- Sağ sidebar: benzer profiller + yeni katılanlar + öne çıkan projeler +
+  // popüler beceriler (hepsi gerçek veriden, LinkedIn'deki "öneriler" bölümüne
+  // benzer şekilde birden çok modül) ---
   let similarProfiles: { id: string; full_name: string | null; skills: string[] | null; avatar_url: string | null }[] = [];
   let popularSkills: string[] = [];
+  const excludeIds = [id, user.id];
+
   if (isDeveloper && viewedProfile.skills && viewedProfile.skills.length > 0) {
     const { data: overlapping } = await supabase
       .from("profiles")
       .select("id, full_name, skills, avatar_url")
       .overlaps("skills", viewedProfile.skills)
-      .neq("id", id)
+      .not("id", "in", `(${excludeIds.join(",")})`)
       .in("user_type", ["developer", "both"])
-      .limit(4);
+      .limit(8);
     similarProfiles = overlapping ?? [];
   }
+
+  const similarIds = similarProfiles.map((p) => p.id);
+  const { data: recentProfilesData } = await supabase
+    .from("profiles")
+    .select("id, full_name, user_type, avatar_url, created_at")
+    .not("id", "in", `(${[...excludeIds, ...similarIds].join(",")})`)
+    .order("created_at", { ascending: false })
+    .limit(5);
+  const recentProfiles = recentProfilesData ?? [];
+
+  const { data: publishedForTrend } = await supabase
+    .from("projects")
+    .select("id, title")
+    .eq("status", "published");
+  const publishedTrendIds = (publishedForTrend ?? []).map((p) => p.id);
+  let trendingProjects: { id: string; title: string; offerCount: number }[] = [];
+  if (publishedTrendIds.length > 0) {
+    const { data: allOffersForTrend } = await supabase
+      .from("offers")
+      .select("project_id")
+      .in("project_id", publishedTrendIds);
+    const offerCountByProject: Record<string, number> = {};
+    for (const o of allOffersForTrend ?? []) {
+      offerCountByProject[o.project_id] = (offerCountByProject[o.project_id] ?? 0) + 1;
+    }
+    trendingProjects = (publishedForTrend ?? [])
+      .map((p) => ({ ...p, offerCount: offerCountByProject[p.id] ?? 0 }))
+      .filter((p) => p.offerCount > 0)
+      .sort((a, b) => b.offerCount - a.offerCount)
+      .slice(0, 4);
+  }
+
   {
     const { data: allDevProfiles } = await supabase
       .from("profiles")
@@ -329,8 +365,10 @@ export default async function KullaniciProfili({
           )}
         </div>
 
-        {/* Sağ sidebar — büyük ekranda sabit (sticky) kalır */}
-        <div className="flex flex-col gap-6 lg:sticky lg:top-24 lg:self-start">
+        {/* Sağ sidebar — büyük ekranda sayfa kaydırılırken sabit kalır (sticky);
+            içeriği viewport'tan uzunsa kendi içinde kayar, sayfayla birlikte
+            aşağı inmez. */}
+        <div className="flex flex-col gap-6 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto lg:pb-4 lg:pr-1">
           {similarProfiles.length > 0 && (
             <div className={CARD}>
               <h2 className={SECTION_LABEL}>Benzer Profiller</h2>
@@ -347,6 +385,53 @@ export default async function KullaniciProfili({
                       {p.skills && p.skills.length > 0 && (
                         <p className="truncate text-xs text-ink-soft">{p.skills.slice(0, 3).join(", ")}</p>
                       )}
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {trendingProjects.length > 0 && (
+            <div className={CARD}>
+              <h2 className={SECTION_LABEL}>Öne Çıkan Projeler</h2>
+              <div className="mt-3 flex flex-col gap-3">
+                {trendingProjects.map((p, i) => (
+                  <a
+                    key={p.id}
+                    href={`/proje/${p.id}`}
+                    className="flex items-center gap-2 text-sm transition-colors hover:text-coral-dark"
+                  >
+                    <span className="font-bold text-ink-soft">{i + 1}</span>
+                    <span className="min-w-0 flex-1 truncate text-ink">{p.title}</span>
+                    <span className="shrink-0 text-xs text-ink-soft">{p.offerCount} teklif</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {recentProfiles.length > 0 && (
+            <div className={CARD}>
+              <h2 className={SECTION_LABEL}>Platforma Yeni Katılanlar</h2>
+              <div className="mt-3 flex flex-col gap-3">
+                {recentProfiles.map((p) => (
+                  <a
+                    key={p.id}
+                    href={`/profil/${p.id}`}
+                    className="flex items-center gap-2.5 transition-opacity hover:opacity-70"
+                  >
+                    <Avatar
+                      name={p.full_name}
+                      role={canActAsFounder(p.user_type) && !canActAsDeveloper(p.user_type) ? "founder" : "developer"}
+                      size="sm"
+                      avatarUrl={p.avatar_url}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-ink">{p.full_name ?? "İsimsiz"}</p>
+                      <p className="truncate text-xs text-ink-soft">
+                        {p.user_type === "both" ? "Yazılımcı & Fikir Sahibi" : p.user_type === "founder" ? "Fikir Sahibi" : "Yazılımcı"}
+                      </p>
                     </div>
                   </a>
                 ))}
