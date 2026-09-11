@@ -9,6 +9,7 @@ export default function ProjectMatchCard({
     title: string;
     raw_idea: string;
     required_skills: string[] | null;
+    founder_id: string;
     founderName: string | null;
     matchScore: number;
   };
@@ -20,10 +21,13 @@ export default function ProjectMatchCard({
         {project.matchScore > 0 && <ProgressRing value={project.matchScore} size={40} strokeWidth={4} />}
       </div>
 
-      <div className="mt-3 flex items-center gap-2">
+      <a
+        href={`/profil/${project.founder_id}`}
+        className="relative z-10 mt-3 flex w-fit items-center gap-2 hover:underline"
+      >
         <Avatar name={project.founderName} role="founder" size="sm" />
         <span className="text-xs text-ink-soft">{project.founderName ?? "İsimsiz Fikir Sahibi"}</span>
-      </div>
+      </a>
 
       <p className="mt-2 line-clamp-2 text-xs text-ink-soft">{project.raw_idea}</p>
 

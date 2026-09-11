@@ -43,7 +43,7 @@ export default function TrendingWidget({
             {trendingDevelopers.map((d) => (
               <a
                 key={d.id}
-                href={`/yazilimci/${d.id}`}
+                href={`/profil/${d.id}`}
                 className="flex items-center gap-2 transition-opacity hover:opacity-70"
               >
                 <Avatar name={d.full_name} role="developer" size="sm" />

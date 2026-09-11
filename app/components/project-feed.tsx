@@ -5,6 +5,7 @@ type Project = {
   title: string;
   raw_idea: string;
   required_skills: string[] | null;
+  founder_id: string;
   founderName: string | null;
 };
 
@@ -18,17 +19,20 @@ export default function ProjectFeed({ projects }: { projects: Project[] }) {
       </p>
       <div className="mt-3 flex max-h-[520px] flex-col gap-2 overflow-y-auto pr-1">
         {projects.map((p) => (
-          <a
-            key={p.id}
-            href={`/proje/${p.id}`}
-            className="block rounded-xl bg-petal/60 p-3 transition-colors hover:bg-petal"
-          >
-            <p className="text-sm font-bold text-ink">{p.title}</p>
-            <div className="mt-1 flex items-center gap-1.5">
+          <div key={p.id} className="rounded-xl bg-petal/60 p-3 transition-colors hover:bg-petal">
+            <a href={`/proje/${p.id}`} className="block text-sm font-bold text-ink hover:underline">
+              {p.title}
+            </a>
+            <a
+              href={`/profil/${p.founder_id}`}
+              className="mt-1 flex w-fit items-center gap-1.5 hover:underline"
+            >
               <Avatar name={p.founderName} role="founder" size="sm" />
               <span className="text-xs text-ink-soft">{p.founderName ?? "İsimsiz"}</span>
-            </div>
-            <p className="mt-2 line-clamp-2 text-xs text-ink-soft">{p.raw_idea}</p>
+            </a>
+            <a href={`/proje/${p.id}`} className="mt-2 block line-clamp-2 text-xs text-ink-soft">
+              {p.raw_idea}
+            </a>
             {p.required_skills && p.required_skills.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-1">
                 {p.required_skills.slice(0, 4).map((skill) => (
@@ -41,7 +45,7 @@ export default function ProjectFeed({ projects }: { projects: Project[] }) {
                 ))}
               </div>
             )}
-          </a>
+          </div>
         ))}
       </div>
     </div>

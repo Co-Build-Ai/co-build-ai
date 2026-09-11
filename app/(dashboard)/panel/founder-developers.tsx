@@ -104,7 +104,7 @@ export default function FounderDevelopers({ developers }: { developers: Develope
           {filtered.map((dev) => (
             <a
               key={dev.id}
-              href={`/yazilimci/${dev.id}`}
+              href={`/profil/${dev.id}`}
               className="block rounded-xl border border-stone-200 bg-white p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] transition-all [transform-style:preserve-3d] hover:[transform:perspective(900px)_rotateX(2deg)_translateY(-4px)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_20px_rgba(17,24,39,0.16)]"
             >
               <div className="flex items-start justify-between gap-3">

@@ -9,6 +9,7 @@ type ProjectWithMatch = {
   title: string;
   raw_idea: string;
   required_skills: string[] | null;
+  founder_id: string;
   founderName: string | null;
   matchScore: number;
   payment_type: "fixed" | "equity" | "flexible" | null;

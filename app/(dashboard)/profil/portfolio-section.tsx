@@ -17,9 +17,11 @@ type PortfolioItem = {
 export default function PortfolioSection({
   userId,
   items,
+  readOnly = false,
 }: {
   userId: string;
   items: PortfolioItem[];
+  readOnly?: boolean;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -71,15 +73,17 @@ export default function PortfolioSection({
         <h2 className="text-lg font-bold text-ink">
           Projeler ve Sertifikalar
         </h2>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="text-sm font-semibold text-coral-dark hover:underline"
-        >
-          {showForm ? "Vazgeç" : "+ Ekle"}
-        </button>
+        {!readOnly && (
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="text-sm font-semibold text-coral-dark hover:underline"
+          >
+            {showForm ? "Vazgeç" : "+ Ekle"}
+          </button>
+        )}
       </div>
 
-      {showForm && (
+      {!readOnly && showForm && (
         <div className="mt-4 rounded-xl border border-coral/30 bg-white p-5">
           <div className="flex gap-3">
             <button
@@ -157,7 +161,7 @@ export default function PortfolioSection({
           <h3 className="text-sm font-semibold text-ink-soft">Projeler</h3>
           <div className="mt-2 flex flex-col gap-3">
             {projects.map((item) => (
-              <ItemCard key={item.id} item={item} onDelete={handleDelete} />
+              <ItemCard key={item.id} item={item} onDelete={readOnly ? undefined : handleDelete} />
             ))}
           </div>
         </div>
@@ -168,7 +172,7 @@ export default function PortfolioSection({
           <h3 className="text-sm font-semibold text-ink-soft">Sertifikalar</h3>
           <div className="mt-2 flex flex-col gap-3">
             {certificates.map((item) => (
-              <ItemCard key={item.id} item={item} onDelete={handleDelete} />
+              <ItemCard key={item.id} item={item} onDelete={readOnly ? undefined : handleDelete} />
             ))}
           </div>
         </div>
@@ -178,7 +182,9 @@ export default function PortfolioSection({
         <div className="mt-4 rounded-xl border border-dashed border-ink/15 bg-white/60 p-8 text-center">
           <p className="text-2xl">🗂️</p>
           <p className="mt-2 text-sm text-ink-soft">
-            Henüz bir proje ya da sertifika eklemedin. Founder&apos;lar seni değerlendirirken bunlara bakacak.
+            {readOnly
+              ? "Henüz bir proje ya da sertifika eklenmemiş."
+              : "Henüz bir proje ya da sertifika eklemedin. Founder'lar seni değerlendirirken bunlara bakacak."}
           </p>
         </div>
       )}
@@ -199,7 +205,7 @@ function ItemCard({
   onDelete,
 }: {
   item: PortfolioItem;
-  onDelete: (id: string) => void;
+  onDelete?: (id: string) => void;
 }) {
   const [lastCommit, setLastCommit] = useState<{
     message: string;
@@ -259,9 +265,11 @@ function ItemCard({
           </a>
         )}
       </div>
-      <button onClick={() => onDelete(item.id)} className="text-xs text-ink-soft hover:text-red-600">
-        Sil
-      </button>
+      {onDelete && (
+        <button onClick={() => onDelete(item.id)} className="text-xs text-ink-soft hover:text-red-600">
+          Sil
+        </button>
+      )}
     </div>
   );
 }

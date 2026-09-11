@@ -24,7 +24,7 @@ export default function DeveloperFeed({ developers }: { developers: Developer[] 
         {developers.map((dev) => (
           <a
             key={dev.id}
-            href={`/yazilimci/${dev.id}`}
+            href={`/profil/${dev.id}`}
             className="block rounded-xl bg-petal/60 p-3 transition-colors hover:bg-petal"
           >
             <div className="flex items-center gap-2">

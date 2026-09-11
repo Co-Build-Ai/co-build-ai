@@ -46,7 +46,7 @@ export default function DeveloperMatchRow({
 
   return (
     <div className="flex items-center gap-3 rounded-xl bg-blue-50 p-4">
-      <a href={`/yazilimci/${developer.id}`} className="flex min-w-0 flex-1 items-center gap-3">
+      <a href={`/profil/${developer.id}`} className="flex min-w-0 flex-1 items-center gap-3">
         <Avatar name={developer.fullName} role="developer" size="sm" />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
