@@ -1,4 +1,5 @@
 import { Cpu, RefreshCw, ShieldCheck, Network } from "lucide-react";
+import TypingText from "./typing-text";
 
 const ITEMS = [
   {
@@ -31,15 +32,18 @@ const ITEMS = [
   },
 ];
 
-export default function ArchitectureSection() {
+export default function ArchitectureSection({ idSuffix = "" }: { idSuffix?: string }) {
   return (
-    <section id="nasil-calisir" className="border-t border-ink/10 bg-petal/40 px-6 py-20 sm:px-12">
-      <h2 className="text-center text-3xl font-extrabold tracking-tight text-ink">
+    <section id={`nasil-calisir${idSuffix}`} className="px-6 py-20 sm:px-12">
+      <h2 className="reveal text-center font-[family-name:var(--font-clash-display)] text-3xl font-bold tracking-tight text-white">
         Arka Planda Ne Çalışıyor?
       </h2>
-      <p className="mx-auto mt-3 max-w-xl text-center text-sm text-ink-soft">
-        Fikrini yazdığın andan yazılımcıyla eşleştiğin ana kadar devrede olan teknoloji.
-      </p>
+      <TypingText
+        as="p"
+        text="Fikrini yazdığın andan yazılımcıyla eşleştiğin ana kadar devrede olan teknoloji."
+        className="reveal mx-auto mt-3 max-w-xl text-center text-sm text-white"
+        speed={26}
+      />
 
       <div className="mx-auto mt-14 grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {ITEMS.map((item) => {
@@ -47,20 +51,20 @@ export default function ArchitectureSection() {
           return (
             <div
               key={item.title}
-              className="flex flex-col rounded-2xl bg-white p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_2px_8px_rgba(17,24,39,0.05),0_16px_40px_rgba(17,24,39,0.08)]"
+              className="reveal panel-3d flex flex-col rounded-2xl bg-white p-6"
             >
               <div className="flex items-center justify-between">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-coral to-periwinkle-dark text-white">
+                <span className="icon-3d flex h-10 w-10 items-center justify-center rounded-full bg-[#063ecc] text-white">
                   <Icon size={18} />
                 </span>
                 {item.status === "soon" && (
-                  <span className="rounded-full bg-ink/5 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-ink-soft">
+                  <span className="badge-soft rounded-full bg-black/5 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-[#4b5563]">
                     Yakında
                   </span>
                 )}
               </div>
-              <h3 className="mt-4 text-base font-bold text-ink">{item.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-ink-soft">{item.description}</p>
+              <h3 className="mt-4 font-[family-name:var(--font-clash-display)] text-base font-bold text-[#111827]">{item.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-[#4b5563]">{item.description}</p>
             </div>
           );
         })}
