@@ -8,6 +8,9 @@ import BadgesSection, { type Badge } from "@/app/components/badges-section";
 import PortfolioSection from "../portfolio-section";
 import { canActAsDeveloper, canActAsFounder } from "@/app/lib/roles";
 
+const CARD = "rounded-xl border border-stone-200 bg-white p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]";
+const SECTION_LABEL = "font-mono text-xs font-semibold uppercase tracking-wide text-ink-soft";
+
 export default async function KullaniciProfili({
   params,
 }: {
@@ -56,7 +59,8 @@ export default async function KullaniciProfili({
     issuer: string | null;
     item_date: string | null;
   }[] = [];
-  let pastWork: { id: string; projectTitle: string }[] = [];
+  const pastWork: { id: string; projectTitle: string }[] = [];
+  const activeWork: { id: string; projectTitle: string; projectId: string }[] = [];
   if (isDeveloper) {
     const { data: portfolioItems } = await supabase
       .from("portfolio_items")
@@ -65,27 +69,31 @@ export default async function KullaniciProfili({
       .order("created_at", { ascending: false });
     items = portfolioItems ?? [];
 
-    // Geçmişte tamamladığı projeler — özet/undetaylı halde, sadece başlık ve
-    // durum bilgisiyle. PRD gibi projeye özel gizli detaylar gösterilmiyor.
-    const { data: completedOffers } = await supabase
+    // Şu an üzerinde çalıştığı + geçmişte tamamladığı projeler — özet/undetaylı
+    // halde, sadece başlık ve durum bilgisiyle. PRD gibi projeye özel gizli
+    // detaylar gösterilmiyor.
+    const { data: acceptedOffers } = await supabase
       .from("offers")
       .select("id, project_id, completed_at")
       .eq("developer_id", id)
       .eq("status", "accepted")
-      .not("completed_at", "is", null)
-      .order("completed_at", { ascending: false });
+      .order("completed_at", { ascending: false, nullsFirst: true });
 
-    const completedProjectIds = [...new Set((completedOffers ?? []).map((o) => o.project_id))];
-    let completedProjects: { id: string; title: string }[] = [];
-    if (completedProjectIds.length > 0) {
-      const { data } = await supabase.from("projects").select("id, title").in("id", completedProjectIds);
-      completedProjects = data ?? [];
+    const projectIds = [...new Set((acceptedOffers ?? []).map((o) => o.project_id))];
+    let relatedProjects: { id: string; title: string }[] = [];
+    if (projectIds.length > 0) {
+      const { data } = await supabase.from("projects").select("id, title").in("id", projectIds);
+      relatedProjects = data ?? [];
     }
 
-    pastWork = (completedOffers ?? []).map((o) => ({
-      ...o,
-      projectTitle: completedProjects.find((p) => p.id === o.project_id)?.title ?? "Bilinmeyen Proje",
-    }));
+    for (const o of acceptedOffers ?? []) {
+      const projectTitle = relatedProjects.find((p) => p.id === o.project_id)?.title ?? "Bilinmeyen Proje";
+      if (o.completed_at) {
+        pastWork.push({ id: o.id, projectTitle });
+      } else {
+        activeWork.push({ id: o.id, projectTitle, projectId: o.project_id });
+      }
+    }
   }
 
   // --- Fikir sahibi tarafı verileri ---
@@ -107,6 +115,36 @@ export default async function KullaniciProfili({
     publishedProjects = data ?? [];
   }
 
+  // --- Sağ sidebar: benzer profiller + popüler beceriler (gerçek veriden) ---
+  let similarProfiles: { id: string; full_name: string | null; skills: string[] | null; avatar_url: string | null }[] = [];
+  let popularSkills: string[] = [];
+  if (isDeveloper && viewedProfile.skills && viewedProfile.skills.length > 0) {
+    const { data: overlapping } = await supabase
+      .from("profiles")
+      .select("id, full_name, skills, avatar_url")
+      .overlaps("skills", viewedProfile.skills)
+      .neq("id", id)
+      .in("user_type", ["developer", "both"])
+      .limit(4);
+    similarProfiles = overlapping ?? [];
+  }
+  {
+    const { data: allDevProfiles } = await supabase
+      .from("profiles")
+      .select("skills")
+      .in("user_type", ["developer", "both"]);
+    const counts: Record<string, number> = {};
+    for (const p of allDevProfiles ?? []) {
+      for (const skill of p.skills ?? []) {
+        counts[skill] = (counts[skill] ?? 0) + 1;
+      }
+    }
+    popularSkills = Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8)
+      .map(([skill]) => skill);
+  }
+
   const badges: Badge[] = [
     ...(isFounder
       ? [
@@ -126,7 +164,7 @@ export default async function KullaniciProfili({
             id: "first-accepted",
             label: "İlk Kabul",
             icon: "CheckCircle" as const,
-            earned: pastWork.length > 0 || scores.length > 0,
+            earned: pastWork.length > 0 || activeWork.length > 0 || scores.length > 0,
           },
           {
             id: "portfolio-started",
@@ -141,139 +179,197 @@ export default async function KullaniciProfili({
   const roleLabel = isFounder && isDeveloper ? "Yazılımcı & Fikir Sahibi" : isFounder ? "Fikir Sahibi" : "Yazılımcı";
 
   return (
-    <div>
-      <div className="mx-auto max-w-3xl">
-        <div className="flex flex-col items-center text-center">
-          <Avatar
-            name={viewedProfile.full_name}
-            role={isDeveloper ? "developer" : "founder"}
-            size="lg"
-            avatarUrl={viewedProfile.avatar_url}
-          />
-          <div className="mt-4 flex items-center gap-2">
-            <h1 className="text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
-              {viewedProfile.full_name ?? "İsimsiz Kullanıcı"}
-            </h1>
-            {isDeveloper && <AvailabilityBadge availability={viewedProfile.availability} />}
+    <div className="mx-auto max-w-6xl">
+      {/* Profil başlığı */}
+      <div className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]">
+        <div className="h-28 bg-gradient-to-r from-periwinkle/40 via-petal to-coral/20 sm:h-36" />
+        <div className="flex flex-col items-center px-6 pb-6 text-center sm:flex-row sm:items-end sm:gap-5 sm:text-left">
+          <div className="-mt-12 shrink-0 rounded-full ring-4 ring-white sm:-mt-14">
+            <Avatar
+              name={viewedProfile.full_name}
+              role={isDeveloper ? "developer" : "founder"}
+              size="lg"
+              avatarUrl={viewedProfile.avatar_url}
+            />
           </div>
-          <p className="mt-2 text-sm text-ink-soft">{roleLabel}</p>
-          <div className="mt-2">
-            <RatingStars average={ratingAvg} count={scores.length} />
+          <div className="mt-3 min-w-0 flex-1 sm:mt-0 sm:pb-1">
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+              <h1 className="text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">
+                {viewedProfile.full_name ?? "İsimsiz Kullanıcı"}
+              </h1>
+              {isDeveloper && <AvailabilityBadge availability={viewedProfile.availability} />}
+            </div>
+            <p className="mt-1 text-sm text-ink-soft">{roleLabel}</p>
+            <div className="mt-1.5 flex justify-center sm:justify-start">
+              <RatingStars average={ratingAvg} count={scores.length} />
+            </div>
           </div>
+        </div>
+      </div>
 
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
-            {isFounder && (
-              <StatCircle value={publishedProjects.length} label="Yayında" tone="lime" size={110} />
-            )}
+      {/* İki sütunlu düzen: sol ana içerik + sağ sabit (sticky) sidebar */}
+      <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="min-w-0">
+          <div className="flex flex-wrap justify-center gap-4 sm:justify-start">
+            {isFounder && <StatCircle value={publishedProjects.length} label="Yayında" tone="lime" size={100} />}
             {isDeveloper && (
               <>
-                <StatCircle value={items.length} label="Portfolyo Öğesi" tone="lime" size={110} />
-                <StatCircle value={pastWork.length} label="Tamamlanan Proje" tone="pink" size={110} />
+                <StatCircle value={items.length} label="Portfolyo Öğesi" tone="lime" size={100} />
+                <StatCircle value={pastWork.length} label="Tamamlanan Proje" tone="pink" size={100} />
               </>
             )}
           </div>
-        </div>
 
-        <BadgesSection badges={badges} />
+          <BadgesSection badges={badges} />
 
-        {isDeveloper && (
-          <div className="mt-8 rounded-xl border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] p-8">
-            <h2 className="text-lg font-bold text-ink">Hakkımda</h2>
-            <p className="mt-3 text-sm leading-relaxed text-ink-soft">
-              {viewedProfile.bio || "Henüz bir tanıtım yazısı eklenmedi."}
-            </p>
+          {isDeveloper && (
+            <div className={`mt-8 ${CARD}`}>
+              <h2 className="text-lg font-bold text-ink">Hakkımda</h2>
+              <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+                {viewedProfile.bio || "Henüz bir tanıtım yazısı eklenmedi."}
+              </p>
 
-            <div className="mt-4 flex flex-wrap gap-2">
-              {viewedProfile.skills && viewedProfile.skills.length > 0 ? (
-                viewedProfile.skills.map((skill: string) => (
-                  <span
-                    key={skill}
-                    className="rounded-full bg-periwinkle/20 px-3 py-1 font-mono text-xs text-ink"
+              <div className="mt-4 flex flex-wrap gap-2">
+                {viewedProfile.skills && viewedProfile.skills.length > 0 ? (
+                  viewedProfile.skills.map((skill: string) => (
+                    <span
+                      key={skill}
+                      className="rounded-full bg-periwinkle/20 px-3 py-1 font-mono text-xs text-ink"
+                    >
+                      {skill}
+                    </span>
+                  ))
+                ) : (
+                  <p className="text-xs text-ink-soft">Henüz beceri etiketi eklenmedi.</p>
+                )}
+              </div>
+
+              <div className="mt-4">
+                {viewedProfile.cv_url ? (
+                  <a
+                    href={viewedProfile.cv_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-semibold text-coral-dark hover:underline"
                   >
-                    {skill}
-                  </span>
-                ))
-              ) : (
-                <p className="text-xs text-ink-soft">Henüz beceri etiketi eklenmedi.</p>
-              )}
+                    CV&apos;yi Görüntüle →
+                  </a>
+                ) : (
+                  <p className="text-xs text-ink-soft">Henüz CV yüklenmedi.</p>
+                )}
+              </div>
             </div>
+          )}
 
-            <div className="mt-4">
-              {viewedProfile.cv_url ? (
-                <a
-                  href={viewedProfile.cv_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-semibold text-coral-dark hover:underline"
-                >
-                  CV&apos;yi Görüntüle →
-                </a>
-              ) : (
-                <p className="text-xs text-ink-soft">Henüz CV yüklenmedi.</p>
-              )}
-            </div>
-          </div>
-        )}
-
-        {isFounder && (
-          <div className="mt-10">
-            <h2 className="font-mono text-xs font-semibold uppercase tracking-wide text-ink-soft">
-              Yayınladığı Projeler ({publishedProjects.length})
-            </h2>
-            {publishedProjects.length === 0 ? (
-              <p className="mt-3 text-sm text-ink-soft">Henüz yayınlanmış bir projesi yok.</p>
-            ) : (
-              <div className="mt-3 flex flex-col gap-3">
-                {publishedProjects.map((project) => (
+          {isDeveloper && activeWork.length > 0 && (
+            <div className="mt-10">
+              <h2 className={SECTION_LABEL}>Şu An Üzerinde Çalıştığı ({activeWork.length})</h2>
+              <div className="mt-3 flex flex-col gap-2">
+                {activeWork.map((item) => (
                   <div
-                    key={project.id}
-                    className="rounded-lg border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] p-5"
+                    key={item.id}
+                    className={`flex items-center justify-between gap-3 px-4 py-3 ${CARD}`}
                   >
-                    <p className="text-sm font-bold text-ink">{project.title}</p>
-                    <p className="mt-1 line-clamp-2 text-xs text-ink-soft">{project.raw_idea}</p>
-                    {project.required_skills && project.required_skills.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-1.5">
-                        {project.required_skills.slice(0, 5).map((skill) => (
-                          <span
-                            key={skill}
-                            className="rounded-full bg-petal px-2 py-0.5 font-mono text-[10px] text-coral-dark"
-                          >
-                            {skill}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    <p className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{item.projectTitle}</p>
+                    <span className="shrink-0 rounded-full bg-petal px-2.5 py-0.5 text-xs font-semibold text-coral-dark">
+                      Devam Ediyor
+                    </span>
                   </div>
                 ))}
               </div>
-            )}
-          </div>
-        )}
-
-        {isDeveloper && <PortfolioSection userId={id} items={items} readOnly />}
-
-        {isDeveloper && pastWork.length > 0 && (
-          <div className="mt-10">
-            <h2 className="font-mono text-xs font-semibold uppercase tracking-wide text-ink-soft">
-              Geçmiş Projeleri
-            </h2>
-            <div className="mt-3 flex flex-col gap-2">
-              {pastWork.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between gap-3 rounded-lg border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] px-4 py-3"
-                >
-                  <p className="min-w-0 flex-1 truncate text-sm font-medium text-ink">
-                    {item.projectTitle}
-                  </p>
-                  <span className="shrink-0 rounded-full bg-periwinkle-dark px-2.5 py-0.5 text-xs font-semibold text-white">
-                    Tamamlandı
-                  </span>
-                </div>
-              ))}
             </div>
-          </div>
-        )}
+          )}
+
+          {isFounder && (
+            <div className="mt-10">
+              <h2 className={SECTION_LABEL}>Yayınladığı Projeler ({publishedProjects.length})</h2>
+              {publishedProjects.length === 0 ? (
+                <p className="mt-3 text-sm text-ink-soft">Henüz yayınlanmış bir projesi yok.</p>
+              ) : (
+                <div className="mt-3 flex flex-col gap-3">
+                  {publishedProjects.map((project) => (
+                    <div key={project.id} className={CARD}>
+                      <p className="text-sm font-bold text-ink">{project.title}</p>
+                      <p className="mt-1 line-clamp-2 text-xs text-ink-soft">{project.raw_idea}</p>
+                      {project.required_skills && project.required_skills.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          {project.required_skills.slice(0, 5).map((skill) => (
+                            <span
+                              key={skill}
+                              className="rounded-full bg-petal px-2 py-0.5 font-mono text-[10px] text-coral-dark"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {isDeveloper && <PortfolioSection userId={id} items={items} readOnly />}
+
+          {isDeveloper && pastWork.length > 0 && (
+            <div className="mt-10">
+              <h2 className={SECTION_LABEL}>Tamamlanan Projeleri</h2>
+              <div className="mt-3 flex flex-col gap-2">
+                {pastWork.map((item) => (
+                  <div key={item.id} className={`flex items-center justify-between gap-3 px-4 py-3 ${CARD}`}>
+                    <p className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{item.projectTitle}</p>
+                    <span className="shrink-0 rounded-full bg-periwinkle-dark px-2.5 py-0.5 text-xs font-semibold text-white">
+                      Tamamlandı
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Sağ sidebar — büyük ekranda sabit (sticky) kalır */}
+        <div className="flex flex-col gap-6 lg:sticky lg:top-24 lg:self-start">
+          {similarProfiles.length > 0 && (
+            <div className={CARD}>
+              <h2 className={SECTION_LABEL}>Benzer Profiller</h2>
+              <div className="mt-3 flex flex-col gap-3">
+                {similarProfiles.map((p) => (
+                  <a
+                    key={p.id}
+                    href={`/profil/${p.id}`}
+                    className="flex items-center gap-2.5 transition-opacity hover:opacity-70"
+                  >
+                    <Avatar name={p.full_name} role="developer" size="sm" avatarUrl={p.avatar_url} />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-ink">{p.full_name ?? "İsimsiz"}</p>
+                      {p.skills && p.skills.length > 0 && (
+                        <p className="truncate text-xs text-ink-soft">{p.skills.slice(0, 3).join(", ")}</p>
+                      )}
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {popularSkills.length > 0 && (
+            <div className={CARD}>
+              <h2 className={SECTION_LABEL}>Platformda Popüler Beceriler</h2>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {popularSkills.map((skill) => (
+                  <span
+                    key={skill}
+                    className="rounded-full bg-periwinkle/20 px-2.5 py-1 font-mono text-[11px] text-ink"
+                  >
+                    #{skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
