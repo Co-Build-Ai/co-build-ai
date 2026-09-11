@@ -218,7 +218,13 @@ export default async function KullaniciProfili({
     <div className="mx-auto max-w-6xl">
       {/* Profil başlığı */}
       <div className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]">
-        <div className="h-28 bg-gradient-to-r from-periwinkle/40 via-petal to-coral/20 sm:h-36" />
+        <div
+          className={`h-28 sm:h-36 ${
+            isDeveloper
+              ? "bg-gradient-to-r from-periwinkle/40 via-petal to-coral/20"
+              : "bg-gradient-to-r from-coral/25 via-petal to-coral/10"
+          }`}
+        />
         <div className="flex flex-col items-center px-6 pb-6 text-center sm:flex-row sm:items-end sm:gap-5 sm:text-left">
           <div className="-mt-12 shrink-0 rounded-full ring-4 ring-white sm:-mt-14">
             <Avatar

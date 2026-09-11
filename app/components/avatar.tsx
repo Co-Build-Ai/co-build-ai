@@ -16,7 +16,6 @@ export default function Avatar({
   avatarUrl?: string | null;
 }) {
   const initial = name?.trim()?.[0]?.toUpperCase() ?? "?";
-  const bg = role === "founder" ? "bg-coral" : "bg-periwinkle-dark";
 
   if (avatarUrl) {
     return (
@@ -24,6 +23,7 @@ export default function Avatar({
       <img
         src={avatarUrl}
         alt={name ?? "Profil fotoğrafı"}
+        data-role={role}
         className={`shrink-0 rounded-full object-cover ${SIZE_CLASSES[size]}`}
       />
     );
@@ -31,7 +31,8 @@ export default function Avatar({
 
   return (
     <div
-      className={`flex shrink-0 items-center justify-center rounded-full font-bold text-white ${bg} ${SIZE_CLASSES[size]}`}
+      data-role={role}
+      className={`flex shrink-0 items-center justify-center rounded-full bg-coral font-bold text-white ${SIZE_CLASSES[size]}`}
     >
       {initial}
     </div>
