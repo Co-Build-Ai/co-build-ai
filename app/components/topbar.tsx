@@ -33,13 +33,13 @@ export default function Topbar({
   const title = PAGE_TITLES[pathname] ?? "Co-Build AI";
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/60 bg-white/70 px-6 py-4 backdrop-blur-xl sm:px-10">
-      <h1 className="text-2xl font-extrabold tracking-tight text-ink">{title}</h1>
+    <header className="sticky top-0 z-30 flex items-center justify-between border-b border-black/[0.07] bg-white px-6 py-4 sm:px-10">
+      <h1 className="text-lg font-semibold tracking-tight text-ink">{title}</h1>
 
       <div className="flex items-center gap-4">
         <MessageBell userId={userId} />
         <NotificationBell userId={userId} enabled={notificationsEnabled} />
-        <Link href="/ayarlar" className="flex items-center gap-2 rounded-full transition-opacity hover:opacity-80">
+        <Link href="/ayarlar" className="flex items-center gap-2 rounded-lg px-1.5 py-1 transition-colors hover:bg-black/[0.04]">
           <Avatar name={userName} role={userType === "founder" ? "founder" : "developer"} size="sm" avatarUrl={avatarUrl} />
           <span className="hidden text-sm font-medium text-ink sm:inline">
             {userName ?? "Profilim"}

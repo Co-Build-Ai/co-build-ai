@@ -28,7 +28,7 @@ export default function DeveloperAvailability({
   }
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] p-8">
+    <div className="rounded-xl border border-black/[0.08] bg-white shadow-sm p-8">
       <h2 className="text-lg font-bold text-ink">Müsaitlik Durumu</h2>
       <p className="mt-1 text-sm text-ink-soft">
         Founder&apos;ların seni keşfederken göreceği durum rozeti.

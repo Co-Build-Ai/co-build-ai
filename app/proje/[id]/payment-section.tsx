@@ -40,8 +40,8 @@ function PaymentForm({
             onClick={() => setPaymentType(type)}
             className={`flex-1 rounded-full px-3 py-1.5 text-xs font-semibold transition-all ${
               paymentType === type
-                ? "bg-coral text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_3px_0_0_var(--color-coral-dark),0_6px_14px_rgba(68,172,255,0.30)] active:translate-y-0.5 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(68,172,255,0.25)]"
-                : "bg-ink/5 text-ink-soft shadow-[inset_0_1px_3px_rgba(17,24,39,0.06)]"
+                ? "bg-[#1a7a52] text-white transition-colors"
+                : "bg-black/[0.04] text-ink-soft"
             }`}
           >
             {TYPE_LABELS[type]}
@@ -56,7 +56,7 @@ function PaymentForm({
           placeholder={paymentType === "fixed" ? "Tutar (₺)" : "Pay yüzdesi (%)"}
           value={paymentAmount}
           onChange={(e) => setPaymentAmount(e.target.value)}
-          className="mt-3 w-full rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-4 py-2 text-center text-sm outline-none focus:ring-2 focus:ring-coral/30"
+          className="mt-3 w-full rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2 text-center text-sm outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
         />
       )}
     </div>
@@ -105,7 +105,7 @@ export function PublishForm({
       <button
         onClick={handlePublish}
         disabled={loading}
-        className="w-full max-w-sm rounded-full bg-coral px-8 py-3 text-base font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_0_0_var(--color-coral-dark),0_10px_20px_rgba(68,172,255,0.35)] transition-all hover:brightness-105 active:translate-y-1 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(68,172,255,0.30)] disabled:opacity-50"
+        className="w-full max-w-sm rounded-full bg-[#1a7a52] px-8 py-3 text-base font-medium text-white transition-colors hover:bg-[#15633f] disabled:opacity-50"
       >
         {loading ? "Yayınlanıyor..." : "Projeyi Yayınla"}
       </button>
@@ -147,7 +147,7 @@ export function PaymentEditor({
 
   if (!editing) {
     return (
-      <div className="mt-4 flex items-center justify-between rounded-lg border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] px-4 py-3">
+      <div className="mt-4 flex items-center justify-between rounded-lg border border-black/[0.08] bg-white shadow-sm px-4 py-3">
         <p className="text-sm text-ink-soft">
           <span className="font-semibold text-ink">Ödeme:</span>{" "}
           {describePayment(initialPaymentType, initialPaymentAmount) ?? "Belirtilmedi"}
@@ -174,13 +174,13 @@ export function PaymentEditor({
         <button
           onClick={handleSave}
           disabled={saving}
-          className="rounded-full bg-coral px-6 py-2 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_0_0_var(--color-coral-dark),0_10px_20px_rgba(68,172,255,0.35)] transition-all hover:brightness-105 active:translate-y-1 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(68,172,255,0.30)] disabled:opacity-50"
+          className="rounded-full bg-[#1a7a52] px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-[#15633f] disabled:opacity-50"
         >
           {saving ? "Kaydediliyor..." : "Kaydet"}
         </button>
         <button
           onClick={() => setEditing(false)}
-          className="rounded-full bg-ink/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(17,24,39,0.06)] active:shadow-[inset_0_2px_4px_rgba(17,24,39,0.10)] active:translate-y-px px-6 py-2.5 text-sm font-semibold text-ink-soft hover:bg-ink/10 hover:text-ink"
+          className="rounded-full bg-black/[0.04] transition-colors px-6 py-2.5 text-sm font-semibold text-ink-soft hover:bg-ink/10 hover:text-ink"
         >
           Vazgeç
         </button>

@@ -35,14 +35,11 @@ export default function Giris() {
   }
 
   return (
-    <div
-      className="flex min-h-screen flex-col items-center justify-center px-6 py-16"
-      style={{
-        background:
-          "radial-gradient(60% 50% at 15% 100%, rgba(137,212,255,0.35) 0%, transparent 70%), radial-gradient(55% 45% at 100% 0%, rgba(249,246,196,0.6) 0%, transparent 70%), #fafafc",
-      }}
-    >
-      <div className="w-full max-w-4xl overflow-hidden rounded-3xl border border-white/60 bg-white/80 shadow-xl shadow-slate-200/50 backdrop-blur-md md:grid md:grid-cols-2">
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-20">
+      {/* Ana sayfayla birebir aynı arka plan */}
+      <div className="landing-bg" />
+
+      <div className="relative w-full max-w-5xl overflow-hidden rounded-3xl border border-white/60 shadow-xl shadow-slate-200/50 backdrop-blur-md md:grid md:grid-cols-2" style={{ background: "linear-gradient(to right, #ffffff 0%, #ffffff 40%, #8DD9A8 70%, #FE9EC7 100%)" }}>
         {/* Sol taraf: giriş formu */}
         <div className="p-8 sm:p-10">
           <h1 className="text-3xl font-extrabold tracking-tight text-ink">
@@ -86,7 +83,7 @@ export default function Giris() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 rounded-full bg-gradient-to-r from-[#44ACFF] to-[#FE9EC7] px-6 py-3.5 text-base font-semibold text-white shadow-[0_10px_24px_rgba(68,172,255,0.35)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(68,172,255,0.45)] active:translate-y-0 disabled:opacity-50"
+              className="mt-2 rounded-full bg-gradient-to-r from-[#8DD9A8] to-[#FE9EC7] px-6 py-3.5 text-base font-semibold text-white shadow-[0_10px_24px_rgba(141,217,168,0.35)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(141,217,168,0.45)] active:translate-y-0 disabled:opacity-50"
             >
               {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
             </button>
@@ -100,13 +97,13 @@ export default function Giris() {
           </p>
         </div>
 
-        {/* Sağ taraf: dekoratif tanıtım paneli */}
-        <div className="relative hidden overflow-hidden bg-gradient-to-br from-[#89D4FF] via-[#bfe3ff] to-[#FE9EC7] p-10 md:flex md:flex-col md:justify-center">
+        {/* Sağ taraf: dekoratif tanıtım paneli (arkaplan sol taraftan sızan tek parça gradyanın devamı) */}
+        <div className="relative hidden overflow-hidden p-10 md:flex md:flex-col md:justify-center">
           <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/30 blur-2xl" />
           <div className="pointer-events-none absolute -bottom-14 -left-10 h-48 w-48 rounded-full bg-white/20 blur-2xl" />
 
           <div className="relative flex flex-col gap-4">
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/90 text-[#44ACFF] shadow-lg shadow-slate-900/10">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/90 text-[#1a7a52] shadow-lg shadow-slate-900/10">
               <Sparkles size={22} />
             </span>
             <h2 className="text-2xl font-extrabold tracking-tight text-slate-800">
@@ -119,7 +116,7 @@ export default function Giris() {
 
             <div className="mt-4 flex flex-col gap-3">
               <div className="flex items-center gap-3 rounded-2xl bg-white/70 px-4 py-3 shadow-sm">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#44ACFF] text-white">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#8DD9A8] text-white">
                   <FileText size={16} />
                 </span>
                 <span className="text-sm font-semibold text-slate-800">Agentic RAG ile PRD üretimi</span>

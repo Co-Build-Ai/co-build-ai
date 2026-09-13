@@ -16,8 +16,8 @@ export default function DeveloperFeed({ developers }: { developers: Developer[] 
   if (developers.length === 0) return null;
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-white p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]">
-      <p className="inline-flex items-center rounded-full bg-coral px-3 py-1 text-[11px] font-extrabold uppercase tracking-wide text-white shadow-sm">
+    <div className="rounded-xl border border-black/[0.08] bg-white p-5 shadow-sm">
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-soft">
         Yazılımcılar Akışı
       </p>
       <div className="mt-3 flex max-h-[520px] flex-col gap-2 overflow-y-auto pr-1">
@@ -25,7 +25,7 @@ export default function DeveloperFeed({ developers }: { developers: Developer[] 
           <a
             key={dev.id}
             href={`/profil/${dev.id}`}
-            className="block rounded-xl bg-petal/60 p-3 transition-colors hover:bg-petal"
+            className="block rounded-lg border border-transparent p-3 transition-colors hover:border-black/[0.06] hover:bg-black/[0.02]"
           >
             <div className="flex items-center gap-2">
               <Avatar name={dev.full_name} role="developer" size="sm" />
@@ -43,7 +43,7 @@ export default function DeveloperFeed({ developers }: { developers: Developer[] 
                 {dev.skills.slice(0, 4).map((skill) => (
                   <span
                     key={skill}
-                    className="rounded-full bg-white px-2 py-0.5 font-mono text-[10px] text-ink-soft"
+                    className="rounded-md bg-black/[0.04] px-2 py-0.5 font-mono text-[10px] text-ink-soft"
                   >
                     {skill}
                   </span>

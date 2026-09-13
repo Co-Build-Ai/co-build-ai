@@ -75,8 +75,9 @@ export default function KayitOl() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6 py-16">
-      <div className="w-full max-w-md rounded-2xl border border-stone-200 bg-white p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] sm:p-10">
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-16">
+      <div className="landing-bg" />
+      <div className="relative w-full max-w-md rounded-3xl border border-white/60 bg-white/80 p-8 shadow-xl shadow-slate-200/50 backdrop-blur-md sm:p-10">
         <h1 className="text-center text-3xl font-extrabold tracking-tight text-ink">
           Co-Build AI&apos;a Katıl
         </h1>
@@ -95,7 +96,7 @@ export default function KayitOl() {
                 onClick={() => setUserType("founder")}
                 className={`rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-colors ${
                   userType === "founder"
-                    ? "border-coral bg-coral/10 text-coral-dark"
+                    ? "border-[#FE9EC7] bg-[#FE9EC7]/15 text-[#c23570]"
                     : "border-ink/10 text-ink-soft"
                 }`}
               >
@@ -106,7 +107,7 @@ export default function KayitOl() {
                 onClick={() => setUserType("developer")}
                 className={`rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-colors ${
                   userType === "developer"
-                    ? "border-periwinkle-dark bg-periwinkle/20 text-ink"
+                    ? "border-[#8DD9A8] bg-[#8DD9A8]/20 text-[#1a7a52]"
                     : "border-ink/10 text-ink-soft"
                 }`}
               >
@@ -117,7 +118,7 @@ export default function KayitOl() {
                 onClick={() => setUserType("both")}
                 className={`rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-colors ${
                   userType === "both"
-                    ? "border-ink bg-ink/10 text-ink"
+                    ? "border-[#44ACFF] bg-[#44ACFF]/15 text-[#1666a8]"
                     : "border-ink/10 text-ink-soft"
                 }`}
               >
@@ -136,7 +137,7 @@ export default function KayitOl() {
               required
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="mt-1 w-full rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-4 py-2.5 text-ink outline-none focus:ring-2 focus:ring-coral/30"
+              className="mt-1 w-full rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2.5 text-ink outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
             />
           </div>
 
@@ -150,7 +151,7 @@ export default function KayitOl() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-4 py-2.5 text-ink outline-none focus:ring-2 focus:ring-coral/30"
+              className="mt-1 w-full rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2.5 text-ink outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
             />
           </div>
 
@@ -165,7 +166,7 @@ export default function KayitOl() {
               minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-4 py-2.5 text-ink outline-none focus:ring-2 focus:ring-coral/30"
+              className="mt-1 w-full rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2.5 text-ink outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
             />
           </div>
 
@@ -174,7 +175,7 @@ export default function KayitOl() {
               type="checkbox"
               checked={termsAccepted}
               onChange={(e) => setTermsAccepted(e.target.checked)}
-              className="mt-1 h-4 w-4 shrink-0 accent-coral"
+              className="mt-1 h-4 w-4 shrink-0 accent-[#8DD9A8]"
             />
             <span>
               Platforma girdiğim proje bilgilerinin ve hesap verilerimin
@@ -192,7 +193,7 @@ export default function KayitOl() {
           <button
             type="submit"
             disabled={loading}
-            className="mt-2 rounded-full bg-coral px-6 py-3 text-base font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_0_0_var(--color-coral-dark),0_10px_20px_rgba(68,172,255,0.35)] transition-all hover:brightness-105 active:translate-y-1 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(68,172,255,0.30)] disabled:opacity-50"
+            className="mt-2 rounded-full bg-gradient-to-r from-[#8DD9A8] to-[#FE9EC7] px-6 py-3.5 text-base font-semibold text-white shadow-[0_10px_24px_rgba(141,217,168,0.35)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(141,217,168,0.45)] active:translate-y-0 disabled:opacity-50"
           >
             {loading ? "Kaydediliyor..." : "Hesap Oluştur"}
           </button>
@@ -200,7 +201,7 @@ export default function KayitOl() {
 
         <p className="mt-6 text-center text-sm text-ink-soft">
           Zaten hesabın var mı?{" "}
-          <a href="/giris" className="font-semibold text-coral-dark">
+          <a href="/giris" className="font-semibold text-[#1a7a52]">
             Giriş yap
           </a>
         </p>

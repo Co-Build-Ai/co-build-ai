@@ -37,7 +37,7 @@ export default function ChangePassword() {
   }
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] p-8">
+    <div className="rounded-xl border border-black/[0.08] bg-white shadow-sm p-8">
       <h2 className="text-lg font-bold text-ink">Şifre Değiştir</h2>
       <div className="mt-4 flex flex-col gap-3 sm:max-w-sm">
         <input
@@ -45,14 +45,14 @@ export default function ChangePassword() {
           placeholder="Yeni şifre"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-coral/30"
+          className="rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
         />
         <input
           type="password"
           placeholder="Yeni şifre (tekrar)"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
-          className="rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-coral/30"
+          className="rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
         />
 
         {message && (
@@ -64,7 +64,7 @@ export default function ChangePassword() {
         <button
           onClick={handleSubmit}
           disabled={saving}
-          className="self-start rounded-full bg-coral px-6 py-2 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_0_0_var(--color-coral-dark),0_10px_20px_rgba(68,172,255,0.35)] transition-all hover:brightness-105 active:translate-y-1 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(68,172,255,0.30)] disabled:opacity-50"
+          className="self-start rounded-full bg-[#1a7a52] px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-[#15633f] disabled:opacity-50"
         >
           {saving ? "Kaydediliyor..." : "Şifreyi Güncelle"}
         </button>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Plus_Jakarta_Sans, Fraunces, JetBrains_Mono, Archivo_Black, Playfair_Display } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans, Fraunces, JetBrains_Mono, Archivo_Black, Playfair_Display, Bagel_Fat_One } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -35,6 +35,12 @@ const playfairDisplay = Playfair_Display({
   weight: ["600", "700"],
 });
 
+const bagelFatOne = Bagel_Fat_One({
+  variable: "--font-bagel",
+  subsets: ["latin"],
+  weight: "400",
+});
+
 export const metadata: Metadata = {
   title: "Co-Build AI",
   description: "Fikrini yaz, AI şartnameye çevirsin, doğru yazılımcıyla eşleş.",
@@ -44,7 +50,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="tr"
-      className={`${inter.variable} ${jakarta.variable} ${fraunces.variable} ${jetbrainsMono.variable} ${archivoBlack.variable} ${playfairDisplay.variable} h-full antialiased`}
+      className={`${inter.variable} ${jakarta.variable} ${fraunces.variable} ${jetbrainsMono.variable} ${archivoBlack.variable} ${playfairDisplay.variable} ${bagelFatOne.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

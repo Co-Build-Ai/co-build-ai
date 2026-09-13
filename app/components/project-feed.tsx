@@ -13,13 +13,13 @@ export default function ProjectFeed({ projects }: { projects: Project[] }) {
   if (projects.length === 0) return null;
 
   return (
-    <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]">
-      <p className="font-mono text-[11px] font-semibold uppercase tracking-wide text-ink-soft">
-        🌊 Fikirler Akışı
+    <div className="rounded-xl border border-black/[0.08] bg-white p-5 shadow-sm">
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-soft">
+        Fikirler Akışı
       </p>
       <div className="mt-3 flex max-h-[520px] flex-col gap-2 overflow-y-auto pr-1">
         {projects.map((p) => (
-          <div key={p.id} className="rounded-xl bg-petal/60 p-3 transition-colors hover:bg-petal">
+          <div key={p.id} className="rounded-lg border border-transparent p-3 transition-colors hover:border-black/[0.06] hover:bg-black/[0.02]">
             <a href={`/proje/${p.id}`} className="block text-sm font-bold text-ink hover:underline">
               {p.title}
             </a>
@@ -38,7 +38,7 @@ export default function ProjectFeed({ projects }: { projects: Project[] }) {
                 {p.required_skills.slice(0, 4).map((skill) => (
                   <span
                     key={skill}
-                    className="rounded-full bg-white px-2 py-0.5 font-mono text-[10px] text-ink-soft"
+                    className="rounded-md bg-black/[0.04] px-2 py-0.5 font-mono text-[10px] text-ink-soft"
                   >
                     {skill}
                   </span>

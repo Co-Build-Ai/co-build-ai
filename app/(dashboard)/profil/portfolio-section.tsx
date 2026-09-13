@@ -120,8 +120,8 @@ export default function PortfolioSection({
               onClick={() => setItemType("project")}
               className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-all ${
                 itemType === "project"
-                  ? "bg-coral text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_3px_0_0_var(--color-coral-dark),0_6px_14px_rgba(68,172,255,0.30)] active:translate-y-0.5 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(68,172,255,0.25)]"
-                  : "bg-ink/5 text-ink-soft shadow-[inset_0_1px_3px_rgba(17,24,39,0.06)]"
+                  ? "bg-[#1a7a52] text-white transition-colors"
+                  : "bg-black/[0.04] text-ink-soft"
               }`}
             >
               Proje
@@ -130,8 +130,8 @@ export default function PortfolioSection({
               onClick={() => setItemType("certificate")}
               className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-all ${
                 itemType === "certificate"
-                  ? "bg-periwinkle-dark text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_3px_0_0_#c23570,0_6px_14px_rgba(254,158,199,0.30)] active:translate-y-0.5 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_#c23570,0_2px_6px_rgba(254,158,199,0.25)]"
-                  : "bg-ink/5 text-ink-soft shadow-[inset_0_1px_3px_rgba(17,24,39,0.06)]"
+                  ? "bg-[#FE9EC7] text-white transition-colors"
+                  : "bg-black/[0.04] text-ink-soft"
               }`}
             >
               Sertifika
@@ -144,14 +144,14 @@ export default function PortfolioSection({
               placeholder={itemType === "project" ? "Proje adı" : "Sertifika adı"}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-coral/30"
+              className="rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
             />
             <textarea
               placeholder="Açıklama (isteğe bağlı)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
-              className="resize-none rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-coral/30"
+              className="resize-none rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
             />
             {itemType === "certificate" && (
               <input
@@ -159,14 +159,14 @@ export default function PortfolioSection({
                 placeholder="Veren kurum (örn. Google, Udemy)"
                 value={issuer}
                 onChange={(e) => setIssuer(e.target.value)}
-                className="rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-coral/30"
+                className="rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
               />
             )}
             <input
               type="date"
               value={itemDate}
               onChange={(e) => setItemDate(e.target.value)}
-              className="rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-coral/30"
+              className="rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
             />
             <input
               type="text"
@@ -180,7 +180,7 @@ export default function PortfolioSection({
                 setFileUrl(e.target.value);
                 setUploadedFileName(null);
               }}
-              className="rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-coral/30"
+              className="rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
             />
 
             <div>
@@ -192,7 +192,7 @@ export default function PortfolioSection({
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
-                  className="rounded-full bg-ink/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(17,24,39,0.06)] active:shadow-[inset_0_2px_4px_rgba(17,24,39,0.10)] active:translate-y-px px-5 py-2 text-sm font-semibold text-ink-soft hover:bg-ink/10 hover:text-ink disabled:opacity-50"
+                  className="rounded-full bg-black/[0.04] transition-colors px-5 py-2 text-sm font-semibold text-ink-soft hover:bg-ink/10 hover:text-ink disabled:opacity-50"
                 >
                   {uploading ? "Yükleniyor..." : "Dosya Seç"}
                 </button>
@@ -215,7 +215,7 @@ export default function PortfolioSection({
             <button
               onClick={handleAdd}
               disabled={saving}
-              className="self-start rounded-full bg-coral px-6 py-2 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_0_0_var(--color-coral-dark),0_10px_20px_rgba(68,172,255,0.35)] transition-all hover:brightness-105 active:translate-y-1 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(68,172,255,0.30)] disabled:opacity-50"
+              className="self-start rounded-full bg-[#1a7a52] px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-[#15633f] disabled:opacity-50"
             >
               {saving ? "Ekleniyor..." : "Ekle"}
             </button>
@@ -303,7 +303,7 @@ function ItemCard({
   }, [item.file_url]);
 
   return (
-    <div className="flex items-start justify-between rounded-lg border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] p-6">
+    <div className="flex items-start justify-between rounded-lg border border-black/[0.08] bg-white shadow-sm p-6">
       <div>
         <p className="text-sm font-bold text-ink">{item.title}</p>
         {item.issuer && <p className="text-xs text-ink-soft">{item.issuer}</p>}

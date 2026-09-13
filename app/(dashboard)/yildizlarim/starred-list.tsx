@@ -51,7 +51,7 @@ export default function StarredList({
   return (
     <div className="mt-6 flex flex-col gap-4">
       {developers.map((dev) => (
-        <div key={dev.id} className="rounded-xl border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] p-6">
+        <div key={dev.id} className="rounded-xl border border-black/[0.08] bg-white shadow-sm p-6">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <Avatar name={dev.full_name} role="developer" />
@@ -81,7 +81,7 @@ export default function StarredList({
               {dev.skills.map((skill) => (
                 <span
                   key={skill}
-                  className="rounded-full bg-periwinkle/20 px-3 py-1 font-mono text-xs text-ink"
+                  className="rounded-md bg-black/[0.04] px-3 py-1 font-mono text-xs text-ink-soft"
                 >
                   {skill}
                 </span>

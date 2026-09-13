@@ -100,7 +100,7 @@ export default function ProfileIdentity({
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="Ad Soyad"
-            className="rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-4 py-2 text-center text-lg font-extrabold text-ink outline-none focus:ring-2 focus:ring-coral/30"
+            className="rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2 text-center text-lg font-extrabold text-ink outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
           />
           <button
             onClick={handleSaveName}

@@ -14,8 +14,8 @@ export default function TrendingWidget({
   return (
     <div className="flex flex-col gap-6">
       {trendingProjects.length > 0 && (
-        <div className="rounded-xl border border-stone-200 bg-white p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]">
-          <p className="text-[11px] font-extrabold uppercase tracking-wide text-ink">
+        <div className="rounded-xl border border-black/[0.08] bg-white p-5 shadow-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-soft">
             Öne Çıkan Projeler
           </p>
           <div className="mt-4 flex flex-col gap-4">
@@ -35,8 +35,8 @@ export default function TrendingWidget({
       )}
 
       {trendingDevelopers.length > 0 && (
-        <div className="rounded-xl border border-stone-200 bg-white p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]">
-          <p className="text-[11px] font-extrabold uppercase tracking-wide text-ink">
+        <div className="rounded-xl border border-black/[0.08] bg-white p-5 shadow-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-soft">
             En Aktif Yazılımcılar
           </p>
           <div className="mt-4 flex flex-col gap-4">

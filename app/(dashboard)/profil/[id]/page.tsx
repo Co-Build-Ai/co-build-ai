@@ -9,7 +9,7 @@ import BadgesSection, { type Badge } from "@/app/components/badges-section";
 import PortfolioSection from "../portfolio-section";
 import { canActAsDeveloper, canActAsFounder } from "@/app/lib/roles";
 
-const CARD = "rounded-xl border border-stone-200 bg-white p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]";
+const CARD = "rounded-xl border border-black/[0.08] bg-white p-6 shadow-sm";
 const SECTION_LABEL = "font-mono text-xs font-semibold uppercase tracking-wide text-ink-soft";
 
 export default async function KullaniciProfili({
@@ -218,12 +218,12 @@ export default async function KullaniciProfili({
   return (
     <div className="mx-auto max-w-6xl">
       {/* Profil başlığı */}
-      <div className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]">
+      <div className="overflow-hidden rounded-xl border border-black/[0.08] bg-white shadow-sm">
         <div
           className={`h-28 sm:h-36 ${
             isDeveloper
-              ? "bg-gradient-to-r from-periwinkle/40 via-petal to-coral/20"
-              : "bg-gradient-to-r from-coral/25 via-petal to-coral/10"
+              ? "bg-gradient-to-r from-[#8DD9A8]/50 via-[#F9F6C4]/40 to-[#89D4FF]/40"
+              : "bg-gradient-to-r from-[#FE9EC7]/50 via-[#F9F6C4]/40 to-[#89D4FF]/30"
           }`}
         />
         <div className="flex flex-col items-center px-6 pb-6 text-center sm:flex-row sm:items-end sm:gap-5 sm:text-left">
@@ -280,7 +280,7 @@ export default async function KullaniciProfili({
                   viewedProfile.skills.map((skill: string) => (
                     <span
                       key={skill}
-                      className="rounded-full bg-periwinkle/20 px-3 py-1 font-mono text-xs text-ink"
+                      className="rounded-md bg-black/[0.04] px-3 py-1 font-mono text-xs text-ink-soft"
                     >
                       {skill}
                     </span>
@@ -342,7 +342,7 @@ export default async function KullaniciProfili({
                           {project.required_skills.slice(0, 5).map((skill) => (
                             <span
                               key={skill}
-                              className="rounded-full bg-petal px-2 py-0.5 font-mono text-[10px] text-coral-dark"
+                              className="rounded-md bg-black/[0.04] px-2 py-0.5 font-mono text-[10px] text-ink-soft"
                             >
                               {skill}
                             </span>
@@ -365,7 +365,7 @@ export default async function KullaniciProfili({
                 {pastWork.map((item) => (
                   <div key={item.id} className={`flex items-center justify-between gap-3 px-4 py-3 ${CARD}`}>
                     <p className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{item.projectTitle}</p>
-                    <span className="shrink-0 rounded-full bg-periwinkle-dark px-2.5 py-0.5 text-xs font-semibold text-white">
+                    <span className="shrink-0 rounded-full bg-[#8DD9A8] px-2.5 py-0.5 text-xs font-semibold text-white">
                       Tamamlandı
                     </span>
                   </div>
@@ -456,7 +456,7 @@ export default async function KullaniciProfili({
                 {popularSkills.map((skill) => (
                   <span
                     key={skill}
-                    className="rounded-full bg-periwinkle/20 px-2.5 py-1 font-mono text-[11px] text-ink"
+                    className="rounded-md bg-black/[0.04] px-2.5 py-1 font-mono text-[11px] text-ink-soft"
                   >
                     #{skill}
                   </span>

@@ -10,8 +10,11 @@ export default function HeroSection() {
         speed={42}
       />
 
-      <h1 className="reveal mt-6 font-[family-name:var(--font-playfair)] text-6xl font-bold tracking-tight text-slate-800 sm:text-8xl lg:text-9xl">
-        Co-Build AI
+      <h1 className="reveal mt-6 font-[family-name:var(--font-bagel)] text-6xl font-normal tracking-tight text-slate-800 sm:text-7xl lg:text-8xl">
+        Co-Build{" "}
+        <span className="bg-gradient-to-r from-[#FE9EC7] to-[#44ACFF] bg-clip-text text-transparent">
+          AI
+        </span>
       </h1>
 
       <TypingText

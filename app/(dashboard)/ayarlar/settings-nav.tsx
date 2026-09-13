@@ -25,7 +25,7 @@ export default function SettingsNav() {
             href={item.href}
             className={`flex shrink-0 items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
               active
-                ? "bg-coral/10 text-coral-dark"
+                ? "bg-[#8DD9A8]/20 text-[#1a7a52]"
                 : "text-ink-soft hover:bg-white/60 hover:text-ink"
             }`}
           >

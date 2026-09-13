@@ -189,23 +189,22 @@ export default async function Panel() {
   return (
     <div>
       {profileIncomplete && (
-        <div className="mb-8 flex items-center gap-3 rounded-2xl border border-white/60 bg-gradient-to-r from-[#FE9EC7]/15 via-white/40 to-[#89D4FF]/15 px-5 py-4 text-sm text-ink shadow-sm backdrop-blur-sm">
-          <span className="text-lg">✨</span>
+        <div className="mb-6 flex items-center gap-3 rounded-xl border border-black/[0.07] bg-[#f4faf6] px-5 py-3.5 text-sm text-ink">
           <span className="flex-1">
             Profilini tamamla — biyografi, beceri ve CV eklemek, eşleştirme motorunun seni doğru projelerle
             eşleştirmesini kolaylaştırır.
           </span>
-          <a href="/profil" className="shrink-0 font-semibold text-coral-dark hover:underline">
+          <a href="/profil" className="shrink-0 font-medium text-[#1a7a52] hover:underline">
             Profili Tamamla →
           </a>
         </div>
       )}
 
       {processingProjects.length > 0 && (
-        <div className="mb-8 flex flex-col gap-2">
+        <div className="mb-6 flex flex-col gap-2">
           {processingProjects.map((p) => (
-            <a key={p.id} href={`/proje/${p.id}`} className="flex items-center gap-3 rounded-2xl border border-white/60 bg-gradient-to-r from-[#89D4FF]/15 via-white/40 to-[#FE9EC7]/15 px-5 py-4 text-sm text-ink shadow-sm backdrop-blur-sm transition-colors hover:from-[#89D4FF]/25 hover:to-[#FE9EC7]/25">
-              <span className="h-3 w-3 shrink-0 animate-spin rounded-full border-2 border-coral border-t-transparent" />
+            <a key={p.id} href={`/proje/${p.id}`} className="flex items-center gap-3 rounded-xl border border-black/[0.07] bg-white px-5 py-3.5 text-sm text-ink transition-colors hover:bg-black/[0.02]">
+              <span className="h-3 w-3 shrink-0 animate-spin rounded-full border-2 border-[#8DD9A8] border-t-transparent" />
               <span className="flex-1">
                 <strong>{p.title}</strong> için PRD hazırlanıyor, görmek için tıkla →
               </span>
@@ -219,14 +218,11 @@ export default async function Panel() {
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight text-ink">
+            <h1 className="text-xl font-semibold tracking-tight text-ink">
               {getGreeting()}
               {profile?.full_name ? (
                 <>
-                  ,{" "}
-                  <span className="bg-gradient-to-r from-coral to-periwinkle-dark bg-clip-text text-transparent">
-                    {profile.full_name.split(" ")[0]}
-                  </span>
+                  , <span className="text-[#1a7a52]">{profile.full_name.split(" ")[0]}</span>
                 </>
               ) : (
                 ""
@@ -241,9 +237,9 @@ export default async function Panel() {
           </div>
 
           {activeRole === "developer" ? (
-            <StatPill value={projects.length} label="Yayınlanmış Proje" tone="lime" />
+            <StatPill value={projects.length} label="Yayınlanmış Proje" />
           ) : (
-            <StatPill value={developers.length} label="Kayıtlı Yazılımcı" tone="lime" />
+            <StatPill value={developers.length} label="Kayıtlı Yazılımcı" />
           )}
         </div>
 
@@ -251,9 +247,18 @@ export default async function Panel() {
 
         {activeRole === "founder" && (
           <div className="mt-8">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <QuickMatch userId={user.id} developers={developers} starredIds={starredIds} />
-              <DirectSearch founderId={user.id} developers={developers} starredIds={starredIds} />
+            <div className="relative">
+              <div
+                className="pointer-events-none absolute -left-16 -top-16 -bottom-24 right-0 blur-2xl"
+                style={{
+                  background:
+                    "linear-gradient(120deg, rgba(254,158,199,0.55) 0%, rgba(249,246,196,0.5) 30%, rgba(137,212,255,0.55) 55%, rgba(141,217,168,0.55) 100%)",
+                }}
+              />
+              <div className="relative grid gap-4 sm:grid-cols-2">
+                <QuickMatch userId={user.id} developers={developers} starredIds={starredIds} />
+                <DirectSearch founderId={user.id} developers={developers} starredIds={starredIds} />
+              </div>
             </div>
             <FounderDevelopers developers={developers} />
           </div>

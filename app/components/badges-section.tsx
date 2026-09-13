@@ -32,7 +32,7 @@ export default function BadgesSection({ badges }: { badges: Badge[] }) {
               key={badge.id}
               title={badge.label}
               className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ${
-                badge.earned ? "bg-periwinkle/30 text-periwinkle-dark" : "bg-ink/5 text-ink-soft/40"
+                badge.earned ? "bg-[#8DD9A8]/25 text-[#1a7a52]" : "bg-ink/5 text-ink-soft/40"
               }`}
             >
               <Icon size={16} />

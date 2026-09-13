@@ -169,11 +169,11 @@ export default function QuickMatch({
 
   if (status === "idle") {
     return (
-      <div className="rounded-xl border border-stone-200 bg-white p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]">
-        <p className="inline-flex items-center rounded-full bg-coral px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-white shadow-sm">
+      <div className="rounded-xl border border-black/[0.08] bg-white p-6 shadow-sm">
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-[#1a7a52]">
           Hızlı Eşleştirme
         </p>
-        <p className="mt-2 text-sm text-ink-soft">
+        <p className="mt-2 text-sm text-ink">
           Aklındaki projeyi kısaca anlat, AI PRD&apos;ye çevirsin ve sana en uygun kayıtlı
           yazılımcıları puanlarına göre sıralasın.
         </p>
@@ -182,11 +182,11 @@ export default function QuickMatch({
           onChange={(e) => setIdea(e.target.value)}
           rows={3}
           placeholder="Örn: Komşular arası eşya paylaşım uygulaması, React Native ile mobil..."
-          className="mt-3 w-full resize-none rounded-xl bg-petal px-4 py-2.5 text-sm text-ink shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] outline-none focus:ring-2 focus:ring-coral/30"
+          className="mt-3 w-full resize-none rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2.5 text-sm text-ink outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
         />
         <button
           onClick={handleSubmit}
-          className="mt-3 rounded-full bg-coral px-6 py-2 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_0_0_var(--color-coral-dark),0_10px_20px_rgba(68,172,255,0.35)] transition-all hover:brightness-105 active:translate-y-1 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(68,172,255,0.30)]"
+          className="mt-3 rounded-lg bg-[#1a7a52] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#15633f]"
         >
           Eşleştir
         </button>
@@ -196,8 +196,8 @@ export default function QuickMatch({
 
   if (status === "generating") {
     return (
-      <div className="flex items-center gap-3 rounded-xl border border-stone-200 bg-white p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]">
-        <span className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-coral border-t-transparent" />
+      <div className="flex items-center gap-3 rounded-xl border border-black/[0.08] bg-white p-6 shadow-sm">
+        <span className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-[#8DD9A8] border-t-transparent" />
         <p className="text-sm text-ink-soft">
           AI fikrini analiz ediyor, bu birkaç dakika sürebilir...
         </p>
@@ -207,16 +207,16 @@ export default function QuickMatch({
 
   if (status === "error") {
     return (
-      <div className="rounded-xl border border-stone-200 bg-white p-6 text-sm text-ink-soft shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]">
+      <div className="rounded-xl border border-black/[0.08] bg-white p-6 text-sm text-ink-soft shadow-sm">
         Bir şeyler ters gitti, tekrar dener misin?
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-white p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]">
+    <div className="rounded-xl border border-black/[0.08] bg-white p-6 shadow-sm">
       <div className="flex items-center justify-between">
-        <p className="inline-flex items-center rounded-full bg-coral px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-white shadow-sm">
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-[#1a7a52]">
           Sana Uygun Yazılımcılar
         </p>
         {projectId && (

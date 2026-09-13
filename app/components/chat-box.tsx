@@ -118,7 +118,7 @@ export default function ChatBox({
                 </span>
                 <div
                   className={`rounded-lg px-3 py-2 text-sm ${
-                    isMine ? "bg-coral text-white" : "bg-white text-ink"
+                    isMine ? "bg-[#1a7a52] text-white" : "bg-white text-ink"
                   }`}
                 >
                   {m.content}
@@ -138,12 +138,12 @@ export default function ChatBox({
             if (e.key === "Enter") handleSend();
           }}
           placeholder="Mesaj yaz..."
-          className="flex-1 rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-coral/30"
+          className="flex-1 rounded-lg border border-black/[0.08] bg-black/[0.02] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
         />
         <button
           onClick={handleSend}
           disabled={sending}
-          className="rounded-lg bg-coral px-4 py-2 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_0_0_var(--color-coral-dark),0_10px_20px_rgba(68,172,255,0.35)] transition-all hover:brightness-105 active:translate-y-1 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(68,172,255,0.30)] disabled:opacity-50"
+          className="rounded-lg bg-[#1a7a52] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#15633f] disabled:opacity-50"
         >
           Gönder
         </button>

@@ -39,7 +39,7 @@ export default function MatchedDevelopers({
         <p className="font-mono text-xs font-semibold uppercase tracking-wide text-ink-soft">
           Eşleşen Yazılımcılar ({developers.length})
         </p>
-        <span className="rounded-full bg-petal px-3 py-1 font-mono text-[10px] font-medium text-coral-dark">
+        <span className="rounded-md bg-black/[0.04] px-3 py-1 font-mono text-[10px] font-medium text-ink-soft">
           Beceri Uyumu
         </span>
       </div>
@@ -122,7 +122,7 @@ function MatchedDeveloperCard({
   }
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-white p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] transition-all [transform-style:preserve-3d] hover:[transform:perspective(900px)_rotateX(2deg)_translateY(-4px)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_20px_rgba(17,24,39,0.16)]">
+    <div className="rounded-xl border border-black/[0.08] bg-white p-6 shadow-sm transition-all hover:shadow-md">
       <div className="flex items-start gap-3">
         <a href={`/profil/${developer.developerId}`} className="flex min-w-0 flex-1 items-start gap-3">
           <Avatar name={developer.fullName} role="developer" size="md" />
@@ -154,7 +154,7 @@ function MatchedDeveloperCard({
           {developer.skills.map((skill) => (
             <span
               key={skill}
-              className="rounded-full bg-periwinkle/20 px-2.5 py-0.5 font-mono text-[11px] text-ink"
+              className="rounded-md bg-black/[0.04] px-2.5 py-0.5 font-mono text-[11px] text-ink-soft"
             >
               {skill}
             </span>
@@ -168,7 +168,7 @@ function MatchedDeveloperCard({
         className={`mt-3 flex w-full items-center justify-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition-all disabled:opacity-70 ${
           invited
             ? "bg-periwinkle/20 text-periwinkle-dark"
-            : "bg-coral text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_3px_0_0_var(--color-coral-dark)] hover:brightness-105 active:translate-y-0.5 active:shadow-none"
+            : "bg-[#1a7a52] text-white transition-colors"
         }`}
       >
         {invited ? (

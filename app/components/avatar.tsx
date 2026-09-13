@@ -32,7 +32,7 @@ export default function Avatar({
   return (
     <div
       data-role={role}
-      className={`flex shrink-0 items-center justify-center rounded-full bg-coral font-bold text-white ${SIZE_CLASSES[size]}`}
+      className={`flex shrink-0 items-center justify-center rounded-full bg-ink font-medium text-white ${SIZE_CLASSES[size]}`}
     >
       {initial}
     </div>

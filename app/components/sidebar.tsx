@@ -92,10 +92,10 @@ export default function Sidebar({
   const groupLabelClass = collapsed ? "hidden" : "hidden px-3 md:block";
 
   return (
-    <aside className={`flex shrink-0 flex-col overflow-y-auto border-r border-white/60 bg-white/70 py-6 shadow-sm backdrop-blur-xl ${collapsed ? "w-16" : "w-16 md:w-64"}`}>
+    <aside className={`flex shrink-0 flex-col overflow-y-auto border-r border-black/[0.07] bg-white py-6 ${collapsed ? "w-16" : "w-16 md:w-64"}`}>
       <div className="mb-6 flex items-center justify-between px-3 md:px-5">
         <Link href="/panel" className={blockClass}>
-          <span className="text-lg font-bold text-ink">Co-Build AI</span>
+          <span className="text-base font-semibold tracking-tight text-ink">Co-Build AI</span>
         </Link>
         <button
           onClick={toggleCollapsed}
@@ -114,7 +114,7 @@ export default function Sidebar({
 
       <nav className="flex flex-col gap-4 px-2 md:px-3">
         <div className="flex flex-col gap-1">
-          <p className={`mb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-ink/70 ${groupLabelClass}`}>
+          <p className={`mb-1 text-[11px] font-medium uppercase tracking-wide text-ink-soft/70 ${groupLabelClass}`}>
             Ana Menü
           </p>
           {NAV_ITEMS.map((item) => {
@@ -125,10 +125,10 @@ export default function Sidebar({
                 key={item.href}
                 href={item.href}
                 title={item.label}
-                className={`flex items-center justify-center gap-3 rounded-full px-3.5 py-2.5 text-sm font-semibold transition-colors md:justify-start ${
+                className={`flex items-center justify-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-normal transition-colors md:justify-start ${
                   active
-                    ? "bg-coral text-white shadow-[0_6px_16px_rgba(68,172,255,0.35)]"
-                    : "text-ink hover:bg-ink/5"
+                    ? "bg-ink/[0.06] text-ink font-medium"
+                    : "text-ink-soft hover:bg-ink/[0.04] hover:text-ink"
                 }`}
               >
                 <Icon size={20} className="shrink-0" />
@@ -141,10 +141,10 @@ export default function Sidebar({
             <Link
               href="/yildizlarim"
               title="Yıldızlılarım"
-              className={`flex items-center justify-center gap-3 rounded-full px-3.5 py-2.5 text-sm font-semibold transition-colors md:justify-start ${
+              className={`flex items-center justify-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-normal transition-colors md:justify-start ${
                 pathname === "/yildizlarim"
-                  ? "bg-coral text-white shadow-[0_6px_16px_rgba(68,172,255,0.35)]"
-                  : "text-ink hover:bg-ink/5"
+                  ? "bg-ink/[0.06] text-ink font-medium"
+                  : "text-ink-soft hover:bg-ink/[0.04] hover:text-ink"
               }`}
             >
               <Star size={20} className="shrink-0" />
@@ -160,8 +160,8 @@ export default function Sidebar({
               {miniStats.map((stat) => {
                 const content = (
                   <>
-                    <span className="text-xs font-semibold text-ink">{stat.label}</span>
-                    <span className="text-base font-extrabold text-ink">{stat.value}</span>
+                    <span className="text-xs font-normal text-ink-soft">{stat.label}</span>
+                    <span className="text-sm font-medium text-ink">{stat.value}</span>
                   </>
                 );
                 return stat.href ? (
@@ -184,20 +184,20 @@ export default function Sidebar({
 
         {(userType === "developer" || userType === "founder") && (
           <div className="flex flex-col gap-1">
-            <p className={`mb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-ink/70 ${groupLabelClass}`}>
+            <p className={`mb-1 text-[11px] font-medium uppercase tracking-wide text-ink-soft/70 ${groupLabelClass}`}>
               Projelerim
             </p>
             <div
-              className={`flex items-center rounded-full transition-colors md:justify-start ${
+              className={`flex items-center rounded-xl transition-colors md:justify-start ${
                 pathname.startsWith("/projelerim")
-                  ? "bg-coral text-white shadow-[0_6px_16px_rgba(68,172,255,0.35)]"
-                  : "text-ink hover:bg-ink/5"
+                  ? "bg-ink/[0.06] text-ink font-medium"
+                  : "text-ink-soft hover:bg-ink/[0.04] hover:text-ink"
               }`}
             >
               <Link
                 href={userType === "developer" ? "/projelerim/aktif" : "/projelerim/yururlukte"}
                 title="Projelerim"
-                className="flex flex-1 items-center justify-center gap-3 px-3.5 py-2.5 text-sm font-semibold md:justify-start"
+                className="flex flex-1 items-center justify-center gap-3 px-3.5 py-2.5 text-sm font-normal md:justify-start"
               >
                 <FolderKanban size={20} className="shrink-0" />
                 <span className={labelClass}>Projelerim</span>
@@ -223,8 +223,8 @@ export default function Sidebar({
                       <Link
                         key={sub.href}
                         href={sub.href}
-                        className={`relative flex items-center gap-2 py-1.5 pl-4 pr-3 text-xs font-medium transition-colors before:absolute before:left-0 before:top-1/2 before:h-px before:w-3 before:bg-ink/15 ${
-                          active ? "text-coral font-semibold" : "text-ink hover:text-coral"
+                        className={`relative flex items-center gap-2 py-1.5 pl-4 pr-3 text-xs font-normal transition-colors before:absolute before:left-0 before:top-1/2 before:h-px before:w-3 before:bg-ink/15 ${
+                          active ? "font-medium text-ink" : "text-ink-soft hover:text-ink"
                         }`}
                       >
                         {sub.label}
@@ -238,7 +238,7 @@ export default function Sidebar({
         )}
 
         <div className="flex flex-col gap-1">
-          <p className={`mb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-ink/70 ${groupLabelClass}`}>
+          <p className={`mb-1 text-[11px] font-medium uppercase tracking-wide text-ink-soft/70 ${groupLabelClass}`}>
             Hesap
           </p>
           {SECONDARY_NAV_ITEMS.map((item) => {
@@ -249,10 +249,10 @@ export default function Sidebar({
                 key={item.href}
                 href={item.href}
                 title={item.label}
-                className={`flex items-center justify-center gap-3 rounded-full px-3.5 py-2.5 text-sm font-semibold transition-colors md:justify-start ${
+                className={`flex items-center justify-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-normal transition-colors md:justify-start ${
                   active
-                    ? "bg-coral text-white shadow-[0_6px_16px_rgba(68,172,255,0.35)]"
-                    : "text-ink hover:bg-ink/5"
+                    ? "bg-ink/[0.06] text-ink font-medium"
+                    : "text-ink-soft hover:bg-ink/[0.04] hover:text-ink"
                 }`}
               >
                 <Icon size={20} className="shrink-0" />
@@ -263,16 +263,16 @@ export default function Sidebar({
 
           <div>
             <div
-              className={`flex items-center rounded-full transition-colors md:justify-start ${
+              className={`flex items-center rounded-xl transition-colors md:justify-start ${
                 pathname.startsWith("/ayarlar")
-                  ? "bg-coral text-white shadow-[0_6px_16px_rgba(68,172,255,0.35)]"
-                  : "text-ink hover:bg-ink/5"
+                  ? "bg-ink/[0.06] text-ink font-medium"
+                  : "text-ink-soft hover:bg-ink/[0.04] hover:text-ink"
               }`}
             >
               <Link
                 href="/ayarlar/hesap"
                 title="Ayarlar"
-                className="flex flex-1 items-center justify-center gap-3 px-3.5 py-2.5 text-sm font-semibold md:justify-start"
+                className="flex flex-1 items-center justify-center gap-3 px-3.5 py-2.5 text-sm font-normal md:justify-start"
               >
                 <Settings size={20} className="shrink-0" />
                 <span className={labelClass}>Ayarlar</span>
@@ -297,8 +297,8 @@ export default function Sidebar({
                     <Link
                       key={sub.href}
                       href={sub.href}
-                      className={`relative flex items-center gap-2 py-1.5 pl-4 pr-3 text-xs font-medium transition-colors before:absolute before:left-0 before:top-1/2 before:h-px before:w-3 before:bg-ink/15 ${
-                        active ? "text-coral font-semibold" : "text-ink hover:text-coral"
+                      className={`relative flex items-center gap-2 py-1.5 pl-4 pr-3 text-xs font-normal transition-colors before:absolute before:left-0 before:top-1/2 before:h-px before:w-3 before:bg-ink/15 ${
+                        active ? "font-medium text-ink" : "text-ink-soft hover:text-ink"
                       }`}
                     >
                       {sub.label}

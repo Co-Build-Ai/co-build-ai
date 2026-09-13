@@ -35,7 +35,7 @@ const ITEMS = [
 export default function ArchitectureSection({ idSuffix = "" }: { idSuffix?: string }) {
   return (
     <section id={`nasil-calisir${idSuffix}`} className="px-6 py-20 sm:px-12">
-      <h2 className="reveal text-center font-[family-name:var(--font-playfair)] text-3xl font-bold tracking-tight text-slate-800">
+      <h2 className="reveal text-center font-[family-name:var(--font-jakarta)] text-3xl font-semibold tracking-tight text-slate-800">
         Arka Planda Ne Çalışıyor?
       </h2>
       <TypingText

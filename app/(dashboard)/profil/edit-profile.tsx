@@ -130,7 +130,7 @@ export default function EditProfile({
 
   if (!editing) {
     return (
-      <div className="mt-8 rounded-xl border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] p-8">
+      <div className="mt-8 rounded-xl border border-black/[0.08] bg-white shadow-sm p-8">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-ink">
             Hakkımda
@@ -150,7 +150,7 @@ export default function EditProfile({
         <div className="mt-4 flex flex-wrap gap-2">
           {initialSkills && initialSkills.length > 0 ? (
             initialSkills.map((skill) => (
-              <span key={skill} className="rounded-full bg-periwinkle/20 px-3 py-1 font-mono text-xs text-ink">
+              <span key={skill} className="rounded-md bg-black/[0.04] px-3 py-1 font-mono text-xs text-ink-soft">
                 {skill}
               </span>
             ))
@@ -206,7 +206,7 @@ export default function EditProfile({
             onChange={(e) => setBio(e.target.value)}
             rows={4}
             placeholder="Kendini kısaca tanıt: hangi alanlarda deneyimlisin, ne tür projelerde çalıştın..."
-            className="mt-1 w-full resize-none rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-4 py-2.5 text-sm text-ink outline-none focus:ring-2 focus:ring-coral/30"
+            className="mt-1 w-full resize-none rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2.5 text-sm text-ink outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
           />
         </div>
 
@@ -217,7 +217,7 @@ export default function EditProfile({
             value={skillsText}
             onChange={(e) => setSkillsText(e.target.value)}
             placeholder="örn. React, Node.js, PostgreSQL (virgülle ayır)"
-            className="mt-1 w-full rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-4 py-2.5 text-sm text-ink outline-none focus:ring-2 focus:ring-coral/30"
+            className="mt-1 w-full rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2.5 text-sm text-ink outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
           />
           <p className="mt-1 text-xs text-ink-soft">Becerileri virgülle ayırarak yaz.</p>
         </div>
@@ -229,7 +229,7 @@ export default function EditProfile({
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={uploadingCv}
-              className="rounded-full bg-ink/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(17,24,39,0.06)] active:shadow-[inset_0_2px_4px_rgba(17,24,39,0.10)] active:translate-y-px px-5 py-2 text-sm font-semibold text-ink-soft hover:bg-ink/10 hover:text-ink disabled:opacity-50"
+              className="rounded-full bg-black/[0.04] transition-colors px-5 py-2 text-sm font-semibold text-ink-soft hover:bg-ink/10 hover:text-ink disabled:opacity-50"
             >
               {uploadingCv ? "Yükleniyor..." : "Dosya Seç"}
             </button>
@@ -269,7 +269,7 @@ export default function EditProfile({
               type="button"
               onClick={() => patentFileInputRef.current?.click()}
               disabled={uploadingPatent}
-              className="rounded-full bg-ink/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(17,24,39,0.06)] active:shadow-[inset_0_2px_4px_rgba(17,24,39,0.10)] active:translate-y-px px-5 py-2 text-sm font-semibold text-ink-soft hover:bg-ink/10 hover:text-ink disabled:opacity-50"
+              className="rounded-full bg-black/[0.04] transition-colors px-5 py-2 text-sm font-semibold text-ink-soft hover:bg-ink/10 hover:text-ink disabled:opacity-50"
             >
               {uploadingPatent ? "Yükleniyor..." : "Dosya Seç"}
             </button>
@@ -303,7 +303,7 @@ export default function EditProfile({
               setPatentFileName(null);
             }}
             placeholder="ya da patent sicil linki yapıştır (örn. TÜRKPATENT sayfası)"
-            className="mt-2 w-full rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-coral/30"
+            className="mt-2 w-full rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
           />
           {patentError && <p className="mt-1 text-xs text-coral-dark">{patentError}</p>}
         </div>
@@ -312,13 +312,13 @@ export default function EditProfile({
           <button
             onClick={handleSave}
             disabled={saving}
-            className="rounded-full bg-coral px-6 py-2 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_0_0_var(--color-coral-dark),0_10px_20px_rgba(68,172,255,0.35)] transition-all hover:brightness-105 active:translate-y-1 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(68,172,255,0.30)] disabled:opacity-50"
+            className="rounded-full bg-[#1a7a52] px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-[#15633f] disabled:opacity-50"
           >
             {saving ? "Kaydediliyor..." : "Kaydet"}
           </button>
           <button
             onClick={() => setEditing(false)}
-            className="rounded-full bg-ink/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(17,24,39,0.06)] active:shadow-[inset_0_2px_4px_rgba(17,24,39,0.10)] active:translate-y-px px-6 py-2.5 text-sm font-semibold text-ink-soft hover:bg-ink/10 hover:text-ink"
+            className="rounded-full bg-black/[0.04] transition-colors px-6 py-2.5 text-sm font-semibold text-ink-soft hover:bg-ink/10 hover:text-ink"
           >
             Vazgeç
           </button>

@@ -17,7 +17,7 @@ export default function LogoutButton({ collapsed = false }: { collapsed?: boolea
   return (
     <button
       onClick={handleLogout}
-      className="flex w-full items-center justify-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-ink-soft transition-colors hover:bg-white/60 hover:text-coral-dark md:justify-start"
+      className="flex w-full items-center justify-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-ink-soft transition-colors hover:bg-black/[0.04] hover:text-ink md:justify-start"
     >
       <LogOut size={20} className="shrink-0" />
       <span className={collapsed ? "hidden" : "hidden md:inline"}>Çıkış Yap</span>

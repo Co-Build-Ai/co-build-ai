@@ -29,8 +29,8 @@ export default function EditablePrd({
   }
 
   return (
-    <div className="mt-8 rounded-xl border border-stone-200 bg-white p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]">
-      <span className="inline-flex items-center rounded-full bg-petal px-3 py-1 font-mono text-xs font-medium text-coral-dark">
+    <div className="mt-8 rounded-xl border border-black/[0.08] bg-white p-6 shadow-sm">
+      <span className="inline-flex items-center rounded-md bg-black/[0.04] px-3 py-1 font-mono text-xs font-medium text-ink-soft">
         AI Tarafından Üretildi
       </span>
       <div className="mt-3 flex items-center justify-between">
@@ -59,7 +59,7 @@ export default function EditablePrd({
             <button
               onClick={handleSave}
               disabled={saving}
-              className="rounded-full bg-coral px-6 py-2 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_0_0_var(--color-coral-dark),0_10px_20px_rgba(68,172,255,0.35)] transition-all hover:brightness-105 active:translate-y-1 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(68,172,255,0.30)] disabled:opacity-50"
+              className="rounded-full bg-[#1a7a52] px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-[#15633f] disabled:opacity-50"
             >
               {saving ? "Kaydediliyor..." : "Kaydet"}
             </button>
@@ -68,7 +68,7 @@ export default function EditablePrd({
                 setText(initialPrd);
                 setEditing(false);
               }}
-              className="rounded-full bg-ink/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(17,24,39,0.06)] active:shadow-[inset_0_2px_4px_rgba(17,24,39,0.10)] active:translate-y-px px-6 py-2.5 text-sm font-semibold text-ink-soft hover:bg-ink/10 hover:text-ink"
+              className="rounded-full bg-black/[0.04] transition-colors px-6 py-2.5 text-sm font-semibold text-ink-soft hover:bg-ink/10 hover:text-ink"
             >
               Vazgeç
             </button>

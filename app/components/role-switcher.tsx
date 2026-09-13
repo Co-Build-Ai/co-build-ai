@@ -28,14 +28,14 @@ export default function RoleSwitcher({
 
   return (
     <div className={`px-1 ${collapsed ? "hidden" : "hidden md:block"}`}>
-      <div className="flex rounded-full bg-ink/5 p-1 text-xs font-semibold">
+      <div className="flex rounded-lg bg-ink/5 p-1 text-xs font-medium">
         <button
           type="button"
           onClick={() => switchTo("founder")}
           disabled={loading}
           title="Fikir Sahibi moduna geç"
-          className={`flex-1 rounded-full px-2.5 py-1.5 transition-colors ${
-            activeRole === "founder" ? "bg-coral text-white" : "text-ink-soft hover:text-ink"
+          className={`flex-1 rounded-md px-2.5 py-1.5 transition-colors ${
+            activeRole === "founder" ? "bg-[#8DD9A8]/25 text-[#1a7a52] shadow-sm" : "text-ink-soft hover:text-ink"
           }`}
         >
           Fikir Sahibi
@@ -45,8 +45,8 @@ export default function RoleSwitcher({
           onClick={() => switchTo("developer")}
           disabled={loading}
           title="Yazılımcı moduna geç"
-          className={`flex-1 rounded-full px-2.5 py-1.5 transition-colors ${
-            activeRole === "developer" ? "bg-periwinkle-dark text-white" : "text-ink-soft hover:text-ink"
+          className={`flex-1 rounded-md px-2.5 py-1.5 transition-colors ${
+            activeRole === "developer" ? "bg-[#8DD9A8]/25 text-[#1a7a52] shadow-sm" : "text-ink-soft hover:text-ink"
           }`}
         >
           Yazılımcı

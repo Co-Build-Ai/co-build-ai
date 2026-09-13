@@ -68,34 +68,43 @@ export default function DeveloperProjects({ projects }: { projects: ProjectWithM
   return (
     <div className="mt-10">
       <div className="relative">
-        <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-soft" />
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Projelerde ara..."
-          className="w-full rounded-full bg-petal py-2.5 pl-10 pr-14 text-sm text-ink shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] outline-none focus:ring-2 focus:ring-coral/30 sm:max-w-sm"
+        <div
+          className="pointer-events-none absolute -left-16 -top-16 -bottom-10 right-0 blur-2xl"
+          style={{
+            background:
+              "linear-gradient(120deg, rgba(254,158,199,0.55) 0%, rgba(249,246,196,0.5) 30%, rgba(137,212,255,0.55) 55%, rgba(141,217,168,0.55) 100%)",
+          }}
         />
-        <kbd className="pointer-events-none absolute right-3.5 top-1/2 hidden -translate-y-1/2 rounded-md bg-white px-1.5 py-0.5 font-mono text-[10px] text-ink-soft sm:block">
-          ⌘K
-        </kbd>
-      </div>
+        <div className="relative">
+          <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-soft" />
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Projelerde ara..."
+            className="w-full rounded-lg border border-black/[0.08] bg-white py-2.5 pl-10 pr-14 text-sm text-ink outline-none focus:ring-2 focus:ring-[#8DD9A8]/40 sm:max-w-sm"
+          />
+          <kbd className="pointer-events-none absolute right-3.5 top-1/2 hidden -translate-y-1/2 rounded-md bg-white px-1.5 py-0.5 font-mono text-[10px] text-ink-soft sm:block">
+            ⌘K
+          </kbd>
+        </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-all ${
-              tab === t.id
-                ? "bg-coral text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_3px_0_0_var(--color-coral-dark),0_6px_14px_rgba(68,172,255,0.30)] active:translate-y-0.5 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(68,172,255,0.25)]"
-                : "bg-ink/5 text-ink-soft shadow-[inset_0_1px_3px_rgba(17,24,39,0.06)] hover:text-ink"
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
+        <div className="relative mt-4 flex flex-wrap gap-2">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${
+                tab === t.id
+                  ? "bg-[#1a7a52] text-white"
+                  : "bg-white text-ink-soft hover:bg-black/[0.05] hover:text-ink"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {visible.length === 0 ? (

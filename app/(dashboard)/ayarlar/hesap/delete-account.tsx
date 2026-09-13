@@ -34,7 +34,7 @@ export default function DeleteAccount({ userEmail }: { userEmail: string }) {
   }
 
   return (
-    <div className="mt-6 rounded-xl border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] p-8">
+    <div className="mt-6 rounded-xl border border-black/[0.08] bg-white shadow-sm p-8">
       <h2 className="text-lg font-bold text-ink">Hesabı Sil</h2>
       <p className="mt-2 text-sm text-ink-soft">
         Hesabını sildiğinde profilin, projelerin, tekliflerin, mesajların ve tüm diğer
@@ -44,7 +44,7 @@ export default function DeleteAccount({ userEmail }: { userEmail: string }) {
       {!expanded ? (
         <button
           onClick={() => setExpanded(true)}
-          className="mt-4 rounded-full bg-ink/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(17,24,39,0.06)] active:shadow-[inset_0_2px_4px_rgba(17,24,39,0.10)] active:translate-y-px px-6 py-2.5 text-sm font-semibold text-ink-soft hover:bg-ink/10 hover:text-ink"
+          className="mt-4 rounded-full bg-black/[0.04] transition-colors px-6 py-2.5 text-sm font-semibold text-ink-soft hover:bg-ink/10 hover:text-ink"
         >
           Hesabımı Sil
         </button>
@@ -58,7 +58,7 @@ export default function DeleteAccount({ userEmail }: { userEmail: string }) {
             value={confirmText}
             onChange={(e) => setConfirmText(e.target.value)}
             placeholder={userEmail}
-            className="rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-red-500/30"
+            className="rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-red-500/30"
           />
 
           {error && <p className="text-sm text-red-600">{error}</p>}
@@ -67,7 +67,7 @@ export default function DeleteAccount({ userEmail }: { userEmail: string }) {
             <button
               onClick={handleDelete}
               disabled={!canDelete || deleting}
-              className="rounded-full bg-red-600 px-6 py-2 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_0_0_#b91c1c,0_10px_20px_rgba(220,38,38,0.35)] transition-all hover:brightness-105 active:translate-y-1 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_#b91c1c,0_2px_6px_rgba(220,38,38,0.30)] disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-full bg-red-600 px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {deleting ? "Siliniyor..." : "Kalıcı Olarak Sil"}
             </button>
@@ -77,7 +77,7 @@ export default function DeleteAccount({ userEmail }: { userEmail: string }) {
                 setConfirmText("");
                 setError(null);
               }}
-              className="rounded-full bg-ink/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(17,24,39,0.06)] active:shadow-[inset_0_2px_4px_rgba(17,24,39,0.10)] active:translate-y-px px-6 py-2.5 text-sm font-semibold text-ink-soft hover:bg-ink/10 hover:text-ink"
+              className="rounded-full bg-black/[0.04] transition-colors px-6 py-2.5 text-sm font-semibold text-ink-soft hover:bg-ink/10 hover:text-ink"
             >
               Vazgeç
             </button>

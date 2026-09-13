@@ -18,8 +18,8 @@ const STORIES = [
   },
   {
     id: "developer",
-    color: "#89D4FF",
-    textColor: "#0f6ab0",
+    color: "#8DD9A8",
+    textColor: "#1a7a52",
 
     title: "Projeleri keşfet, doğru olanı seç, inşa et",
     description:
@@ -72,13 +72,8 @@ export default function StorySection() {
                 >
                   {story.id === "founder" ? "Fikir Sahibi" : story.id === "developer" ? "Yazılımcı" : "Dual Hesap"}
                 </span>
-                <h3 className="mt-4 font-[family-name:var(--font-playfair)] text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">
-                  <span
-                    className="highlight-sweep"
-                    style={{ ["--sweep-color" as string]: story.color }}
-                  >
-                    {story.title}
-                  </span>
+                <h3 className="mt-4 font-[family-name:var(--font-jakarta)] text-2xl font-semibold tracking-tight text-slate-800 sm:text-3xl">
+                  {story.title}
                 </h3>
                 <p className="mt-3 max-w-md text-sm leading-relaxed text-slate-600 sm:text-base">
                   {story.description}

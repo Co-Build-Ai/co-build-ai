@@ -74,7 +74,7 @@ export default function FounderDevelopers({ developers }: { developers: Develope
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="İsim veya beceriye göre ara..."
-          className="w-full rounded-full bg-petal py-2.5 pl-10 pr-14 text-sm text-ink shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] outline-none focus:ring-2 focus:ring-coral/30 sm:max-w-sm"
+          className="w-full rounded-lg border border-black/[0.08] bg-black/[0.02] py-2.5 pl-10 pr-14 text-sm text-ink outline-none focus:ring-2 focus:ring-[#8DD9A8]/40 sm:max-w-sm"
         />
         <kbd className="pointer-events-none absolute right-3.5 top-1/2 hidden -translate-y-1/2 rounded-md bg-white px-1.5 py-0.5 font-mono text-[10px] text-ink-soft sm:block">
           ⌘K
@@ -87,10 +87,10 @@ export default function FounderDevelopers({ developers }: { developers: Develope
             <button
               key={skill}
               onClick={() => setActiveSkill((prev) => (prev === skill ? null : skill))}
-              className={`rounded-full px-3 py-1 font-mono text-xs font-medium transition-colors ${
+              className={`rounded-md px-3 py-1 font-mono text-xs font-medium transition-colors ${
                 activeSkill === skill
-                  ? "bg-coral text-white"
-                  : "bg-periwinkle/25 text-periwinkle-dark hover:bg-periwinkle/40"
+                  ? "bg-[#1a7a52] text-white"
+                  : "bg-black/[0.04] text-ink-soft hover:bg-black/[0.07] hover:text-ink"
               }`}
             >
               #{skill}
@@ -107,7 +107,7 @@ export default function FounderDevelopers({ developers }: { developers: Develope
             <a
               key={dev.id}
               href={`/profil/${dev.id}`}
-              className="block rounded-xl border border-stone-200 bg-white p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] transition-all [transform-style:preserve-3d] hover:[transform:perspective(900px)_rotateX(2deg)_translateY(-4px)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_20px_rgba(17,24,39,0.16)]"
+              className="block rounded-xl border border-black/[0.08] bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
@@ -130,7 +130,7 @@ export default function FounderDevelopers({ developers }: { developers: Develope
                   {dev.skills.map((skill) => (
                     <span
                       key={skill}
-                      className="rounded-full bg-petal px-2.5 py-1 font-mono text-xs text-ink-soft"
+                      className="rounded-md bg-black/[0.04] px-2.5 py-1 font-mono text-xs text-ink-soft"
                     >
                       {skill}
                     </span>

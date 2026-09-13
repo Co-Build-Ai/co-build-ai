@@ -31,7 +31,7 @@ export default function HowItWorksSection() {
         <span className="w-fit text-sm font-semibold uppercase tracking-widest text-[#44ACFF]">
           Süreç
         </span>
-        <h2 className="mt-4 font-[family-name:var(--font-playfair)] text-3xl font-bold tracking-tight text-slate-800 sm:text-4xl">
+        <h2 className="mt-4 font-[family-name:var(--font-jakarta)] text-3xl font-semibold tracking-tight text-slate-800 sm:text-4xl">
           Fikirden Ürüne 4 Adım
         </h2>
         <TypingText

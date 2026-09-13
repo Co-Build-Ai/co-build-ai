@@ -83,7 +83,7 @@ export default function DeveloperProjectView({
 
   if (!accepted) {
     return (
-      <div className="mt-8 flex flex-col items-center gap-4 rounded-xl border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] p-8 text-center">
+      <div className="mt-8 flex flex-col items-center gap-4 rounded-xl border border-black/[0.08] bg-white shadow-sm p-8 text-center">
         <h2 className="text-lg font-bold text-ink">
           Gizlilik Onayı
         </h2>
@@ -95,7 +95,7 @@ export default function DeveloperProjectView({
         <button
           onClick={handleAccept}
           disabled={loading}
-          className="rounded-full bg-coral px-8 py-3 text-base font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_0_0_var(--color-coral-dark),0_10px_20px_rgba(68,172,255,0.35)] transition-all hover:brightness-105 active:translate-y-1 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(68,172,255,0.30)] disabled:opacity-50"
+          className="rounded-full bg-[#1a7a52] px-8 py-3 text-base font-medium text-white transition-colors hover:bg-[#15633f] disabled:opacity-50"
         >
           {loading ? "Kaydediliyor..." : "Onaylıyorum, PRD'yi Görüntüle"}
         </button>
@@ -121,7 +121,7 @@ export default function DeveloperProjectView({
           {requiredSkills.map((skill) => (
             <span
               key={skill}
-              className="rounded-full bg-periwinkle/20 px-3 py-1 font-mono text-xs text-ink"
+              className="rounded-md bg-black/[0.04] px-3 py-1 font-mono text-xs text-ink-soft"
             >
               {skill}
             </span>
@@ -140,8 +140,8 @@ export default function DeveloperProjectView({
         </p>
       )}
 
-      <div className="mt-8 rounded-xl border border-stone-200 bg-white p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]">
-        <span className="inline-flex items-center rounded-full bg-petal px-3 py-1 font-mono text-xs font-medium text-coral-dark">
+      <div className="mt-8 rounded-xl border border-black/[0.08] bg-white p-6 shadow-sm">
+        <span className="inline-flex items-center rounded-md bg-black/[0.04] px-3 py-1 font-mono text-xs font-medium text-ink-soft">
           AI Tarafından Üretildi
         </span>
         <h2 className="mt-3 text-xl font-bold text-ink">
@@ -289,7 +289,7 @@ function OfferSection({
 
   if (offer) {
     return (
-      <div className="mt-8 rounded-xl border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] p-8">
+      <div className="mt-8 rounded-xl border border-black/[0.08] bg-white shadow-sm p-8">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-ink">
             Teklifin
@@ -347,14 +347,14 @@ function OfferSection({
                   placeholder="https://github.com/kullanici/repo"
                   value={repoUrl}
                   onChange={(e) => setRepoUrl(e.target.value)}
-                  className="rounded-lg bg-white shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-coral/30"
+                  className="rounded-lg border border-black/[0.08] bg-black/[0.02] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
                 />
                 {repoError && <p className="text-xs text-coral-dark">{repoError}</p>}
                 <div className="flex gap-3">
                   <button
                     onClick={handleSaveRepo}
                     disabled={savingRepo}
-                    className="rounded-full bg-coral px-4 py-1.5 text-xs font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_3px_0_0_var(--color-coral-dark),0_6px_14px_rgba(68,172,255,0.30)] disabled:opacity-50"
+                    className="rounded-full bg-[#1a7a52] px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[#15633f] disabled:opacity-50"
                   >
                     {savingRepo ? "Kaydediliyor..." : "Kaydet"}
                   </button>
@@ -401,14 +401,14 @@ function OfferSection({
                 <button
                   onClick={handleApproveRemoval}
                   disabled={saving}
-                  className="rounded-full bg-coral px-5 py-2 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_0_0_var(--color-coral-dark),0_10px_20px_rgba(68,172,255,0.35)] transition-all hover:brightness-105 active:translate-y-1 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(68,172,255,0.30)] disabled:opacity-50"
+                  className="rounded-full bg-[#1a7a52] px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-[#15633f] disabled:opacity-50"
                 >
                   Onayla
                 </button>
                 <button
                   onClick={handleRejectRemoval}
                   disabled={saving}
-                  className="rounded-full bg-ink/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_0_rgba(17,24,39,0.06)] active:shadow-[inset_0_2px_4px_rgba(17,24,39,0.10)] active:translate-y-px px-5 py-2.5 text-sm font-semibold text-ink-soft hover:bg-ink/10 hover:text-ink disabled:opacity-50"
+                  className="rounded-full bg-black/[0.04] transition-colors px-5 py-2.5 text-sm font-semibold text-ink-soft hover:bg-ink/10 hover:text-ink disabled:opacity-50"
                 >
                   Reddet
                 </button>
@@ -428,7 +428,7 @@ function OfferSection({
   }
 
   return (
-    <div className="mt-8 rounded-xl border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] p-8">
+    <div className="mt-8 rounded-xl border border-black/[0.08] bg-white shadow-sm p-8">
       <h2 className="text-lg font-bold text-ink">Teklif Ver</h2>
       <div className="mt-4 flex flex-col gap-3">
         {typeIsChoosable && (
@@ -438,8 +438,8 @@ function OfferSection({
               onClick={() => setOfferPaymentType("fixed")}
               className={`flex-1 rounded-full px-4 py-1.5 text-sm font-semibold transition-all ${
                 offerPaymentType === "fixed"
-                  ? "bg-coral text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_3px_0_0_var(--color-coral-dark),0_6px_14px_rgba(68,172,255,0.30)] active:translate-y-0.5 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(68,172,255,0.25)]"
-                  : "bg-ink/5 text-ink-soft shadow-[inset_0_1px_3px_rgba(17,24,39,0.06)]"
+                  ? "bg-[#1a7a52] text-white transition-colors"
+                  : "bg-black/[0.04] text-ink-soft"
               }`}
             >
               Sabit Ücret
@@ -449,8 +449,8 @@ function OfferSection({
               onClick={() => setOfferPaymentType("equity")}
               className={`flex-1 rounded-full px-4 py-1.5 text-sm font-semibold transition-all ${
                 offerPaymentType === "equity"
-                  ? "bg-periwinkle-dark text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_3px_0_0_#c23570,0_6px_14px_rgba(254,158,199,0.30)] active:translate-y-0.5 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_#c23570,0_2px_6px_rgba(254,158,199,0.25)]"
-                  : "bg-ink/5 text-ink-soft shadow-[inset_0_1px_3px_rgba(17,24,39,0.06)]"
+                  ? "bg-[#FE9EC7] text-white transition-colors"
+                  : "bg-black/[0.04] text-ink-soft"
               }`}
             >
               Ortaklık
@@ -462,7 +462,7 @@ function OfferSection({
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           rows={4}
-          className="resize-none rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-coral/30"
+          className="resize-none rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
         />
         <input
           type="number"
@@ -472,19 +472,19 @@ function OfferSection({
           }
           value={proposedAmount}
           onChange={(e) => setProposedAmount(e.target.value)}
-          className="rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-coral/30"
+          className="rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
         />
         <input
           type="text"
           placeholder="Kanıt linki: portfolyo, GitHub, vb. (isteğe bağlı)"
           value={proofLink}
           onChange={(e) => setProofLink(e.target.value)}
-          className="rounded-lg bg-ink/5 shadow-[inset_0_2px_5px_rgba(17,24,39,0.08)] px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-coral/30"
+          className="rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
         />
         <button
           onClick={handleSubmit}
           disabled={saving}
-          className="self-start rounded-full bg-coral px-6 py-2 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_0_0_var(--color-coral-dark),0_10px_20px_rgba(68,172,255,0.35)] transition-all hover:brightness-105 active:translate-y-1 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(68,172,255,0.30)] disabled:opacity-50"
+          className="self-start rounded-full bg-[#1a7a52] px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-[#15633f] disabled:opacity-50"
         >
           {saving ? "Gönderiliyor..." : "Teklifi Gönder"}
         </button>

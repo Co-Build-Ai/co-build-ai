@@ -174,7 +174,7 @@ export default async function Profil() {
           </div>
 
           {activeRole === "founder" && (
-            <a href="/fikir-ekle" className="mt-6 inline-block rounded-full bg-coral px-8 py-3.5 text-base font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_0_0_var(--color-coral-dark),0_10px_20px_rgba(68,172,255,0.35)] transition-all hover:brightness-105 active:translate-y-1 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(68,172,255,0.30)]">
+            <a href="/fikir-ekle" className="mt-6 inline-block rounded-full bg-[#1a7a52] px-8 py-3.5 text-base font-medium text-white transition-colors hover:bg-[#15633f]">
               + Yeni Fikir Ekle
             </a>
           )}
@@ -196,7 +196,7 @@ export default async function Profil() {
                     <a
                       key={offer.id}
                       href={`/proje/${offer.project_id}`}
-                      className="flex items-center gap-3 rounded-lg border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] p-4 transition-all [transform-style:preserve-3d] hover:[transform:perspective(900px)_rotateX(2deg)_translateY(-4px)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_20px_rgba(17,24,39,0.16)]"
+                      className="flex items-center gap-3 rounded-lg border border-black/[0.08] bg-white shadow-sm p-4 transition-all hover:shadow-md"
                     >
                       <Avatar name={offer.developerName} role="developer" size="sm" />
                       <p className="min-w-0 flex-1 truncate text-sm text-ink">
@@ -247,7 +247,7 @@ export default async function Profil() {
                 <a
                   key={offer.id}
                   href={`/proje/${offer.project_id}`}
-                  className="flex items-center justify-between gap-3 rounded-lg border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] p-4 transition-all [transform-style:preserve-3d] hover:[transform:perspective(900px)_rotateX(2deg)_translateY(-4px)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_20px_rgba(17,24,39,0.16)]"
+                  className="flex items-center justify-between gap-3 rounded-lg border border-black/[0.08] bg-white shadow-sm p-4 transition-all hover:shadow-md"
                 >
                   <p className="min-w-0 flex-1 truncate text-sm text-ink">
                     {offer.projectTitle ?? "Bilinmeyen Proje"}

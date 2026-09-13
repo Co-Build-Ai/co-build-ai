@@ -15,9 +15,9 @@ export default function ProjectMatchCard({
   };
 }) {
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] p-6 transition-all [transform-style:preserve-3d] hover:[transform:perspective(900px)_rotateX(2deg)_translateY(-4px)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_20px_rgba(17,24,39,0.16)]">
+    <div className="group relative overflow-hidden rounded-xl border border-black/[0.08] bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
       <div className="flex items-start justify-between gap-3">
-        <h3 className="truncate text-sm font-bold text-ink">{project.title}</h3>
+        <h3 className="truncate text-sm font-semibold text-ink">{project.title}</h3>
         {project.matchScore > 0 && <ProgressRing value={project.matchScore} size={40} strokeWidth={4} />}
       </div>
 
@@ -36,7 +36,7 @@ export default function ProjectMatchCard({
           {project.required_skills.slice(0, 4).map((skill) => (
             <span
               key={skill}
-              className="rounded-full bg-petal px-2 py-0.5 font-mono text-[10px] text-coral-dark"
+              className="rounded-md bg-black/[0.04] px-2 py-0.5 font-mono text-[10px] text-ink-soft"
             >
               {skill}
             </span>
@@ -47,7 +47,7 @@ export default function ProjectMatchCard({
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex translate-y-full justify-end bg-gradient-to-t from-white via-white/95 to-transparent p-3 pt-6 transition-transform duration-200 group-hover:translate-y-0 group-hover:pointer-events-auto">
         <a
           href={`/proje/${project.id}`}
-          className="rounded-full bg-coral px-4 py-1.5 text-xs font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_0_0_var(--color-coral-dark),0_10px_20px_rgba(68,172,255,0.35)] transition-all hover:brightness-105 active:translate-y-1 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(68,172,255,0.30)]"
+          className="rounded-lg bg-[#1a7a52] px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[#15633f]"
         >
           Detayları Gör →
         </a>

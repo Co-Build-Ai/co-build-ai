@@ -268,7 +268,7 @@ export default async function ProjeDetay({
                 {project.required_skills.map((skill: string) => (
                   <span
                     key={skill}
-                    className="rounded-full bg-periwinkle/20 px-3 py-1 font-mono text-xs text-ink"
+                    className="rounded-md bg-black/[0.04] px-3 py-1 font-mono text-xs text-ink-soft"
                   >
                     {skill}
                   </span>
@@ -294,7 +294,7 @@ export default async function ProjeDetay({
                 </div>
 
                 {project.status === "draft" && (
-                  <div className="mt-8 flex flex-col items-center gap-3 rounded-xl border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] p-6 text-center">
+                  <div className="mt-8 flex flex-col items-center gap-3 rounded-xl border border-black/[0.08] bg-white shadow-sm p-6 text-center">
                     <p className="text-sm text-ink-soft">
                       PRD&apos;yi inceledin mi? Her şey doğru görünüyorsa, ödeme
                       tipini seçip projeni yazılımcılara açabilirsin.

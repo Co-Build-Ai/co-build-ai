@@ -81,7 +81,7 @@ export default async function KabulEttiklerim() {
             <a
               key={item.id}
               href={`/proje/${item.project_id}`}
-              className="flex items-center justify-between gap-3 rounded-lg border border-stone-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)] p-6 transition-all [transform-style:preserve-3d] hover:[transform:perspective(900px)_rotateX(2deg)_translateY(-4px)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_20px_rgba(17,24,39,0.16)]"
+              className="flex items-center justify-between gap-3 rounded-lg border border-black/[0.08] bg-white shadow-sm p-6 transition-all hover:shadow-md"
             >
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-bold text-ink">{item.developerName}</p>
