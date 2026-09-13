@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import DeveloperMatchRow from "@/app/components/developer-match-row";
 
 type Developer = {
   id: string;
@@ -39,6 +38,8 @@ export default function QuickMatch({
   const [matches, setMatches] = useState<(Developer & { matchScore: number })[]>([]);
   const [projectId, setProjectId] = useState<string | null>(null);
 
+  // Dönüş: null => istek başarısız oldu (DB'ye yazılmamalı, tekrar denenmeli).
+  // [] => istek başarılı ama gerçekten hiç eşleşme yok.
   async function fetchMatches(prdText: string, requiredSkills: string[]) {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_AI_SERVICE_URL}/eslestir/hibrit`, {
@@ -50,7 +51,7 @@ export default function QuickMatch({
           top_k: 5,
         }),
       });
-      if (!res.ok) return [];
+      if (!res.ok) return null;
 
       const data: { yazilimcilar: HybridSearchResult[] } = await res.json();
       return (data.yazilimcilar ?? []).map((r) => {
@@ -67,7 +68,7 @@ export default function QuickMatch({
         };
       });
     } catch {
-      return [];
+      return null;
     }
   }
 
@@ -82,22 +83,29 @@ export default function QuickMatch({
           const requiredSkills: string[] = data.skills ?? [];
           const matched = await fetchMatches(data.prd, requiredSkills);
 
+          // matched null ise (eşleştirme isteği başarısız oldu) matched_developers
+          // alanını hiç güncellemiyoruz — kalıcı olarak boş dizi yazıp veriyi
+          // kaybetmeyelim, bir sonraki denemede tekrar hesaplanabilsin.
           await supabase
             .from("projects")
             .update({
               generated_prd: data.prd,
               required_skills: requiredSkills,
-              matched_developers: matched.map((m) => ({
-                developerId: m.id,
-                fullName: m.full_name,
-                bio: "",
-                skills: m.skills ?? [],
-                matchScore: m.matchScore,
-              })),
+              ...(matched !== null
+                ? {
+                    matched_developers: matched.map((m) => ({
+                      developerId: m.id,
+                      fullName: m.full_name,
+                      bio: "",
+                      skills: m.skills ?? [],
+                      matchScore: m.matchScore,
+                    })),
+                  }
+                : {}),
             })
             .eq("id", id);
 
-          setMatches(matched);
+          setMatches(matched ?? []);
           setStatus("done");
         } else if (data.status === "error") {
           clearInterval(interval);
@@ -214,39 +222,21 @@ export default function QuickMatch({
   }
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-white p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]">
-      <div className="flex items-center justify-between">
-        <p className="inline-flex items-center rounded-full bg-coral px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-white shadow-sm">
-          Sana Uygun Yazılımcılar
-        </p>
-        {projectId && (
-          <a href={`/proje/${projectId}`} className="text-xs font-semibold text-ink hover:underline">
-            PRD&apos;yi Gör →
-          </a>
-        )}
-      </div>
-
-      {matches.length === 0 ? (
-        <p className="mt-3 text-sm text-ink">Şu an eşleşen kayıtlı bir yazılımcı yok.</p>
-      ) : (
-        <div className="mt-4 flex flex-col gap-4">
-          {matches.map((d) => (
-            <DeveloperMatchRow
-              key={d.id}
-              founderId={userId}
-              initiallyStarred={starredIds.includes(d.id)}
-              developer={{
-                id: d.id,
-                fullName: d.full_name,
-                matchScore: d.matchScore,
-                ratingAvg: d.ratingAvg,
-                ratingCount: d.ratingCount,
-                availability: d.availability,
-                hasVerifiedPatent: d.has_verified_patent,
-              }}
-            />
-          ))}
-        </div>
+    <div className="flex flex-col items-center gap-3 rounded-xl border border-stone-200 bg-white p-8 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_4px_12px_rgba(17,24,39,0.12)]">
+      <p className="inline-flex items-center rounded-full bg-periwinkle-dark px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-white shadow-sm">
+        Hazır
+      </p>
+      <p className="text-sm text-ink-soft">
+        PRD üretildi{matches.length > 0 ? ` ve ${matches.length} yazılımcı eşleşti` : ""} — detayları ve
+        önerilen yazılımcıları taslak sayfasında incele.
+      </p>
+      {projectId && (
+        <a
+          href={`/proje/${projectId}`}
+          className="mt-1 rounded-full bg-coral px-6 py-2.5 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_4px_0_0_var(--color-coral-dark),0_10px_20px_rgba(68,172,255,0.35)] transition-all hover:brightness-105 active:translate-y-1 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0px_0_0_var(--color-coral-dark),0_2px_6px_rgba(68,172,255,0.30)]"
+        >
+          PRD ve Eşleşmeleri İncele →
+        </a>
       )}
     </div>
   );

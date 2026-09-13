@@ -1,5 +1,6 @@
 import PrdStatus from "./prd-status";
 import EditablePrd from "./editable-prd";
+import EditableTitle from "./editable-title";
 import MatchedDevelopers, { type MatchedDeveloper } from "./matched-developers";
 import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
@@ -231,12 +232,16 @@ export default async function ProjeDetay({
           ← Panele Dön
         </a>
 
-        <div className="mt-6 flex items-center justify-between">
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink">
-            {project.title}
-          </h1>
+        <div className="mt-6 flex items-center justify-between gap-3">
+          {isFounder ? (
+            <EditableTitle projectId={project.id} initialTitle={project.title} />
+          ) : (
+            <h1 className="min-w-0 truncate text-2xl font-extrabold tracking-tight text-ink">
+              {project.title}
+            </h1>
+          )}
           <span
-            className={`rounded-full px-3 py-1 text-xs font-semibold ${
+            className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${
               project.status === "published"
                 ? "bg-periwinkle-dark text-white"
                 : "bg-petal text-coral-dark"
