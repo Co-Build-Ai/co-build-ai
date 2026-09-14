@@ -144,6 +144,7 @@ export default async function Profil() {
             role={activeRole === "founder" ? "founder" : "developer"}
             initialFullName={profile?.full_name ?? null}
             initialAvatarUrl={profile?.avatar_url ?? null}
+            initialBannerUrl={profile?.banner_url ?? null}
           />
           <div className="mt-2 flex items-center gap-2">
             <p className="text-sm text-ink-soft">

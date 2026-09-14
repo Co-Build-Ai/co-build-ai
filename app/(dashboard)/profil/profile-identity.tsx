@@ -11,19 +11,24 @@ export default function ProfileIdentity({
   role,
   initialFullName,
   initialAvatarUrl,
+  initialBannerUrl,
 }: {
   userId: string;
   role: "founder" | "developer";
   initialFullName: string | null;
   initialAvatarUrl: string | null;
+  initialBannerUrl?: string | null;
 }) {
   const router = useRouter();
   const supabase = createClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
   const [editingName, setEditingName] = useState(false);
   const [fullName, setFullName] = useState(initialFullName ?? "");
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
+  const [bannerUrl, setBannerUrl] = useState(initialBannerUrl ?? null);
   const [uploading, setUploading] = useState(false);
+  const [uploadingBanner, setUploadingBanner] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -57,6 +62,34 @@ export default function ProfileIdentity({
     router.refresh();
   }
 
+  async function handleBannerChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingBanner(true);
+    setError(null);
+
+    const ext = file.name.split(".").pop() ?? "jpg";
+    const path = `${userId}/banner.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("banners")
+      .upload(path, file, { upsert: true, cacheControl: "3600" });
+
+    if (uploadError) {
+      setError("Banner yüklenemedi, tekrar dener misin?");
+      setUploadingBanner(false);
+      return;
+    }
+
+    const { data } = supabase.storage.from("banners").getPublicUrl(path);
+    const freshUrl = `${data.publicUrl}?t=${Date.now()}`;
+
+    await supabase.from("profiles").update({ banner_url: freshUrl }).eq("id", userId);
+    setBannerUrl(freshUrl);
+    setUploadingBanner(false);
+    router.refresh();
+  }
+
   async function handleSaveName() {
     if (!fullName.trim()) return;
     setSaving(true);
@@ -67,7 +100,41 @@ export default function ProfileIdentity({
   }
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex w-full flex-col items-center">
+      <div
+        className={`group relative mb-[-2.5rem] h-28 w-full overflow-hidden rounded-xl sm:h-36 ${
+          bannerUrl
+            ? ""
+            : role === "developer"
+              ? "bg-gradient-to-r from-[#8DD9A8]/50 via-[#F9F6C4]/40 to-[#89D4FF]/40"
+              : "bg-gradient-to-r from-[#FE9EC7]/50 via-[#F9F6C4]/40 to-[#89D4FF]/30"
+        }`}
+      >
+        {bannerUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={bannerUrl} alt="" className="h-full w-full object-cover" />
+        )}
+        <button
+          onClick={() => bannerInputRef.current?.click()}
+          disabled={uploadingBanner}
+          title="Banner değiştir"
+          className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white opacity-0 shadow-sm backdrop-blur transition-opacity hover:bg-black/55 group-hover:opacity-100 disabled:opacity-50"
+        >
+          {uploadingBanner ? (
+            <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+          ) : (
+            <Camera size={16} />
+          )}
+        </button>
+        <input
+          ref={bannerInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleBannerChange}
+          className="hidden"
+        />
+      </div>
+
       <div className="group relative">
         <Avatar name={fullName} role={role} size="lg" avatarUrl={avatarUrl} />
         <button

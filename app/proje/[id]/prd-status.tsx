@@ -14,6 +14,8 @@ type HybridSearchResult = {
   uyum_skoru: number | null;
 };
 
+// Dönüş: null => istek başarısız oldu (tekrar denenmeli, DB'ye YAZILMAMALI).
+// [] => istek başarılı ama gerçekten hiç eşleşme yok (bu durumda boş kaydetmek doğru).
 async function fetchMatchedDevelopers(prdText: string, requiredSkills: string[]) {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_AI_SERVICE_URL}/eslestir/hibrit`, {
@@ -25,7 +27,7 @@ async function fetchMatchedDevelopers(prdText: string, requiredSkills: string[])
         top_k: 5,
       }),
     });
-    if (!res.ok) return [];
+    if (!res.ok) return null;
 
     const data: { yazilimcilar: HybridSearchResult[] } = await res.json();
     return (data.yazilimcilar ?? []).map((d) => ({
@@ -36,9 +38,9 @@ async function fetchMatchedDevelopers(prdText: string, requiredSkills: string[])
       matchScore: d.uyum_skoru ?? 0,
     }));
   } catch {
-    // Eşleştirme motoruna ulaşılamazsa PRD yine de kaydedilsin,
-    // sadece "Eşleşen Yazılımcılar" boş kalır
-    return [];
+    // Eşleştirme motoruna ulaşılamadı — null dönüyoruz ki DB'deki alanı
+    // boş bir dizi ile EZMEYELİM (aksi halde kalıcı olarak boş kalır).
+    return null;
   }
 }
 
@@ -83,12 +85,15 @@ export default function PrdStatus({ projectId }: { projectId: string }) {
 
           setStatusText("Kaydediliyor...");
 
+          // matchedDevelopers null ise (eşleştirme isteği başarısız oldu) bu
+          // alanı hiç güncellemiyoruz — böylece kalıcı olarak boş bir dizi
+          // yazıp "hiç eşleşme yok" gibi görünmesini engelliyoruz.
           const { error } = await supabase
             .from("projects")
             .update({
               generated_prd: data.prd,
               required_skills: requiredSkills,
-              matched_developers: matchedDevelopers,
+              ...(matchedDevelopers !== null ? { matched_developers: matchedDevelopers } : {}),
             })
             .eq("id", projectId);
 

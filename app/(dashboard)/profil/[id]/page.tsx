@@ -220,12 +220,19 @@ export default async function KullaniciProfili({
       {/* Profil başlığı */}
       <div className="overflow-hidden rounded-xl border border-black/[0.08] bg-white shadow-sm">
         <div
-          className={`h-28 sm:h-36 ${
-            isDeveloper
-              ? "bg-gradient-to-r from-[#8DD9A8]/50 via-[#F9F6C4]/40 to-[#89D4FF]/40"
-              : "bg-gradient-to-r from-[#FE9EC7]/50 via-[#F9F6C4]/40 to-[#89D4FF]/30"
+          className={`h-28 overflow-hidden sm:h-36 ${
+            viewedProfile.banner_url
+              ? ""
+              : isDeveloper
+                ? "bg-gradient-to-r from-[#8DD9A8]/50 via-[#F9F6C4]/40 to-[#89D4FF]/40"
+                : "bg-gradient-to-r from-[#FE9EC7]/50 via-[#F9F6C4]/40 to-[#89D4FF]/30"
           }`}
-        />
+        >
+          {viewedProfile.banner_url && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={viewedProfile.banner_url} alt="" className="h-full w-full object-cover" />
+          )}
+        </div>
         <div className="flex flex-col items-center px-6 pb-6 text-center sm:flex-row sm:items-end sm:gap-5 sm:text-left">
           <div className="-mt-12 shrink-0 rounded-full ring-4 ring-white sm:-mt-14">
             <Avatar
