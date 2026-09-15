@@ -180,11 +180,11 @@ export default function QuickMatch({
 
   if (status === "idle") {
     return (
-      <div className="rounded-xl border border-black/[0.08] bg-white p-6 shadow-sm">
+      <div className="flex h-full flex-col rounded-xl border border-black/[0.08] bg-white p-6 shadow-sm">
         <p className="text-[11px] font-semibold uppercase tracking-wide text-[#1a7a52]">
           Hızlı Eşleştirme
         </p>
-        <p className="mt-2 text-sm text-ink">
+        <p className="mt-2 min-h-[2.75rem] text-sm text-ink">
           Aklındaki projeyi kısaca anlat, AI PRD&apos;ye çevirsin ve sana en uygun kayıtlı
           yazılımcıları puanlarına göre sıralasın.
         </p>
@@ -193,11 +193,11 @@ export default function QuickMatch({
           onChange={(e) => setIdea(e.target.value)}
           rows={3}
           placeholder="Örn: Komşular arası eşya paylaşım uygulaması, React Native ile mobil..."
-          className="mt-3 w-full resize-none rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2.5 text-sm text-ink outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
+          className="mt-3 w-full flex-1 resize-none rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2.5 text-sm text-ink outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
         />
         <button
           onClick={handleSubmit}
-          className="mt-3 rounded-lg bg-[#1a7a52] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#15633f]"
+          className="mt-3 self-start rounded-lg bg-[#1a7a52] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#15633f]"
         >
           Eşleştir
         </button>
