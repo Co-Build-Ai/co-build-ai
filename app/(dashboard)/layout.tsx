@@ -54,9 +54,16 @@ export default async function DashboardLayout({
       offersReceived = count ?? 0;
     }
 
+    const { count: gonderilenSayisi } = await supabase
+      .from("notifications")
+      .select("id", { count: "exact", head: true })
+      .eq("sender_id", user.id)
+      .eq("type", "project_invite");
+
     miniStats = [
       { label: "Analiz Edilen Fikirler", value: projectCount, href: "/profil" },
       { label: "Gelen Teklifler", value: offersReceived, href: "/profil" },
+      { label: "Gönderilen Teklifler", value: gonderilenSayisi ?? 0, href: "/gonderilen-teklifler" },
     ];
   } else if (userType === "developer") {
     const { data: offers } = await supabase

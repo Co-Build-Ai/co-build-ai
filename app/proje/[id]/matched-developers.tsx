@@ -111,14 +111,17 @@ function MatchedDeveloperCard({
     if (inviting || invited) return;
     setInviting(true);
 
-    await supabase.from("notifications").insert({
+    const { error } = await supabase.from("notifications").insert({
       user_id: developer.developerId,
+      sender_id: founderId,
       project_id: projectId,
       type: "project_invite",
       message: `"${projectTitle}" projesi için seninle çalışmak istiyorlar — PRD'yi incele ve dilersen teklifini gönder.`,
     });
 
-    setInvited(true);
+    if (!error) {
+      setInvited(true);
+    }
     setInviting(false);
   }
 
