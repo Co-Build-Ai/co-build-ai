@@ -30,12 +30,31 @@ async function fetchMatchedDevelopers(prdText: string, requiredSkills: string[])
     if (!res.ok) return null;
 
     const data: { yazilimcilar: HybridSearchResult[] } = await res.json();
-    return (data.yazilimcilar ?? []).map((d) => ({
+    const eslesenler = data.yazilimcilar ?? [];
+
+    // AI eşleştirme servisi avatar bilgisi döndürmüyor — kayıtlı profillerden
+    // ayrıca çekip birleştiriyoruz, aksi halde önerilen yazılımcı kartlarında
+    // fotoğraf yerine hep baş harf görünür.
+    let avatarById: Record<string, string | null> = {};
+    if (eslesenler.length > 0) {
+      const supabase = createClient();
+      const { data: avatarProfiles } = await supabase
+        .from("profiles")
+        .select("id, avatar_url")
+        .in(
+          "id",
+          eslesenler.map((d) => d.developer_id)
+        );
+      avatarById = Object.fromEntries((avatarProfiles ?? []).map((p) => [p.id, p.avatar_url]));
+    }
+
+    return eslesenler.map((d) => ({
       developerId: d.developer_id,
       fullName: d.ad_soyad,
       bio: d.bio,
       skills: d.skills,
       matchScore: d.uyum_skoru ?? 0,
+      avatarUrl: avatarById[d.developer_id] ?? null,
     }));
   } catch {
     // Eşleştirme motoruna ulaşılamadı — null dönüyoruz ki DB'deki alanı

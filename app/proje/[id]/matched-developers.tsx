@@ -12,6 +12,7 @@ export type MatchedDeveloper = {
   bio: string | null;
   skills: string[];
   matchScore: number;
+  avatarUrl?: string | null;
 };
 
 export default function MatchedDevelopers({
@@ -125,7 +126,7 @@ function MatchedDeveloperCard({
     <div className="rounded-xl border border-black/[0.08] bg-white p-6 shadow-sm transition-all hover:shadow-md">
       <div className="flex items-start gap-3">
         <a href={`/profil/${developer.developerId}`} className="flex min-w-0 flex-1 items-start gap-3">
-          <Avatar name={developer.fullName} role="developer" size="md" />
+          <Avatar name={developer.fullName} role="developer" size="md" avatarUrl={developer.avatarUrl} />
 
           <div className="min-w-0 flex-1">
             <h3 className="truncate text-base font-bold text-ink hover:underline">

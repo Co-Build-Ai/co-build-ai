@@ -10,6 +10,7 @@ type Developer = {
   skills: string[] | null;
   availability: string | null;
   has_verified_patent?: boolean | null;
+  avatar_url?: string | null;
   ratingAvg: number | null;
   ratingCount: number;
 };
@@ -62,6 +63,7 @@ export default function QuickMatch({
           skills: r.skills,
           availability: local?.availability ?? null,
           has_verified_patent: local?.has_verified_patent ?? false,
+          avatar_url: local?.avatar_url ?? null,
           ratingAvg: local?.ratingAvg ?? null,
           ratingCount: local?.ratingCount ?? 0,
           matchScore: r.uyum_skoru ?? 0,
@@ -99,6 +101,7 @@ export default function QuickMatch({
                       bio: "",
                       skills: m.skills ?? [],
                       matchScore: m.matchScore,
+                      avatarUrl: m.avatar_url ?? null,
                     })),
                   }
                 : {}),

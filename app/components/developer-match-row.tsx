@@ -21,6 +21,7 @@ export default function DeveloperMatchRow({
     ratingCount: number;
     availability?: string | null;
     hasVerifiedPatent?: boolean | null;
+    avatarUrl?: string | null;
   };
   founderId: string;
   initiallyStarred?: boolean;
@@ -49,7 +50,7 @@ export default function DeveloperMatchRow({
   return (
     <div className="flex items-center gap-3 rounded-lg border border-black/[0.06] bg-black/[0.015] p-4 transition-colors hover:bg-black/[0.03]">
       <a href={`/profil/${developer.id}`} className="flex min-w-0 flex-1 items-center gap-3">
-        <Avatar name={developer.fullName} role="developer" size="sm" />
+        <Avatar name={developer.fullName} role="developer" size="sm" avatarUrl={developer.avatarUrl} />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <p className="truncate text-sm font-medium text-ink hover:underline">{developer.fullName ?? "İsimsiz"}</p>

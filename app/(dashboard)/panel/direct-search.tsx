@@ -7,6 +7,7 @@ type Developer = {
   id: string;
   availability: string | null;
   has_verified_patent?: boolean | null;
+  avatar_url?: string | null;
   ratingAvg: number | null;
   ratingCount: number;
 };
@@ -25,6 +26,7 @@ type MatchedDeveloper = {
   ratingCount: number;
   availability: string | null;
   hasVerifiedPatent?: boolean | null;
+  avatarUrl?: string | null;
 };
 
 export default function DirectSearch({
@@ -67,6 +69,7 @@ export default function DirectSearch({
           ratingCount: local?.ratingCount ?? 0,
           availability: local?.availability ?? null,
           hasVerifiedPatent: local?.has_verified_patent ?? false,
+          avatarUrl: local?.avatar_url ?? null,
         };
       });
 
