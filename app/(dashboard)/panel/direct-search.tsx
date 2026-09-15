@@ -39,6 +39,7 @@ export default function DirectSearch({
   starredIds: string[];
 }) {
   const [query, setQuery] = useState("");
+  const [searchedQuery, setSearchedQuery] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [results, setResults] = useState<MatchedDeveloper[]>([]);
 
@@ -74,6 +75,7 @@ export default function DirectSearch({
       });
 
       setResults(enriched);
+      setSearchedQuery(query);
       setStatus("done");
     } catch {
       setStatus("error");
@@ -120,6 +122,7 @@ export default function DirectSearch({
                   developer={d}
                   founderId={founderId}
                   initiallyStarred={starredIds.includes(d.id)}
+                  searchContext={searchedQuery}
                 />
               ))}
             </div>
