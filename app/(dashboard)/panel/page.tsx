@@ -302,7 +302,7 @@ export default async function Panel() {
                     "linear-gradient(120deg, rgba(254,158,199,0.55) 0%, rgba(249,246,196,0.5) 30%, rgba(137,212,255,0.55) 55%, rgba(141,217,168,0.55) 100%)",
                 }}
               />
-              <div className="relative grid gap-4 sm:grid-cols-2">
+              <div className="relative grid items-start gap-4 sm:grid-cols-2">
                 <QuickMatch userId={user.id} developers={developers} starredIds={starredIds} />
                 <DirectSearch founderId={user.id} developers={developers} starredIds={starredIds} />
               </div>
