@@ -53,7 +53,7 @@ export default async function Panel() {
       const founderIds = [...new Set(data.map((p) => p.founder_id))];
       const { data: founderProfiles } = await supabase
         .from("profiles")
-        .select("id, full_name")
+        .select("id, full_name, avatar_url")
         .in("id", founderIds);
 
       const mySkills = new Set((profile?.skills ?? []).map((s: string) => s.toLowerCase()));
@@ -70,6 +70,7 @@ export default async function Panel() {
         return {
           ...p,
           founderName: founderProfiles?.find((f) => f.id === p.founder_id)?.full_name ?? null,
+          founderAvatarUrl: founderProfiles?.find((f) => f.id === p.founder_id)?.avatar_url ?? null,
           matchScore,
         };
       });
