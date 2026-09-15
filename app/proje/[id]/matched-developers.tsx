@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Star, Send, Check } from "lucide-react";
+import { Star, Send, Check, MessageCircle } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import Avatar from "@/app/components/avatar";
 import ProgressRing from "@/app/components/progress-ring";
@@ -163,25 +163,35 @@ function MatchedDeveloperCard({
         </div>
       )}
 
-      <button
-        onClick={handleInvite}
-        disabled={inviting || invited}
-        className={`mt-3 flex w-full items-center justify-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition-all disabled:opacity-70 ${
-          invited
-            ? "bg-periwinkle/20 text-periwinkle-dark"
-            : "bg-[#1a7a52] text-white transition-colors"
-        }`}
-      >
-        {invited ? (
-          <>
-            <Check size={14} /> Davet Gönderildi
-          </>
-        ) : (
-          <>
-            <Send size={14} /> {inviting ? "Gönderiliyor..." : "Projeye Davet Et"}
-          </>
+      <div className="mt-3 flex gap-2">
+        <button
+          onClick={handleInvite}
+          disabled={inviting || invited}
+          className={`flex flex-1 items-center justify-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition-all disabled:opacity-70 ${
+            invited
+              ? "bg-periwinkle/20 text-periwinkle-dark"
+              : "bg-[#1a7a52] text-white transition-colors"
+          }`}
+        >
+          {invited ? (
+            <>
+              <Check size={14} /> Davet Gönderildi
+            </>
+          ) : (
+            <>
+              <Send size={14} /> {inviting ? "Gönderiliyor..." : "Projeye Davet Et"}
+            </>
+          )}
+        </button>
+        {invited && (
+          <a
+            href={`/mesajlar/${developer.developerId}`}
+            className="flex items-center justify-center gap-1.5 rounded-full border border-black/[0.08] px-4 py-2 text-xs font-semibold text-ink-soft transition-colors hover:bg-black/[0.04] hover:text-ink"
+          >
+            <MessageCircle size={14} /> Mesaj Gönder
+          </a>
         )}
-      </button>
+      </div>
     </div>
   );
 }

@@ -12,6 +12,7 @@ import {
   FolderKanban,
   ChevronDown,
   Star,
+  MessageCircle,
 } from "lucide-react";
 import LogoutButton from "./logout-button";
 import Avatar from "./avatar";
@@ -19,7 +20,10 @@ import RatingStars from "./rating-stars";
 import AvailabilityBadge from "./availability-badge";
 import RoleSwitcher from "./role-switcher";
 
-const NAV_ITEMS = [{ href: "/panel", label: "Keşfet", icon: Compass }];
+const NAV_ITEMS = [
+  { href: "/panel", label: "Keşfet", icon: Compass },
+  { href: "/mesajlar", label: "Mesajlarım", icon: MessageCircle },
+];
 
 const SECONDARY_NAV_ITEMS = [{ href: "/profil", label: "Profilim", icon: User }];
 

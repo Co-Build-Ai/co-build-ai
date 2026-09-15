@@ -19,7 +19,7 @@ export default function FounderFeed({ founders }: { founders: Founder[] }) {
       <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-soft">
         Girişimciler Akışı
       </p>
-      <div className="mt-3 flex max-h-[520px] flex-col gap-2 overflow-y-auto pr-1">
+      <div className="mt-3 flex flex-col gap-2">
         {founders.map((founder) => (
           <a
             key={founder.id}

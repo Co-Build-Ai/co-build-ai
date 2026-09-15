@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Star } from "lucide-react";
+import { Star, MessageCircle } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import Avatar from "./avatar";
 import RatingStars from "./rating-stars";
@@ -65,6 +65,16 @@ export default function DeveloperMatchRow({
       <span className="shrink-0 rounded-md bg-[#8DD9A8]/25 px-2.5 py-0.5 text-xs font-semibold text-[#1a7a52]">
         %{developer.matchScore}
       </span>
+      <a
+        href={`/mesajlar/${developer.id}`}
+        title="Mesaj Gönder"
+        className="shrink-0 rounded-lg border border-black/[0.08] px-3 py-1.5 text-xs font-medium text-ink-soft transition-colors hover:bg-black/[0.04] hover:text-ink"
+      >
+        <span className="flex items-center gap-1.5">
+          <MessageCircle size={14} />
+          <span className="hidden sm:inline">Mesaj Gönder</span>
+        </span>
+      </a>
       <button
         onClick={toggleStar}
         disabled={saving}

@@ -1,4 +1,5 @@
 import { redirect, notFound } from "next/navigation";
+import { MessageCircle } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
 import Avatar from "@/app/components/avatar";
 import StatCircle from "@/app/components/stat-circle";
@@ -286,6 +287,13 @@ export default async function KullaniciProfili({
               <RatingStars average={ratingAvg} count={scores.length} />
             </div>
           </div>
+          <a
+            href={`/mesajlar/${id}`}
+            className="mt-3 flex shrink-0 items-center justify-center gap-2 rounded-full bg-[#1a7a52] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#15633f] sm:mt-0"
+          >
+            <MessageCircle size={16} />
+            Mesaj Gönder
+          </a>
         </div>
       </div>
 

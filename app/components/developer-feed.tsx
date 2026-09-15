@@ -21,7 +21,7 @@ export default function DeveloperFeed({ developers }: { developers: Developer[] 
       <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-soft">
         Yazılımcılar Akışı
       </p>
-      <div className="mt-3 flex max-h-[520px] flex-col gap-2 overflow-y-auto pr-1">
+      <div className="mt-3 flex flex-col gap-2">
         {developers.map((dev) => (
           <a
             key={dev.id}
