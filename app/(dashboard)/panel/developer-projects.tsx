@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Search } from "lucide-react";
 import ProjectMatchCard from "@/app/components/project-match-card";
 import Avatar from "@/app/components/avatar";
 
@@ -42,8 +41,9 @@ export default function DeveloperProjects({
   founders?: FounderResult[];
 }) {
   const [query, setQuery] = useState("");
+  const [submittedQuery, setSubmittedQuery] = useState("");
   const [tab, setTab] = useState<TabId>("all");
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     function handleKeydown(e: KeyboardEvent) {
@@ -56,7 +56,11 @@ export default function DeveloperProjects({
     return () => window.removeEventListener("keydown", handleKeydown);
   }, []);
 
-  const trimmedQuery = query.trim().toLowerCase();
+  function handleSearch() {
+    setSubmittedQuery(query);
+  }
+
+  const trimmedQuery = submittedQuery.trim().toLowerCase();
 
   if (projects.length === 0 && founders.length === 0) {
     return (
@@ -100,19 +104,33 @@ export default function DeveloperProjects({
               "linear-gradient(120deg, rgba(254,158,199,0.55) 0%, rgba(249,246,196,0.5) 30%, rgba(137,212,255,0.55) 55%, rgba(141,217,168,0.55) 100%)",
           }}
         />
-        <div className="relative">
-          <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-soft" />
-          <input
+        <div className="relative rounded-xl border border-black/[0.08] bg-white p-6 shadow-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#1a7a52]">
+            Doğrudan Arama
+          </p>
+          <p className="mt-2 text-sm text-ink">
+            Aradığın proje ya da girişimciyi tarif et, isim/başlık ve beceri etiketlerinde arayalım.
+          </p>
+          <textarea
             ref={inputRef}
-            type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Proje veya girişimci ara..."
-            className="w-full rounded-lg border border-black/[0.08] bg-white py-2.5 pl-10 pr-14 text-sm text-ink outline-none focus:ring-2 focus:ring-[#8DD9A8]/40 sm:max-w-sm"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSearch();
+              }
+            }}
+            rows={3}
+            placeholder="Örn: React Native bilen bir mobil geliştirici arıyorum, e-ticaret deneyimi olan biriyle çalışmak istiyorum..."
+            className="mt-3 w-full resize-none rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2.5 text-sm text-ink outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
           />
-          <kbd className="pointer-events-none absolute right-3.5 top-1/2 hidden -translate-y-1/2 rounded-md bg-white px-1.5 py-0.5 font-mono text-[10px] text-ink-soft sm:block">
-            ⌘K
-          </kbd>
+          <button
+            onClick={handleSearch}
+            className="mt-3 rounded-lg bg-[#1a7a52] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#15633f]"
+          >
+            Ara
+          </button>
         </div>
 
         <div className="relative mt-4 flex flex-wrap gap-2">
