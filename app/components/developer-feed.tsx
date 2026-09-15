@@ -8,6 +8,7 @@ type Developer = {
   bio: string | null;
   skills: string[] | null;
   availability: string | null;
+  avatar_url?: string | null;
   ratingAvg: number | null;
   ratingCount: number;
 };
@@ -28,7 +29,7 @@ export default function DeveloperFeed({ developers }: { developers: Developer[] 
             className="block rounded-lg border border-transparent p-3 transition-colors hover:border-black/[0.06] hover:bg-black/[0.02]"
           >
             <div className="flex items-center gap-2">
-              <Avatar name={dev.full_name} role="developer" size="sm" />
+              <Avatar name={dev.full_name} role="developer" size="sm" avatarUrl={dev.avatar_url} />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
                   <p className="truncate text-sm font-bold text-ink">{dev.full_name ?? "İsimsiz"}</p>

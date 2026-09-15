@@ -75,6 +75,7 @@ export function PublishForm({
   const router = useRouter();
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [paymentType, setPaymentType] = useState<PaymentType>(defaultPaymentType ?? "fixed");
   const [paymentAmount, setPaymentAmount] = useState(
     defaultPaymentAmount ? String(defaultPaymentAmount) : ""
@@ -82,15 +83,27 @@ export function PublishForm({
 
   async function handlePublish() {
     setLoading(true);
-    await supabase
+    setError(null);
+    const { data, error: updateError } = await supabase
       .from("projects")
       .update({
         status: "published",
         payment_type: paymentType,
         payment_amount: paymentType === "flexible" ? null : paymentAmount ? Number(paymentAmount) : null,
       })
-      .eq("id", projectId);
+      .eq("id", projectId)
+      .select();
     setLoading(false);
+    if (updateError) {
+      setError(updateError.message);
+      return;
+    }
+    if (!data || data.length === 0) {
+      setError(
+        "Güncelleme yapılamadı (0 satır etkilendi) — büyük olasılıkla Supabase RLS politikası bu güncellemeyi engelliyor."
+      );
+      return;
+    }
     router.refresh();
   }
 
@@ -109,6 +122,7 @@ export function PublishForm({
       >
         {loading ? "Yayınlanıyor..." : "Projeyi Yayınla"}
       </button>
+      {error && <p className="max-w-sm text-center text-sm text-red-600">{error}</p>}
     </div>
   );
 }

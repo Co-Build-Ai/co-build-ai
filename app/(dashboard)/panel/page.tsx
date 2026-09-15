@@ -8,7 +8,7 @@ import DirectSearch from "./direct-search";
 import FounderDevelopers from "./founder-developers";
 import CancelProcessingProject from "./cancel-processing-project";
 import DeveloperFeed from "@/app/components/developer-feed";
-import ProjectFeed from "@/app/components/project-feed";
+import FounderFeed from "@/app/components/founder-feed";
 import { getActiveRole } from "@/app/lib/roles";
 
 function getGreeting() {
@@ -110,6 +110,51 @@ export default async function Panel() {
     }
   }
 
+  let founders: any[] = [];
+  if (activeRole === "developer") {
+    const { data: foundersRaw } = await supabase
+      .from("profiles")
+      .select("id, full_name, bio, avatar_url")
+      .in("user_type", ["founder", "both"])
+      .neq("id", user.id)
+      .order("created_at", { ascending: false });
+
+    if (foundersRaw && foundersRaw.length > 0) {
+      const founderIds = foundersRaw.map((f) => f.id);
+
+      const { data: ratingsData } = await supabase
+        .from("ratings")
+        .select("rated_user_id, score")
+        .in("rated_user_id", founderIds);
+
+      const ratingsByFounder: Record<string, number[]> = {};
+      for (const r of ratingsData ?? []) {
+        (ratingsByFounder[r.rated_user_id] ??= []).push(r.score);
+      }
+
+      const { data: publishedProjects } = await supabase
+        .from("projects")
+        .select("founder_id")
+        .eq("status", "published")
+        .in("founder_id", founderIds);
+
+      const projectCountByFounder: Record<string, number> = {};
+      for (const p of publishedProjects ?? []) {
+        projectCountByFounder[p.founder_id] = (projectCountByFounder[p.founder_id] ?? 0) + 1;
+      }
+
+      founders = foundersRaw.map((f) => {
+        const scores = ratingsByFounder[f.id] ?? [];
+        return {
+          ...f,
+          ratingAvg: scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : null,
+          ratingCount: scores.length,
+          projectCount: projectCountByFounder[f.id] ?? 0,
+        };
+      });
+    }
+  }
+
   let starredIds: string[] = [];
   if (activeRole === "founder") {
     const { data: starredData } = await supabase
@@ -139,7 +184,7 @@ export default async function Panel() {
   const publishedIds = (publishedForTrends ?? []).map((p) => p.id);
 
   let trendingProjects: { id: string; title: string; offerCount: number }[] = [];
-  let trendingDevelopers: { id: string; full_name: string | null; acceptedCount: number }[] = [];
+  let trendingDevelopers: { id: string; full_name: string | null; avatar_url: string | null; acceptedCount: number }[] = [];
 
   if (publishedIds.length > 0) {
     const { data: allOffers } = await supabase
@@ -171,12 +216,13 @@ export default async function Panel() {
     if (topDevIds.length > 0) {
       const { data: topDevProfiles } = await supabase
         .from("profiles")
-        .select("id, full_name")
+        .select("id, full_name, avatar_url")
         .in("id", topDevIds);
 
       trendingDevelopers = topDevIds.map((id) => ({
         id,
         full_name: topDevProfiles?.find((d) => d.id === id)?.full_name ?? null,
+        avatar_url: topDevProfiles?.find((d) => d.id === id)?.avatar_url ?? null,
         acceptedCount: acceptedCountByDeveloper[id],
       }));
     }
@@ -243,7 +289,7 @@ export default async function Panel() {
           )}
         </div>
 
-        {activeRole === "developer" && <DeveloperProjects projects={projects} />}
+        {activeRole === "developer" && <DeveloperProjects projects={projects} founders={founders} />}
 
         {activeRole === "founder" && (
           <div className="mt-8">
@@ -270,7 +316,7 @@ export default async function Panel() {
         {activeRole === "founder" ? (
           <DeveloperFeed developers={developers} />
         ) : (
-          <ProjectFeed projects={projects} />
+          <FounderFeed founders={founders} />
         )}
       </div>
       </div>

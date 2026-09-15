@@ -9,6 +9,7 @@ import ProfileIdentity from "./profile-identity";
 import { getActiveRole } from "@/app/lib/roles";
 import BadgesSection, { type Badge } from "@/app/components/badges-section";
 import PatentBadge from "@/app/components/patent-badge";
+import PatentsSection, { type Patent } from "@/app/components/patents-section";
 
 const STATUS_LABELS: Record<string, string> = {
   pending: "Bekliyor",
@@ -50,8 +51,20 @@ export default async function Profil() {
     const projectIds = projectsRaw.map((p) => p.id);
 
     const offersByProject: Record<string, { total: number; hasAccepted: boolean }> = {};
+    const unreadProjectIds = new Set<string>();
 
     if (projectIds.length > 0) {
+      const { data: unreadNotifs } = await supabase
+        .from("notifications")
+        .select("project_id")
+        .eq("user_id", user.id)
+        .is("read_at", null)
+        .in("project_id", projectIds);
+
+      for (const n of unreadNotifs ?? []) {
+        if (n.project_id) unreadProjectIds.add(n.project_id);
+      }
+
       const { data: offersData } = await supabase
         .from("offers")
         .select("id, project_id, developer_id, status, created_at")
@@ -88,7 +101,7 @@ export default async function Profil() {
       if (p.status === "published") progress = 50;
       if (stats.total > 0) progress = 75;
       if (stats.hasAccepted) progress = 100;
-      return { ...p, offerCount: stats.total, progress };
+      return { ...p, offerCount: stats.total, progress, hasUnread: unreadProjectIds.has(p.id) };
     });
 
     const publishedCount = projectsRaw.filter((p) => p.status === "published").length;
@@ -101,6 +114,8 @@ export default async function Profil() {
 
   let portfolioItems: any[] = [];
   let myOffers: any[] = [];
+  const patents: Patent[] = [];
+  const ekPatentIds = new Set<string>();
   if (activeRole === "developer") {
     const { data } = await supabase
       .from("portfolio_items")
@@ -108,6 +123,29 @@ export default async function Profil() {
       .eq("developer_id", user.id)
       .order("created_at", { ascending: false });
     portfolioItems = data ?? [];
+
+    if (profile?.has_verified_patent && profile.patent_url) {
+      patents.push({
+        id: "birincil-patent",
+        title: profile.patent_title || "Doğrulanmış Patent",
+        issuer: null,
+        item_date: null,
+        file_url: profile.patent_url,
+      });
+    }
+    for (const item of portfolioItems) {
+      if (item.item_type === "certificate" && item.title.endsWith("(Patent)")) {
+        ekPatentIds.add(item.id);
+        patents.push({
+          id: item.id,
+          title: item.title.replace(/\s*\(Patent\)$/, ""),
+          issuer: item.issuer,
+          item_date: item.item_date,
+          file_url: item.file_url,
+        });
+      }
+    }
+    portfolioItems = portfolioItems.filter((item: any) => !ekPatentIds.has(item.id));
 
     const { data: offersData } = await supabase
       .from("offers")
@@ -231,8 +269,11 @@ export default async function Profil() {
             initialSkills={profile?.skills ?? null}
             initialCvUrl={profile?.cv_url ?? null}
             initialPatentUrl={profile?.patent_url ?? null}
+            initialPatentTitle={profile?.patent_title ?? null}
           />
         )}
+
+        {activeRole === "developer" && <PatentsSection patents={patents} />}
 
         {activeRole === "developer" && (
           <PortfolioSection userId={user.id} items={portfolioItems} />

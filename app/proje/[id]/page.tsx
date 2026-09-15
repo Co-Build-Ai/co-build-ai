@@ -254,6 +254,7 @@ export default async function ProjeDetay({
         {developerView ? (
           <DeveloperProjectView
             projectId={project.id}
+            projectTitle={project.title}
             userId={user.id}
             founderId={project.founder_id}
             founderName={developerView.founderName}

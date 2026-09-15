@@ -5,7 +5,7 @@ export default function TrendingWidget({
   trendingDevelopers,
 }: {
   trendingProjects: { id: string; title: string; offerCount: number }[];
-  trendingDevelopers: { id: string; full_name: string | null; acceptedCount: number }[];
+  trendingDevelopers: { id: string; full_name: string | null; avatar_url?: string | null; acceptedCount: number }[];
 }) {
   if (trendingProjects.length === 0 && trendingDevelopers.length === 0) {
     return null;
@@ -46,7 +46,7 @@ export default function TrendingWidget({
                 href={`/profil/${d.id}`}
                 className="flex items-center gap-2 transition-opacity hover:opacity-70"
               >
-                <Avatar name={d.full_name} role="developer" size="sm" />
+                <Avatar name={d.full_name} role="developer" size="sm" avatarUrl={d.avatar_url} />
                 <span className="min-w-0 flex-1 truncate text-sm text-ink">{d.full_name ?? "İsimsiz"}</span>
                 <span className="shrink-0 text-xs text-ink-soft">{d.acceptedCount} kabul</span>
               </a>

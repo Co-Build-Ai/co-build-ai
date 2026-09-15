@@ -5,6 +5,7 @@ import StatCircle from "@/app/components/stat-circle";
 import RatingStars from "@/app/components/rating-stars";
 import AvailabilityBadge from "@/app/components/availability-badge";
 import PatentBadge from "@/app/components/patent-badge";
+import PatentsSection, { type Patent } from "@/app/components/patents-section";
 import BadgesSection, { type Badge } from "@/app/components/badges-section";
 import PortfolioSection from "../portfolio-section";
 import { canActAsDeveloper, canActAsFounder } from "@/app/lib/roles";
@@ -96,6 +97,34 @@ export default async function KullaniciProfili({
       }
     }
   }
+
+  // --- Patentler: birincil patent (profiles.patent_url) + portfolyoda
+  // başlığı "(Patent)" ile biten sertifika-tipi ek patent kayıtları
+  // (tek patent alanına sığmayan ikinci/üçüncü patentler için) ---
+  const patents: Patent[] = [];
+  if (viewedProfile.has_verified_patent && viewedProfile.patent_url) {
+    patents.push({
+      id: "birincil-patent",
+      title: viewedProfile.patent_title || "Doğrulanmış Patent",
+      issuer: null,
+      item_date: null,
+      file_url: viewedProfile.patent_url,
+    });
+  }
+  const ekPatentIds = new Set<string>();
+  for (const item of items) {
+    if (item.item_type === "certificate" && item.title.endsWith("(Patent)")) {
+      ekPatentIds.add(item.id);
+      patents.push({
+        id: item.id,
+        title: item.title.replace(/\s*\(Patent\)$/, ""),
+        issuer: item.issuer,
+        item_date: item.item_date,
+        file_url: item.file_url,
+      });
+    }
+  }
+  const portfolioItemsWithoutPatents = items.filter((item) => !ekPatentIds.has(item.id));
 
   // --- Fikir sahibi tarafı verileri ---
   let publishedProjects: {
@@ -314,9 +343,11 @@ export default async function KullaniciProfili({
             </div>
           )}
 
+          {isDeveloper && <PatentsSection patents={patents} />}
+
           {isDeveloper && activeWork.length > 0 && (
             <div className="mt-10">
-              <h2 className={SECTION_LABEL}>Şu An Üzerinde Çalıştığı ({activeWork.length})</h2>
+              <h2 className="text-lg font-bold text-ink">Şu An Üzerinde Çalıştığı ({activeWork.length})</h2>
               <div className="mt-3 flex flex-col gap-2">
                 {activeWork.map((item) => (
                   <div
@@ -363,7 +394,7 @@ export default async function KullaniciProfili({
             </div>
           )}
 
-          {isDeveloper && <PortfolioSection userId={id} items={items} readOnly />}
+          {isDeveloper && <PortfolioSection userId={id} items={portfolioItemsWithoutPatents} readOnly />}
 
           {isDeveloper && pastWork.length > 0 && (
             <div className="mt-10">

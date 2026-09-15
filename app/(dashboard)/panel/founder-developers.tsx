@@ -14,6 +14,7 @@ type Developer = {
   skills: string[] | null;
   availability: string | null;
   has_verified_patent?: boolean | null;
+  avatar_url?: string | null;
   ratingAvg: number | null;
   ratingCount: number;
 };
@@ -111,7 +112,7 @@ export default function FounderDevelopers({ developers }: { developers: Develope
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <Avatar name={dev.full_name} role="developer" />
+                  <Avatar name={dev.full_name} role="developer" avatarUrl={dev.avatar_url} />
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="text-base font-bold text-ink">

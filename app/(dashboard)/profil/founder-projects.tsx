@@ -10,6 +10,7 @@ type ProjectWithProgress = {
   status: "draft" | "published";
   progress: number;
   offerCount: number;
+  hasUnread?: boolean;
 };
 
 export default function FounderProjects({ projects }: { projects: ProjectWithProgress[] }) {

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import ProjectMatchCard from "@/app/components/project-match-card";
+import Avatar from "@/app/components/avatar";
 
 type ProjectWithMatch = {
   id: string;
@@ -16,6 +17,13 @@ type ProjectWithMatch = {
   payment_amount: number | null;
 };
 
+type FounderResult = {
+  id: string;
+  full_name: string | null;
+  bio: string | null;
+  avatar_url: string | null;
+};
+
 type TabId = "all" | "matched" | "budget" | "fixed";
 
 const TABS: { id: TabId; label: string }[] = [
@@ -25,7 +33,13 @@ const TABS: { id: TabId; label: string }[] = [
   { id: "fixed", label: "Sabit Ücretli" },
 ];
 
-export default function DeveloperProjects({ projects }: { projects: ProjectWithMatch[] }) {
+export default function DeveloperProjects({
+  projects,
+  founders = [],
+}: {
+  projects: ProjectWithMatch[];
+  founders?: FounderResult[];
+}) {
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState<TabId>("all");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -41,7 +55,9 @@ export default function DeveloperProjects({ projects }: { projects: ProjectWithM
     return () => window.removeEventListener("keydown", handleKeydown);
   }, []);
 
-  if (projects.length === 0) {
+  const trimmedQuery = query.trim().toLowerCase();
+
+  if (projects.length === 0 && founders.length === 0) {
     return (
       <div className="mt-10 rounded-2xl border border-dashed border-ink/15 bg-white/60 p-10 text-center">
         <p className="text-2xl">🔭</p>
@@ -52,7 +68,15 @@ export default function DeveloperProjects({ projects }: { projects: ProjectWithM
     );
   }
 
-  const searched = projects.filter((p) => p.title.toLowerCase().includes(query.trim().toLowerCase()));
+  const searched = projects.filter(
+    (p) =>
+      p.title.toLowerCase().includes(trimmedQuery) ||
+      (p.founderName ?? "").toLowerCase().includes(trimmedQuery)
+  );
+
+  const matchedFounders = trimmedQuery
+    ? founders.filter((f) => (f.full_name ?? "").toLowerCase().includes(trimmedQuery))
+    : [];
 
   let visible = searched;
   if (tab === "matched") {
@@ -82,7 +106,7 @@ export default function DeveloperProjects({ projects }: { projects: ProjectWithM
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Projelerde ara..."
+            placeholder="Proje veya girişimci ara..."
             className="w-full rounded-lg border border-black/[0.08] bg-white py-2.5 pl-10 pr-14 text-sm text-ink outline-none focus:ring-2 focus:ring-[#8DD9A8]/40 sm:max-w-sm"
           />
           <kbd className="pointer-events-none absolute right-3.5 top-1/2 hidden -translate-y-1/2 rounded-md bg-white px-1.5 py-0.5 font-mono text-[10px] text-ink-soft sm:block">
@@ -107,8 +131,35 @@ export default function DeveloperProjects({ projects }: { projects: ProjectWithM
         </div>
       </div>
 
+      {matchedFounders.length > 0 && (
+        <div className="mt-6">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-soft">
+            Girişimciler ({matchedFounders.length})
+          </p>
+          <div className="mt-2 grid gap-3 sm:grid-cols-2">
+            {matchedFounders.map((founder) => (
+              <a
+                key={founder.id}
+                href={`/profil/${founder.id}`}
+                className="flex items-center gap-3 rounded-xl border border-black/[0.08] bg-white p-4 shadow-sm transition-all hover:shadow-md"
+              >
+                <Avatar name={founder.full_name} role="founder" avatarUrl={founder.avatar_url} />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-bold text-ink">{founder.full_name ?? "İsimsiz"}</p>
+                  {founder.bio && (
+                    <p className="line-clamp-1 text-xs text-ink-soft">{founder.bio}</p>
+                  )}
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
       {visible.length === 0 ? (
-        <p className="mt-6 text-sm text-ink-soft">Bu kritere uyan bir proje yok.</p>
+        matchedFounders.length === 0 && (
+          <p className="mt-6 text-sm text-ink-soft">Bu kritere uyan bir proje yok.</p>
+        )
       ) : (
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
           {visible.map((project) => (

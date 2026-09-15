@@ -11,6 +11,7 @@ export default function EditProfile({
   initialSkills,
   initialCvUrl,
   initialPatentUrl,
+  initialPatentTitle,
 }: {
   userId: string;
   fullName: string | null;
@@ -18,6 +19,7 @@ export default function EditProfile({
   initialSkills: string[] | null;
   initialCvUrl: string | null;
   initialPatentUrl?: string | null;
+  initialPatentTitle?: string | null;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -31,6 +33,7 @@ export default function EditProfile({
   const [uploadingCv, setUploadingCv] = useState(false);
   const [cvError, setCvError] = useState<string | null>(null);
   const [patentUrl, setPatentUrl] = useState(initialPatentUrl ?? "");
+  const [patentTitle, setPatentTitle] = useState(initialPatentTitle ?? "");
   const [patentFileName, setPatentFileName] = useState<string | null>(null);
   const [uploadingPatent, setUploadingPatent] = useState(false);
   const [patentError, setPatentError] = useState<string | null>(null);
@@ -100,6 +103,7 @@ export default function EditProfile({
         skills: skillsArray,
         cv_url: cvUrl.trim() || null,
         patent_url: patentUrl.trim() || null,
+        patent_title: patentUrl.trim() ? patentTitle.trim() || null : null,
         has_verified_patent: !!patentUrl.trim(),
       })
       .eq("id", userId);
@@ -303,6 +307,13 @@ export default function EditProfile({
               setPatentFileName(null);
             }}
             placeholder="ya da patent sicil linki yapıştır (örn. TÜRKPATENT sayfası)"
+            className="mt-2 w-full rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
+          />
+          <input
+            type="text"
+            value={patentTitle}
+            onChange={(e) => setPatentTitle(e.target.value)}
+            placeholder="Patentin başlığı (profilindeki Patentler bölümünde bu görünür)"
             className="mt-2 w-full rounded-lg border border-black/[0.08] bg-black/[0.02] px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-[#8DD9A8]/40"
           />
           {patentError && <p className="mt-1 text-xs text-coral-dark">{patentError}</p>}

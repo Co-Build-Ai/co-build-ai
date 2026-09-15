@@ -28,6 +28,7 @@ type Offer = {
 
 export default function DeveloperProjectView({
   projectId,
+  projectTitle,
   userId,
   founderId,
   founderName,
@@ -41,6 +42,7 @@ export default function DeveloperProjectView({
   initialOffer,
 }: {
   projectId: string;
+  projectTitle: string;
   userId: string;
   founderId: string;
   founderName: string | null;
@@ -154,6 +156,7 @@ export default function DeveloperProjectView({
 
       <OfferSection
         projectId={projectId}
+        projectTitle={projectTitle}
         userId={userId}
         founderId={founderId}
         founderName={founderName}
@@ -179,6 +182,7 @@ function describeOfferPayment(paymentType: PaymentType | null, amount: number | 
 
 function OfferSection({
   projectId,
+  projectTitle,
   userId,
   founderId,
   founderName,
@@ -186,6 +190,7 @@ function OfferSection({
   initialOffer,
 }: {
   projectId: string;
+  projectTitle: string;
   userId: string;
   founderId: string;
   founderName: string | null;
@@ -229,7 +234,15 @@ function OfferSection({
       .single();
 
     setSaving(false);
-    if (data) setOffer(data as Offer);
+    if (data) {
+      setOffer(data as Offer);
+      await supabase.from("notifications").insert({
+        user_id: founderId,
+        project_id: projectId,
+        type: "new_offer",
+        message: `"${projectTitle}" projen için yeni bir teklif geldi.`,
+      });
+    }
   }
 
   // offers/projects üzerindeki RLS politikaları bu güncellemeleri sadece proje
