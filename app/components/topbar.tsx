@@ -34,7 +34,11 @@ export default function Topbar({
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between border-b border-black/[0.07] bg-white px-6 py-4 sm:px-10">
-      <h1 className="text-lg font-semibold tracking-tight text-ink">{title}</h1>
+      <div className="flex items-center gap-2.5">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo-icon.png" alt="Co-Build AI" className="h-8 w-8 object-contain" />
+        <h1 className="text-lg font-semibold tracking-tight text-ink">{title}</h1>
+      </div>
 
       <div className="flex items-center gap-4">
         <MessageBell userId={userId} />
