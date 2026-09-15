@@ -11,6 +11,7 @@ export default function ProjectMatchCard({
     required_skills: string[] | null;
     founder_id: string;
     founderName: string | null;
+    founderAvatarUrl?: string | null;
     matchScore: number;
   };
 }) {
@@ -25,7 +26,7 @@ export default function ProjectMatchCard({
         href={`/profil/${project.founder_id}`}
         className="relative z-10 mt-3 flex w-fit items-center gap-2 hover:underline"
       >
-        <Avatar name={project.founderName} role="founder" size="sm" />
+        <Avatar name={project.founderName} role="founder" size="sm" avatarUrl={project.founderAvatarUrl} />
         <span className="text-xs text-ink-soft">{project.founderName ?? "İsimsiz Fikir Sahibi"}</span>
       </a>
 

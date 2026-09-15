@@ -12,6 +12,7 @@ type ProjectWithMatch = {
   required_skills: string[] | null;
   founder_id: string;
   founderName: string | null;
+  founderAvatarUrl?: string | null;
   matchScore: number;
   payment_type: "fixed" | "equity" | "flexible" | null;
   payment_amount: number | null;
