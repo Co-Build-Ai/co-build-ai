@@ -2,6 +2,8 @@
 
 Bu dosya Claude Code oturumlarında otomatik okunur. Projenin ne olduğunu, mimarisini, tamamlanan işleri ve bekleyen işleri özetler. Claude Code, bu dosyayı okuduktan sonra kısaca özetleyip kullanıcıdan (Esma) onay almalı.
 
+**UYARI (2026-09-16):** Bu dosya bir noktada "v4" olarak güncellenmiş (dual-role ve patent RAG'ın TAMAMLANDI olduğu, kod okunarak doğrulanmıştı) ama şu an tekrar bu eski "v3" içeriğe dönmüş görünüyor (muhtemelen bir merge/çakışma sırasında eski sürüm kazandı). Aşağıdaki "KISMEN BAŞLADI" / "PLANLANIYOR" gibi ifadelere güvenmeden önce ilgili kodu (`role-switcher.tsx`, `app/lib/roles.ts`, `has_verified_patent` kullanımları) mutlaka tekrar kontrol et.
+
 ## 1. Proje Nedir
 
 **Co-Build AI**: Teknik bilgisi olmayan fikir sahiplerini (founder) yazılımcılarla (developer) buluşturan bir pazar yeri platformu. Fikir sahibi projesini kendi cümleleriyle yazıyor, bir AI bunu profesyonel bir PRD'ye (teknik şartname) çeviriyor + gereken beceri etiketlerini çıkarıyor. Yazılımcılar bu projeleri keşfediyor, fikir sahipleri de yazılımcı profillerini keşfediyor.
@@ -50,6 +52,7 @@ VLLM_MODEL_ADI=Qwen/Qwen2.5-32B-Instruct-AWQ
 - Next.js 16, App Router, TypeScript, Tailwind CSS v4
 - Supabase: PostgreSQL + Authentication + RLS
 - Tasarım sistemi: coral `#fd5e51`, periwinkle `#9fc2fa`, petal `#ffdef9`, ink `#3d3229`; fontlar: Plus Jakarta Sans, Fraunces, JetBrains Mono
+- **Logo (2026-09-16 eklendi):** `public/logo.png` (tam logo, ikon+yazı) ve `public/logo-icon.png` (sadece ikon, topbar'da küçük boyutta kullanılıyor). `topbar.tsx`'te sayfa başlığının solunda gösteriliyor. Kaynak görsel beyaz zeminliydi, şeffaflaştırılıp ikon kısmı kırpıldı — ikon/yazı arası boşluk çok dar (~3px) olduğu için ilk kırpma denemesi yazıyı da içine almıştı, piksel yoğunluğu taramasıyla düzeltildi.
 
 ### Dashboard Yeniden Yapılandırıldı
 `(dashboard)` route group altında, sidebar + topbar düzeni kuruldu (TailAdmin referans alınarak). Şu an var olan sayfa yapısı (Claude Code tarafından genişletildi, kullanıcının bilmediği/hatırlamadığı kısımlar olabilir):
