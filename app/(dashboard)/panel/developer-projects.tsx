@@ -33,6 +33,14 @@ const TABS: { id: TabId; label: string }[] = [
   { id: "fixed", label: "Sabit Ücretli" },
 ];
 
+type SemanticProjectResult = {
+  project_id: string;
+  title: string;
+  required_skills: string[];
+  ozet: string;
+  uyum_skoru: number | null;
+};
+
 export default function DeveloperProjects({
   projects,
   founders = [],
@@ -41,9 +49,12 @@ export default function DeveloperProjects({
   founders?: FounderResult[];
 }) {
   const [query, setQuery] = useState("");
-  const [submittedQuery, setSubmittedQuery] = useState("");
   const [tab, setTab] = useState<TabId>("all");
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const [searchStatus, setSearchStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
+  const [searchResults, setSearchResults] = useState<ProjectWithMatch[]>([]);
+  const [submittedQuery, setSubmittedQuery] = useState("");
 
   useEffect(() => {
     function handleKeydown(e: KeyboardEvent) {
@@ -56,11 +67,40 @@ export default function DeveloperProjects({
     return () => window.removeEventListener("keydown", handleKeydown);
   }, []);
 
-  function handleSearch() {
+  async function handleSearch() {
+    if (!query.trim()) return;
+    setSearchStatus("loading");
     setSubmittedQuery(query);
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_AI_SERVICE_URL}/eslestir/proje-top5`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sorgu_metni: query, top_k: 5 }),
+      });
+
+      if (!res.ok) {
+        setSearchStatus("error");
+        return;
+      }
+
+      const data: { projeler: SemanticProjectResult[] } = await res.json();
+      const enriched: ProjectWithMatch[] = (data.projeler ?? []).flatMap((r) => {
+        const local = projects.find((p) => p.id === r.project_id);
+        if (!local) return []; // AI havuzunda var ama bu listede yoksa (ör. kendi projesi) atla
+        return [{ ...local, matchScore: r.uyum_skoru ?? 0 }];
+      });
+
+      setSearchResults(enriched);
+      setSearchStatus("done");
+    } catch {
+      setSearchStatus("error");
+    }
   }
 
-  const trimmedQuery = submittedQuery.trim().toLowerCase();
+  const matchedFounders = submittedQuery.trim()
+    ? founders.filter((f) => (f.full_name ?? "").toLowerCase().includes(submittedQuery.trim().toLowerCase()))
+    : [];
 
   if (projects.length === 0 && founders.length === 0) {
     return (
@@ -73,25 +113,15 @@ export default function DeveloperProjects({
     );
   }
 
-  const searched = projects.filter(
-    (p) =>
-      p.title.toLowerCase().includes(trimmedQuery) ||
-      (p.founderName ?? "").toLowerCase().includes(trimmedQuery)
-  );
-
-  const matchedFounders = trimmedQuery
-    ? founders.filter((f) => (f.full_name ?? "").toLowerCase().includes(trimmedQuery))
-    : [];
-
-  let visible = searched;
+  let visible = projects;
   if (tab === "matched") {
-    visible = searched.filter((p) => p.matchScore > 0).sort((a, b) => b.matchScore - a.matchScore);
+    visible = projects.filter((p) => p.matchScore > 0).sort((a, b) => b.matchScore - a.matchScore);
   } else if (tab === "budget") {
-    visible = searched
+    visible = projects
       .filter((p) => p.payment_amount !== null)
       .sort((a, b) => (b.payment_amount ?? 0) - (a.payment_amount ?? 0));
   } else if (tab === "fixed") {
-    visible = searched.filter((p) => p.payment_type === "fixed");
+    visible = projects.filter((p) => p.payment_type === "fixed");
   }
 
   return (
@@ -109,7 +139,8 @@ export default function DeveloperProjects({
             Doğrudan Arama
           </p>
           <p className="mt-2 text-sm text-ink">
-            Aradığın proje ya da girişimciyi tarif et, isim/başlık ve beceri etiketlerinde arayalım.
+            Ne tür bir projede çalışmak istediğini yaz, anlamsal aramayla yayınlanmış projeler arasından
+            en uygunlarını bulalım. (Girişimci ismiyle de arayabilirsin.)
           </p>
           <textarea
             ref={inputRef}
@@ -127,10 +158,14 @@ export default function DeveloperProjects({
           />
           <button
             onClick={handleSearch}
-            className="mt-3 rounded-lg bg-[#1a7a52] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#15633f]"
+            disabled={searchStatus === "loading"}
+            className="mt-3 rounded-lg bg-[#1a7a52] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#15633f] disabled:opacity-50"
           >
-            Ara
+            {searchStatus === "loading" ? "Aranıyor..." : "Ara"}
           </button>
+          {searchStatus === "error" && (
+            <p className="mt-2 text-sm text-red-600">Arama sırasında bir şeyler ters gitti, tekrar dener misin?</p>
+          )}
         </div>
 
         <div className="relative mt-4 flex flex-wrap gap-2">
@@ -175,12 +210,30 @@ export default function DeveloperProjects({
         </div>
       )}
 
+      {searchStatus === "done" && (
+        <div className="mt-6">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-soft">
+            Arama Sonuçları ({searchResults.length})
+          </p>
+          {searchResults.length === 0 ? (
+            <p className="mt-2 text-sm text-ink-soft">Bu aramayla eşleşen bir proje bulunamadı.</p>
+          ) : (
+            <div className="mt-2 grid gap-3 sm:grid-cols-2">
+              {searchResults.map((project) => (
+                <ProjectMatchCard key={project.id} project={project} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      <p className="mt-8 text-[11px] font-semibold uppercase tracking-wide text-ink-soft">
+        Tüm Yayınlanmış Projeler
+      </p>
       {visible.length === 0 ? (
-        matchedFounders.length === 0 && (
-          <p className="mt-6 text-sm text-ink-soft">Bu kritere uyan bir proje yok.</p>
-        )
+        <p className="mt-2 text-sm text-ink-soft">Bu kritere uyan bir proje yok.</p>
       ) : (
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <div className="mt-2 grid gap-3 sm:grid-cols-2">
           {visible.map((project) => (
             <ProjectMatchCard key={project.id} project={project} />
           ))}

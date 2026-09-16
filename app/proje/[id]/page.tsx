@@ -307,6 +307,9 @@ export default async function ProjeDetay({
                     </p>
                     <PublishForm
                       projectId={project.id}
+                      projectTitle={project.title}
+                      generatedPrd={project.generated_prd}
+                      requiredSkills={project.required_skills}
                       defaultPaymentType={founderDefaults.paymentType}
                       defaultPaymentAmount={founderDefaults.paymentAmount}
                     />

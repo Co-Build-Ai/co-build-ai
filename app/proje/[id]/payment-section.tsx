@@ -65,10 +65,16 @@ function PaymentForm({
 
 export function PublishForm({
   projectId,
+  projectTitle,
+  generatedPrd,
+  requiredSkills,
   defaultPaymentType,
   defaultPaymentAmount,
 }: {
   projectId: string;
+  projectTitle: string;
+  generatedPrd?: string | null;
+  requiredSkills?: string[] | null;
   defaultPaymentType?: PaymentType | null;
   defaultPaymentAmount?: number | null;
 }) {
@@ -104,6 +110,25 @@ export function PublishForm({
       );
       return;
     }
+
+    // Yazılımcı tarafındaki "Doğrudan Arama"nın anlamsal aramada bu projeyi
+    // bulabilmesi için AI sunucusunda vektörle (aynı project_id ile upsert)
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_AI_SERVICE_URL}/proje/vektorle`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          project_id: projectId,
+          title: projectTitle,
+          generated_prd: generatedPrd ?? "",
+          required_skills: requiredSkills ?? [],
+        }),
+      });
+    } catch {
+      // AI sunucusuna ulaşılamazsa proje yine de yayınlanmış olur, sadece
+      // eşleştirme motorunda anlamsal aramada görünmeyebilir
+    }
+
     router.refresh();
   }
 
