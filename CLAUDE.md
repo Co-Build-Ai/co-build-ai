@@ -1,154 +1,148 @@
-# Co-Build AI — CLAUDE.md (En Güncel, v3)
+# Co-Build AI — CLAUDE.md (v5, 2026-09-16)
 
-Bu dosya Claude Code oturumlarında otomatik okunur. Projenin ne olduğunu, mimarisini, tamamlanan işleri ve bekleyen işleri özetler. Claude Code, bu dosyayı okuduktan sonra kısaca özetleyip kullanıcıdan (Esma) onay almalı.
-
-**UYARI (2026-09-16):** Bu dosya bir noktada "v4" olarak güncellenmiş (dual-role ve patent RAG'ın TAMAMLANDI olduğu, kod okunarak doğrulanmıştı) ama şu an tekrar bu eski "v3" içeriğe dönmüş görünüyor (muhtemelen bir merge/çakışma sırasında eski sürüm kazandı). Aşağıdaki "KISMEN BAŞLADI" / "PLANLANIYOR" gibi ifadelere güvenmeden önce ilgili kodu (`role-switcher.tsx`, `app/lib/roles.ts`, `has_verified_patent` kullanımları) mutlaka tekrar kontrol et.
+Bu dosya Claude Code oturumlarında otomatik okunur. **v5 notu:** Bu revizyon, iki repodaki (`co-build-ai` + `co-build-ai-server`) gerçek kod okunarak (dosya dosya, git log dahil) hazırlandı — önceki "v3"/"v4" karışıklığı (bir merge sırasında v4 kaybolup v3'e dönülmüştü) bu sürümle kapatıldı. Yeni bir işe başlamadan önce yine de ilgili dosyayı oku — bu proje hızlı değişiyor ve iki kişi (Esma + Berna) paralel çalışıyor, sık sık merge conflict yaşanıyor.
 
 ## 1. Proje Nedir
 
-**Co-Build AI**: Teknik bilgisi olmayan fikir sahiplerini (founder) yazılımcılarla (developer) buluşturan bir pazar yeri platformu. Fikir sahibi projesini kendi cümleleriyle yazıyor, bir AI bunu profesyonel bir PRD'ye (teknik şartname) çeviriyor + gereken beceri etiketlerini çıkarıyor. Yazılımcılar bu projeleri keşfediyor, fikir sahipleri de yazılımcı profillerini keşfediyor.
+**Co-Build AI**: Teknik bilgisi olmayan fikir sahiplerini (founder) yazılımcılarla (developer) buluşturan bir pazar yeri platformu. Fikir sahibi projesini kendi cümleleriyle yazıyor, bir AI (LangGraph tabanlı agent, tek seferlik prompt değil) bunu profesyonel bir PRD'ye çeviriyor + beceri etiketleri çıkarıyor + patent çakışması kontrolü yapıyor. Yazılımcılar ve fikir sahipleri birbirini semantik arama ile keşfediyor, teklif/davet gönderiyor, mesajlaşıyor, değerlendiriyor.
 
 ## 2. Kullanıcı Profili
 
-Esma — Python/ML deneyimli, web geliştirmede orta seviyeye ulaşmış (proje ilerledikçe öğrendi). Windows kullanıyor. Berna ile birlikte geliştiriyor. Adım adım, gerekçeli açıklamalarla ilerlemeyi tercih ediyor.
+Esma — Python/ML deneyimli, web geliştirmede orta seviyede (proje ilerledikçe öğrendi). Windows kullanıyor. Berna ile birlikte geliştiriyor (iki ayrı GitHub hesabı, iki ayrı repo). Adım adım, gerekçeli açıklamalarla ilerlemeyi tercih ediyor. Rutin işlemleri (commit/push gibi) her seferinde onay istemeden yapılmasını istiyor.
 
-## 3. BÜYÜK MİMARİ DEĞİŞİKLİĞİ: Artık RunPod/vLLM Kullanılıyor (Ollama DEĞİL)
+## 3. İki Repo
 
-**ÇOK ÖNEMLİ — ESKİ BİLGİ GEÇERSİZ:** Proje başlangıçta Ollama + Llama 3.1 8B ile yerel/CPU tabanlı çalışıyordu. **Bu artık değişti.** Sebep: CPU'da PRD üretimi çok yavaştı (1-5 dakika) ve Türkçe kalitesi zayıftı (yarım kalan cümleler, İngilizce kelime karışması).
+- **`co-build-ai`** (bu repo, `Co-Build-Ai/co-build-ai` GitHub org'u altında) — Next.js 16 frontend, esmacakar hesabıyla da çalışılıyor.
+- **`co-build-ai-server`** (`Co-Build-Ai/co-build-ai-server`) — Python/FastAPI AI servisi, berna1727 hesabıyla da çalışılıyor, private.
+- Rutin: `git pull` → çalış → `git add <spesifik dosyalar>` (asla `-A` körlemesine değil, paralel oturumun commit'lenmemiş işini ezmemek için) → `git commit` → `git push`. Merge conflict olursa dosyaları okuyup iki tarafı da koruyarak birleştir.
 
-### Güncel AI Altyapısı
-- **Model:** `Qwen/Qwen2.5-32B-Instruct-AWQ` (Llama değil, Qwen'e geçildi — çok dillilik/Türkçe kalitesi daha iyi bulundu)
-- **Motor:** vLLM (Ollama değil) — OpenAI-uyumlu API sunuyor (`/v1/chat/completions`)
-- **Donanım:** RunPod'da kiralanan bir GPU sunucusu (RTX 4090, 24GB VRAM), saatlik ücretlendirme (~$0.75/saat)
-- **Template:** RunPod'da "Runpod Pytorch 2.8.0" template'i kullanılıyor, CUDA 12.8+ filtresiyle deploy edilmeli (eski/uyumsuz sürücülü host'lara denk gelmemek için — bu gerçek bir sorun yaşandı, "NVIDIA driver too old" hatası alındı, GPU/CUDA filtresi olmadan Pod kiralanınca tekrar olabilir)
-- **Kalıcı depo:** RunPod Pod'unun **container disk'i geçicidir** (Pod restart olursa sıfırlanabilir, bu gerçekten yaşandı). Bu yüzden vLLM kurulumu ve model dosyaları **`/workspace` altına** (Network Volume, kalıcı) kuruldu:
-  - Sanal ortam: `/workspace/vllm_env`
-  - Hugging Face önbelleği: `/workspace/.cache/huggingface/` (bazı ortamlarda `HF_HOME` farklı davranabiliyor, kontrol edilmeli)
-- **Pod her yeniden başladığında** (Stop/Start sonrası), terminalde şunlar gerekiyor:
-  ```bash
-  cd /workspace
-  source vllm_env/bin/activate
-  vllm serve Qwen/Qwen2.5-32B-Instruct-AWQ --quantization awq --max-model-len 4096 --gpu-memory-utilization 0.90
-  ```
-- **Bilinen risk:** RunPod bazen "Pod resume failed: not enough free GPUs on host machine" hatası verebiliyor — bu geçici, birkaç dakika sonra tekrar denenerek çözüldü. Sunum günü için Pod'u erkenden (en az 1-2 saat önce) başlatıp hazır tutmak öneriliyor.
-- **Maliyet bilinci:** GPU saatlik ücretlendirildiği için, iş bitince Pod **Stop** edilmeli. Kalıcı depo sayesinde tekrar Start edildiğinde yeniden kurulum gerekmiyor, sadece `vllm serve ...` komutu tekrar çalıştırılıyor.
+## 4. AI Altyapısı (RunPod/vLLM)
 
-### `.env` Dosyasında Kullanılan Değişkenler (`co-build-ai-server`)
+- **Model:** `Qwen/Qwen2.5-32B-Instruct-AWQ`, **vLLM** ile serve ediliyor (OpenAI-uyumlu API). Kod tarafında (`prd_agent.py`) `ChatOpenAI` (LangChain) kullanılıyor, `VLLM_BASE_URL`/`VLLM_MODEL_ADI`/`VLLM_API_KEY` env değişkenleriyle yönlendiriliyor (varsayılan: `http://localhost:8000/v1`, model adı yukarıdaki, key `EMPTY`).
+- **Donanım:** RunPod'da kiralanan GPU sunucusu (RTX 4090, 24GB VRAM, ~$0.75/saat). Kod içinde RunPod'a özgü hiçbir env değişkeni okunmuyor — sadece jenerik `VLLM_*` değişkenleri. Kurulum/Pod detayları (Network Volume, `vllm serve ...` komutu vb.) operasyonel bilgi, kodda değil.
+- Pod yeniden deploy edilirse `VLLM_BASE_URL` değişir → hem server'ın `.env`'i hem web'in `NEXT_PUBLIC_AI_SERVICE_URL`'i güncellenmeli, yoksa istekler sessizce başarısız olur (frontend try/catch ile yutuyor).
+- Embedding modeli (`sentence-transformers/all-MiniLM-L6-v2`) ve BM25 tamamen CPU'da çalışıyor, RunPod/vLLM'e ihtiyaç duymuyor — demo veri/embedding script'leri Pod kapalıyken de çalıştırılabilir.
+
+## 5. PRD Üretim Akışı (LangGraph, `co-build-ai-server/prd_agent.py`)
+
 ```
-VLLM_BASE_URL=https://[pod-id]-8000.proxy.runpod.net/v1
-VLLM_API_KEY=EMPTY
-VLLM_MODEL_ADI=Qwen/Qwen2.5-32B-Instruct-AWQ
+prd_uret --> elestir --(onaylandı ya da 2. deneme)--> eslestir --> END
+    ^                        |
+    +-- (revize gerekli) ----+
 ```
-**Not:** `VLLM_BASE_URL`, Pod her yeniden deploy edildiğinde (yeni bir Pod oluşturulursa) değişebilir — güncel URL'i RunPod panelinden (Connect → Port 8000 → HTTP Service) alıp `.env`'i güncellemek gerekir. Kod, bu değerleri `os.getenv()` ile okuyor, `main.py` içine sabit yazılmadı.
 
-### Kod Tarafında Değişen Şey
-`main.py`'de artık `OllamaLLM` DEĞİL, **`ChatOpenAI`** (LangChain'in OpenAI-uyumlu istemcisi) kullanılıyor — çünkü vLLM, OpenAI API formatını taklit ediyor. Bu, gerçek OpenAI'a bağlandığı anlamına gelmiyor, `openai_api_base` parametresi RunPod'un kendi adresine yönlendiriliyor.
+- `MAX_ITERATIONS = 2` (ilk üretim + en fazla 1 düzeltme), ek güvenlik olarak `recursion_limit=8`.
+- Öz-eleştiri iki aşamalı: önce regex ile Çince/Kiril/Kore/Japon alfabesi sızıntısı kesin tespit edilir (LLM'e sorulmadan); geçerse LLM'e 8 bölümün tamlığı + dil saflığı sorulur.
+- **Patent kontrolü LangGraph'ın DIŞINDA yapılıyor**: `main.py` içinde, graph başlamadan önce `patent_cakismasi_kontrol_et()` çağrılıp sonuç düz metin olarak `PRD_PROMPT`'a `{patent_kontrolu}` şeklinde enjekte ediliyor — graph'ın kendisi patent araması yapmıyor.
+- PRD 8 bölüm: Ürün Özeti, Hedef Kullanıcı, Temel Özellikler, Teknik Gereksinimler, Benzer Örnekler ve Farklılaşma, Patent/Özgünlük Kontrolü, Tahmini Altyapı Maliyeti Kategorisi, Beceri Etiketleri.
+- **Bilinen küçük tutarsızlık:** prompt LLM'den ≤5 beceri etiketi istiyor ama parser (`_skills_ve_prd_ayikla`) 8'e kadar kabul ediyor (`MAKS_SKILLS = 8`).
+- Çıktı: `{"prd", "skills", "onerilen_gelistiriciler", "iterasyon_sayisi"}`.
+- Next.js tarafı asenkron çalışır: `/prd-uret-baslat`'a POST atıp hemen döner (sonuç bellek-içi `job_store`'da, **kalıcı değil**, sunucu restart'ında kaybolur), `/prd-durum/{id}` ile 4 saniyede bir sorgulanır (frontend'de max 5 dk timeout var, backend'de de ayrı bir 5 dk watchdog var).
 
-### Artık İkinci Bilgisayara (Wi-Fi Eşleşmesine) Gerek Yok
-Önceden iki bilgisayarın aynı Wi-Fi/hotspot ağında olması gerekiyordu (Ollama yerel ağdaydı). **Artık gerekmiyor** — RunPod sunucusu gerçek internet üzerinden erişilebilir, hangi ağda olursa olsun (İBB Wi-Fi dahil) bağlanılabiliyor. Next.js ve FastAPI'nin aynı bilgisayarda çalışması bile mümkün hale geldi (opsiyonel, henüz taşınmadı, ama teorik engel yok).
+## 6. Patent RAG + Tescilli Mucit Çarpanı — Sunucu Tarafı
 
-## 4. Web Tarafı (Next.js — `co-build-ai` reposu)
+1. **Veri seti:** HuggingFace `HUPD/hupd`, G06F/G06N sınıflı (computing/AI), hedef 3000-5000 kayıt (`patent_veri_yukle.py`, `--yil YYYY` önerilen mod). `datasets==2.19.0` bilerek sabitlenmiş (daha yeni sürüm HUPD'nin eski yükleme yöntemini kırıyor). ChromaDB koleksiyonu: `patent_ornekleri` (cosine).
+2. **Patent çakışma kontrolü:** `main.py`'deki `patent_cakismasi_kontrol_et()`, `PATENT_BENZERLIK_ESIGI = 0.75` üzeri benzerlikte uyarı ekliyor — kesin hukuki iddia değil, ön bulgu.
+3. **Tescilli Mucit Çarpanı:** `matchmaking_engine.py`'de `PATENT_CARPAN = 1.15`, RRF skoruna **top_k seçilmeden önce** uygulanıyor (gerçekten sıralamayı etkiliyor) — `_patentli_gelistiricileri_getir()` ile `profiles.has_verified_patent`'ten okunuyor, kolon yoksa sessizce boş küme dönüyor (geriye dönük uyumlu).
+4. **Web tarafında patent akışı tamamen self-service, admin onayı YOK:** Yazılımcı kendi profilinden (`edit-profile.tsx`) dosya (PDF/JPG/PNG, `patent-belgeleri` bucket) ya da link yükleyip bir başlık (`patent_title`) giriyor; kaydedince `has_verified_patent = !!patentUrl` otomatik set ediliyor. "Doğrulanmış" ismi yanıltıcı — gerçek bir doğrulama süreci yok.
+5. **İkinci/üçüncü patent için resmi bir alan yok** — tek patent alanı (`profiles.patent_url`/`patent_title`) var. Ek patentler, `portfolio_items` tablosunda `item_type='certificate'` ve başlığı `" (Patent)"` ile biten satırlar olarak temsil ediliyor (belgelenmemiş bir konvansiyon, `PatentsSection` component'i bunları filtreleyip ayrı gösteriyor). Bu, **doğrulanmamış/kırılgan bir yaklaşım** — herhangi bir yerde şema düzeyinde zorlanmıyor.
+6. **Not:** Patent verisi eşleştirme motoruna (`developer_embeddings`) dahil DEĞİL — profil kaydedilince sadece bio+skills yeniden vektörleniyor, patent metni embedding'e girmiyor. Yani bir geliştiricinin patent konusu, gerçek anlamsal aramada onu üste çıkarmaz; sadece rozet/çarpan üzerinden skor çarpanı olarak etkiler.
 
-- Next.js 16, App Router, TypeScript, Tailwind CSS v4
-- Supabase: PostgreSQL + Authentication + RLS
-- Tasarım sistemi: coral `#fd5e51`, periwinkle `#9fc2fa`, petal `#ffdef9`, ink `#3d3229`; fontlar: Plus Jakarta Sans, Fraunces, JetBrains Mono
-- **Logo (2026-09-16 eklendi):** `public/logo.png` (tam logo, ikon+yazı) ve `public/logo-icon.png` (sadece ikon, topbar'da küçük boyutta kullanılıyor). `topbar.tsx`'te sayfa başlığının solunda gösteriliyor. Kaynak görsel beyaz zeminliydi, şeffaflaştırılıp ikon kısmı kırpıldı — ikon/yazı arası boşluk çok dar (~3px) olduğu için ilk kırpma denemesi yazıyı da içine almıştı, piksel yoğunluğu taramasıyla düzeltildi.
+## 7. Eşleştirme Motoru (`matchmaking_engine.py` + `eslestirme_endpoints.py`)
 
-### Dashboard Yeniden Yapılandırıldı
-`(dashboard)` route group altında, sidebar + topbar düzeni kuruldu (TailAdmin referans alınarak). Şu an var olan sayfa yapısı (Claude Code tarafından genişletildi, kullanıcının bilmediği/hatırlamadığı kısımlar olabilir):
-```
-app/(dashboard)/
-  ayarlar/ (tercihler, bildirimler, guvenlik, hesap, tehlikeli-bolge alt sayfaları)
-  panel/ (developer-projects.tsx, founder-developers.tsx, quick-match.tsx)
-  profil/ (founder-projects.tsx)
-  mesajlar/
-  projelerim/ (aktif, kabul-ettiklerim, teklifler, yururlukte alt sayfaları)
-  yildizlarim/
-  layout.tsx
-app/components/
-  sidebar.tsx, topbar.tsx, notification-bell.tsx, role-switcher.tsx,
-  project-match-card.tsx, project-progress-card.tsx, rate-offer-form.tsx,
-  rating-stars.tsx, stat-circle.tsx, trending-widget.tsx, availability-badge.tsx,
-  progress-ring.tsx, avatar.tsx, chat-box.tsx, logout-button.tsx
-app/lib/roles.ts
-app/proje/[id]/
-  developer-project-view.tsx, offers-list.tsx, payment-section.tsx
-```
-**Not:** Bu dosyaların TAM işlevsel durumu (hangisi test edildi, hangisi yarım) kullanıcı tarafından teyit edilmedi — Claude Code kendi oturumlarında bunları oluşturmuş, kullanıcı bazılarını hiç görmemiş olabilir. Yeni bir işe başlamadan önce mevcut kodu okuyup gerçek durumu tespit et, varsayımda bulunma.
+- **Semantik arama:** `en_uygun_gelistiricileri_bul()` — PRD/sorgu metnini `all-MiniLM-L6-v2` ile embed'leyip `developer_embeddings` üzerinde (RPC `match_developers`) kosinüs benzerliğiyle top_k getirir.
+- **Hibrit arama:** `hibrit_eslestirme_yap()` — semantik top-20 aday + BM25 (tüm havuz, `rank_bm25`, max 200 aday) sonuçlarını RRF (k=60) ile birleştirir, PATENT_CARPAN burada uygulanır.
+- **Skor normalizasyonu:** `uyum_skorlarini_hesapla_ve_ata()` — hibrit skor varsa 65-98 aralığına, yoksa ham kosinüs benzerliği 0-100'e ölçekleniyor → `uyum_skoru` alanı, arayüzde doğrudan "%X uyum" olarak gösteriliyor.
+- **Metadata filtreleme:** `budget_type`/`sektor` opsiyonel, migration yoksa sessizce atlanıyor.
+- **⚠️ ÖNEMLİ — Önceki dokümantasyonda tamamen eksikti:** Aynı dosyada `project_embeddings` tablosu ve `match_projects` RPC'si üzerinden çalışan **paralel bir "proje arama" özelliği** de var: `proje_profilini_vektorle()` / `en_uygun_projeleri_bul()`. Bunun toplu karşılığı `projeleri_toplu_vektorle.py`. Bu, geliştiricinin "bana uygun proje bul" tarzı arama yapabilmesini sağlıyor (bkz. Bölüm 9 endpoint listesi).
+- **Endpoint'ler (`eslestirme_endpoints.py`, 5 tane — eskiden 3 sanılıyordu):**
+  1. `POST /gelistirici/vektorle`
+  2. `POST /eslestir/semantik-top5`
+  3. `POST /eslestir/hibrit`
+  4. `POST /proje/vektorle` — proje ilanını vektörler
+  5. `POST /eslestir/proje-top5` — yayınlanmış projeler arasında semantik arama (geliştirici tarafı için)
 
-### Dual-Role (Çift Rol) Sistemi — KISMEN BAŞLADI
-`role-switcher.tsx` ve `app/lib/roles.ts` dosyaları oluşturulmuş — bu, daha önce "v2'nin ilk maddesi, MVP bitince yapılacak" diye planlanan **çift rol** (kullanıcının hem founder hem developer olabilmesi) özelliğinin **başlangıcı** gibi görünüyor. Bu, MVP tamamlanmadan erken başlatılmış olabilir — kullanıcıyla bu kapsam değişikliğini netleştir, çakışan/yarım kalan kısımları tamamla.
+## 8. Web Tarafı (Next.js — `co-build-ai` reposu)
 
-## 5. Veritabanı Şeması (Supabase) — Bilinen Tablolar
+- Next.js 16, App Router, TypeScript, Tailwind CSS v4, Supabase (PostgreSQL + RLS + Auth).
+- **Tasarım sistemi — gerçek `globals.css` `@theme` değerleri (isimler yanıltıcı, isme değil hex'e güven):**
+  - `--color-coral: #44acff` (aslında mavi), `--color-coral-dark: #2f8bd8`
+  - `--color-periwinkle: #fe9ec7` (aslında pembe), `--color-periwinkle-dark: #c23570`
+  - `--color-petal: #eaf6ff`, `--color-ink: #0f172a`, `--color-ink-soft: #64748b`
+  - Fontlar: Plus Jakarta Sans (sans/display), JetBrains Mono
+  - Landing sayfası ayrı bir pastel gradyan (`.landing-bg`, krem `#f9f6c4` taban) kullanıyor.
+  - **Tutarsızlık:** Birçok component (Kaydet, davet, yayınla butonları, rol değiştirici, sohbet baloncukları) tema token'larını değil **hardcoded yeşil** (`#1a7a52`, `#15633f`, `#8DD9A8`) kullanıyor — yani gerçek "birincil aksiyon rengi" yeşil, tema mavi/pembe olsa da. Yeni UI eklerken hangi rengin kullanıldığını kontrol et, tutarlılık için.
+  - `public/logo.png` (tam logo) ve `public/logo-icon.png` (sadece ikon, topbar'da kullanılıyor) — 2026-09-16'da eklendi.
+- **Route yapısı:** `(dashboard)` route group (`panel`, `profil`, `profil/[id]`, `mesajlar`, `mesajlar/[userId]`, `gonderilen-teklifler`, `projelerim/*`, `yildizlarim`, `ayarlar/*`) + grup dışında `giris`, `kayit-ol`, `fikir-ekle`, `proje/[id]`, `app/page.tsx` (landing). Sunucu-taraflı gizli işlemler `app/api/*/route.ts` altında: `hesap-sil`, `kaldirma-onayla`, `repo-baglama`.
 
-- `profiles` (id, user_type, full_name, bio, skills[], terms_accepted_at) — **`user_type` muhtemelen dual-role için değişiyor olabilir, kontrol et**
-- `projects` (id, founder_id, title, raw_idea, generated_prd, required_skills[], status, idea_hash, idea_created_at, payment_type, payment_amount)
-- `portfolio_items` (id, developer_id, title, description, file_url, item_type, issuer, item_date)
-- `project_nda_acceptances`, `project_views` — durumu teyit edilmeli (arayüze bağlandı mı, bağlanmadı mı — önceki bilgi "bağlanmadı" idi ama `developer-project-view.tsx` dosyasının varlığı bunun değişmiş olabileceğini gösteriyor)
-- `offers` — `offers-list.tsx`, `rate-offer-form.tsx`, `payment-section.tsx` dosyalarının varlığı, teklif sisteminin **kısmen veya tamamen kodlanmış** olabileceğini gösteriyor — MVP planında "henüz yapılmadı" deniyordu, bu artık geçersiz olabilir, kontrol et
-- **YENİ EKLENECEK (henüz yapılmadı):** `profiles.has_verified_patent` (boolean) — Patent RAG özelliği için planlanıyor (bkz. Bölüm 8)
+### Dual-Role Sistemi — TAMAMLANDI, uçtan uca çalışıyor
+- `profiles.user_type`: `"founder" | "developer" | "both"`; `profiles.active_role`: `"founder" | "developer"` (sadece `"both"` için anlamlı).
+- `app/lib/roles.ts`: `getActiveRole(userType, activeRole)` — `"both"` ise `activeRole ?? "founder"`; değilse `userType`'ın kendisi. `canActAsDeveloper`/`canActAsFounder` yardımcıları her yerde kullanılıyor.
+- `role-switcher.tsx` sidebar'da mod değiştiriyor (`active_role` güncelleyip `router.refresh()`). Merkezi bir context YOK — her sayfa kendi `getActiveRole` hesaplamasını sunucu tarafında tekrar yapıyor.
 
-RLS tüm tablolarda aktif.
+### Teklif / Mesajlaşma / Bildirim Sistemi
+- **Teklifler (`offers`):** Yazılımcı NDA kabul ettikten sonra bir projeye teklif verir (mesaj, ödeme tipi, tutar). Founder Kabul Et/Reddet yapar. Kabul edilince GitHub repo bağlama (`/api/repo-baglama`) ve "Tamamlandı" işaretleme (`completed_at`) açılır, bu da karşılıklı değerlendirmeyi (`ratings`) açar.
+- **Teklif-bazlı sohbet (`messages`):** Sadece aralarında bir `offers` kaydı olan iki taraf arasında.
+- **Doğrudan mesajlaşma (`direct_messages`, YENİ):** Herhangi bir kullanıcı, herhangi birine, teklife bağlı olmadan mesaj atabilir (`direct-message-box.tsx`, `/mesajlar/[userId]`). Realtime açık.
+- **Bildirimler (`notifications`):** `sender_id` kolonu YENİ eklendi (kim gönderdi bilgisi, eskiden yoktu) — `offer_accepted` gibi sistem bildirimlerinde hâlâ null olabilir, sadece `project_invite` tipinde doldurulan bir alan.
+- **⚠️ `message-bell.tsx` ile `/mesajlar` sayfası senkron değil:** bell sadece teklif-bazlı `messages`'ı sayıyor, `direct_messages`'ı saymıyor — okunmamış sayısı gerçek gelen kutusuyla uyuşmayabilir. Düzeltilmesi gereken bilinen bir tutarsızlık.
 
-## 6. AI Servisi (`co-build-ai-server` reposu)
+### Keşif / Eşleştirme Akışları (Founder tarafı, `/panel`)
+1. **Hızlı Eşleştirme** (`quick-match.tsx`) — fikir yazılır, PRD üretilir, `/eslestir/hibrit` ile top-5 yazılımcı bulunup projeye `matched_developers` (jsonb) olarak yazılır.
+2. **Doğrudan Arama** (`direct-search.tsx`) — serbest metin, proje oluşturmadan `/eslestir/semantik-top5`.
+3. **Her PRD üretiminden sonra otomatik top-5** (`proje/[id]/prd-status.tsx`) — Hızlı Eşleştirme dışında `fikir-ekle`'den gelen projeler için de çalışır.
+4. **"Teklif Gönder" / "Projeye Davet Et" butonları** (`developer-match-row.tsx`, `matched-developers.tsx`) — aslında gerçek bir `offers` kaydı OLUŞTURMUYOR (offers sadece yazılımcı tarafından oluşturulabilir); bunun yerine `notifications` tablosuna `type: "project_invite"` kaydı düşüyor, yazılımcıyı projeye/founder'a yönlendiriyor. Davet gönderilince "Mesaj Gönder" linki (doğrudan mesajlaşmaya) beliriyor.
+5. **`/gonderilen-teklifler`** (YENİ sayfa) — founder'ın gönderdiği tüm davetleri listeler (`sender_id` ile sorgulanıyor), hem alıcı adı hem profil linki tıklanabilir.
+6. **`founder-developers.tsx`** — AI'siz, tamamen client-side isim/beceri filtreli tam yazılımcı dizini.
 
-### Mevcut Yapı
-- `main.py` — FastAPI, asenkron PRD üretimi (`/prd-uret-baslat`, `/prd-durum/{id}`), timeout mekanizması (5 dakika, `JOB_TIMEOUT_SECONDS`), eş zamanlı istek kuyruğu (`queue.Queue` + tek worker thread) eklendi
-- `veri_yukle.py` — RAG için startup verisi yükleme script'i (tek seferlik, çalıştırıldı)
-- `demo_kullanici_uret.py` + `demo_veri.json` — Demo/sunum verisi (15 yazılımcı + portfolyo, 8 fikir sahibi + bio, 8 proje), Supabase Admin API ile gerçek auth kullanıcıları olarak yüklendi
-- `eslestirme_endpoints.py`, `matchmaking_engine.py` — **YENİ (kullanıcı hatırlamıyor, detayları bilinmiyor)**: Founder'a PRD sonrası 5 uygun yazılımcı öneren semantik eşleştirme sistemi. `rank_bm25`, `langchain_community` gibi ek kütüphaneler gerektiriyor. Skor hesaplama mantığı (`benzerlik_skoru`, `hibrit_skor`) düşük/anlamsız değerler üretiyor olabilir (0.03 gibi), muhtemelen normalizasyon sorunu var, incelenip düzeltilmeli.
-- RAG (startup örnekleri): `sentence-transformers` (`all-MiniLM-L6-v2`) + ChromaDB (`chroma_data/startup_ornekleri` koleksiyonu, ~1500 kayıt, HackerNoon/where-startups-trend veri setinden, MIT lisanslı)
+### Diğer Notlar
+- `idea_hash`/`idea_created_at`: aynı fikrin tekrar proje oluşturmasını engelleyen SHA-256 hash (kripto-güvenli bir "fikir sahipliği kanıtı" değil, sadece dedup).
+- `project_nda_acceptances` + `project_views`: yazılımcı PRD'yi NDA kabul etmeden göremiyor; her ziyarette (zaten kabul etmişse bile) yeni bir `project_views` satırı düşüyor — zamanla şişebilir, günlük dedup yok.
+- Hesap silme (`/api/hesap-sil`) ratings→messages→offers→notifications→nda→views→portfolio_items→projects→profiles sırasıyla cascade siliyor.
 
-### Prompt Yapısı
-Tek birleşik prompt: PRD (Ürün Özeti, Hedef Kullanıcı, Temel Özellikler, Teknik Gereksinimler, Benzer Örnekler ve Farklılaşma, Tahmini Altyapı Maliyeti Kategorisi) + Beceri Etiketleri. Ayrıştırma birden fazla format dener (`## Beceri Etiketleri`, `**Beceri Etiketleri**`, düz metin) çünkü model tutarsız formatlıyor — bazen numaralı liste de yazabiliyor, ayrıştırma bunu her zaman yakalamayabilir, bilinen bir kusur.
+## 9. Veritabanı Şeması (Supabase) — Bilinen Tablolar
 
-### GitHub Repo
-`github.com/berna1727/co-build-ai-server` (Private). README.md (İngilizce, profesyonel) ve requirements.txt eklendi. `startups.xlsx` (13MB, ham veri) yanlışlıkla commit edilmiş, temizlenmedi (düşük öncelik).
+- `profiles` — id, user_type, active_role, full_name, bio, skills[], availability, avatar_url, banner_url, cv_url, patent_url, patent_title, has_verified_patent, notifications_enabled, terms_accepted_at, default_payment_type, default_payment_amount
+- `projects` — id, founder_id, title, raw_idea, generated_prd, required_skills[], status (draft/published), idea_hash, idea_created_at, payment_type, payment_amount, matched_developers (jsonb)
+- `offers` — id, project_id, developer_id, message, proposed_amount, proof_link, payment_type, status, completed_at, github_repo_url, removal_requested_by_founder_at, removal_approved_by_developer_at
+- `notifications` — id, user_id, sender_id (YENİ), project_id (nullable), type, message, read_at
+- `messages` — teklif-bazlı sohbet (offer_id, sender_id, content, read_at)
+- `direct_messages` — YENİ, teklife bağlı olmayan 1:1 sohbet (sender_id, recipient_id, content, read_at)
+- `ratings` — offer_id, rater_id, rated_user_id, score, comment (unique per offer+rater)
+- `portfolio_items` — developer_id, title, description, item_type (project/certificate), issuer, item_date, file_url — `"(Patent)"` sonekli certificate'lar ek patent olarak yorumlanıyor (bkz. Bölüm 6.5)
+- `starred_developers` — founder_id, developer_id (yıldızlama)
+- `project_nda_acceptances`, `project_views` — arayüze bağlı
+- `developer_embeddings` — developer_id, full_name, skills, bio, kaynak_metin, embedding(384), opsiyonel budget_type/sektor
+- `project_embeddings` (YENİ, önceki dokümantasyonda hiç yoktu) — project_id, title, required_skills, kaynak_metin, embedding(384); kasıtlı olarak vektör indexi yok (az kayıtta ivfflat yanlış sonuç veriyordu)
 
-## 7. Git İş Akışı — ÖNEMLİ DENEYİMLER
+Storage bucket'ları: `cvs`, `patent-belgeleri`, `portfolyo-dosyalari`, `avatars`, `banners`.
 
-- Proje artık **iki ayrı repo**: `co-build-ai` (esmacakar hesabı) ve `co-build-ai-server` (berna1727 hesabı)
-- **Merge conflict yaşandı** (Esma'nın yerel dual-role değişiklikleri ile GitHub'daki Claude Code değişiklikleri çakıştı) — `profil/page.tsx`, `projelerim/yururlukte/page.tsx`, `proje/[id]/page.tsx` dosyalarında. Bu tür çakışmalarda Claude Code'un dosyaları okuyup iki tarafı da koruyarak birleştirmesi isteniyor, kullanıcı elle çözmüyor.
-- Rutin: `git pull` (başlamadan önce) → çalış → `git add . && git commit -m "..." && git push`
-- Kullanıcı, Claude Code'a büyük değişiklik yaptırmadan önce commit atma alışkanlığını henüz tam oturtmadı, hatırlatmak faydalı olabilir
+RLS tüm tablolarda aktif. Migration dosyaları tek kaynak — kod tabanında ayrı bir migrations/ klasörü yok, hepsi `co-build-ai-server/supabase_migration_*.sql` altında (10 dosya, bkz. server CLAUDE.md).
 
-## 8. AKTİF OLARAK PLANLANAN: Patent RAG + Tescilli Mucit Çarpanı
+## 10. Bilinçli Olarak v2'ye Ertelenenler
 
-Bu, henüz uygulanmamış olabilir — kullanıcı bu promptu verdiyse aşağıdaki gibi ilerlenmeli, vermediyse bu bir sonraki iş.
-
-**Kapsam:**
-1. **Patent veri seti:** Hugging Face `HUPD/hupd` (Harvard USPTO Patent Dataset) — Google Cloud/BigQuery DEĞİL (kredi kartı/ön provizyon gerektirdiği için vazgeçildi). G06F/G06N sınıflı, 3000-5000 kayıt, ayrı bir ChromaDB koleksiyonu (`patent_ornekleri`).
-2. **Patent çakışma kontrolü:** PRD üretim akışına yeni bir bölüm (`## Patent/Özgünlük Kontrolü`) — bulunan benzer patentleri gösterir, yüksek benzerlikte hukuki danışmanlık önerir, kesin hukuki iddia üretmez.
-3. **Tescilli Mucit Çarpanı:** `profiles.has_verified_patent` (boolean, yeni sütun) — eşleştirme motorunda bu true olan yazılımcıların skoruna `PATENT_CARPAN = 1.15` çarpanı uygulanır.
-4. Bu iş **RunPod Pod'u kapalıyken de yapılabilir** — patent verisi indirme/embedding işlemi CPU'da çalışır, GPU'ya (dolayısıyla vLLM'e) ihtiyaç duymaz. Sadece gerçek PRD/patent kontrolü testi için Pod açık olmalı.
-
-**Not — Daha önce v2'ye ertelenmiş bir özellik (patent karşılaştırması) şimdi kısmi/prototip olarak MVP'ye alınıyor.** Kapsamı net: gerçek zamanlı, resmi patent ofisi entegrasyonu DEĞİL, statik bir veri seti üzerinden RAG tabanlı bir ön-kontrol prototipi.
-
-## 9. Bilinçli Olarak v2'ye Ertelenen Özellikler (Hâlâ Geçerli)
-
-- Biyometrik KYC, Stripe/escrow gerçek ödeme
-- Tinder-tarzı swipe eşleştirme (kesin olarak vazgeçildi)
+- Gerçek para transferi / escrow, Stripe entegrasyonu
+- Biyometrik KYC, NDA dijital imza, mobil uygulama
+- Tinder-tarzı swipe eşleştirme (kesin vazgeçildi)
 - GitHub commit'e göre otomatik milestone/ödeme tetikleme
 - Platform içi kod editörü/sandbox
-- Gerçek zamanlı canlı web/rakip taraması
-- Mobil uygulama
-- Tam kapsamlı, resmi patent ofisi entegrasyonu (yukarıdaki prototip bunun yerine geçiyor, MVP kapsamında)
+- Gerçek zamanlı rakip/web taraması
+- Tam kapsamlı resmi patent ofisi entegrasyonu (statik veri setli RAG prototipi MVP'de, bkz. Bölüm 6)
 
-## 10. Belirsiz/Kontrol Edilmesi Gereken Noktalar (Claude Code İçin Uyarı)
+## 11. Bilinen Riskler / Teknik Borç
 
-Bu proje, kullanıcının kendisinin de "Claude Code baya geride kalmış" dediği bir noktada — yani **kod tabanı, kullanıcının hafızasından daha ileride**. Yeni bir işe başlamadan önce:
-1. Mevcut dosyaları oku, varsayımda bulunma
-2. Kullanıcıya "şu an X dosyası şöyle görünüyor, bu senin beklediğin gibi mi?" diye doğrulat
-3. Özellikle `offers`, `project_nda_acceptances`, `project_views`, dual-role sisteminin **gerçek/güncel durumunu** ilk iş olarak netleştir
+- `message-bell.tsx` doğrudan mesajları saymıyor (Bölüm 8).
+- Patent "doğrulanmış" alanı tamamen self-declared, admin onay akışı yok.
+- İkinci patent temsili (`"(Patent)"` string konvansiyonu) şema düzeyinde değil, kırılgan.
+- `job_store` (PRD sonuçları) bellek-içi — sunucu restart'ında kaybolur.
+- RunPod Pod kapalıyken PRD üretimi bekleyen proje sessizce sonsuza kadar "hazırlanıyor" gösterir.
+- `project_views` günlük dedup yapmıyor, zamanla şişebilir.
+- `co-build-ai-server/requirements.txt` daha önce UTF-16 kodluydu ve `reportlab` eksikti — 2026-09-16'da UTF-8'e çevrilip `reportlab` eklendi (bu düzeltmenin kalıcı olduğunu bir sonraki oturumda doğrula, daha önce de "düzeltildi" denip tekrar bozulmuştu).
 
-## 11. Kod Tarzı Notları
+## 12. Kod Tarzı Notları
 
-- Next.js App Router yapısı, client component'ler `"use client"` ile başlıyor
-- Tailwind renkleri `globals.css`'te `@theme` bloğunda
-- Python tarafında Türkçe fonksiyon/değişken isimleri (`benzer_ornekleri_bul`, `patent_cakismasi_kontrol_et` gibi)
-- `.env` üzerinden okunan değerler `os.getenv()` ile, path'ler hardcode edilmiyor
-- Kod yorumları Türkçe
-
----
-
-**Bu dosyayı okuyan Claude Code'a not:** Kullanıcı (Esma) Python/ML deneyimli, web geliştirmede artık orta seviyede. Adım adım, gerekçeli ilerlemeyi seviyor. **En kritik nokta:** proje son birkaç oturumda hızla büyüdü (RunPod geçişi, dashboard genişlemesi, eşleştirme motoru, dual-role başlangıcı) ve kullanıcının kendisi bile tüm değişikliklerin farkında değil — bu yüzden varsayımda bulunmak yerine önce mevcut kodu okuyup durumu netleştirmek, sonra ilerlemek en güvenlisi.
+- Client component'ler `"use client"` ile başlıyor, tıklanabilir/etkileşimli her şey ayrı dosyada.
+- Ortak component'ler `app/components/` altında; sayfa-özel component'ler ilgili route klasöründe.
+- Sunucu tarafı gizli anahtar gerektiren işlemler `app/api/*/route.ts` altında (`SUPABASE_SERVICE_ROLE_KEY` client'a gitmiyor).
+- Python tarafında Türkçe fonksiyon/değişken isimleri, kod yorumları Türkçe.
+- `.env` üzerinden okunan değerler `os.getenv()` ile, path'ler hardcode edilmiyor (demo/tek-seferlik script'ler hariç — onlar bilinçli olarak geliştirici makinesine özel).
