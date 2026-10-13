@@ -20,6 +20,7 @@ export default function MatchedDevelopers({
   founderId,
   projectId,
   projectTitle,
+  isPublished = true,
   starredIds = [],
   invitedIds = [],
 }: {
@@ -27,6 +28,7 @@ export default function MatchedDevelopers({
   founderId: string;
   projectId: string;
   projectTitle: string;
+  isPublished?: boolean;
   starredIds?: string[];
   invitedIds?: string[];
 }) {
@@ -53,6 +55,7 @@ export default function MatchedDevelopers({
             founderId={founderId}
             projectId={projectId}
             projectTitle={projectTitle}
+            isPublished={isPublished}
             initiallyStarred={starredIds.includes(dev.developerId)}
             initiallyInvited={invitedIds.includes(dev.developerId)}
           />
@@ -71,6 +74,7 @@ function MatchedDeveloperCard({
   founderId,
   projectId,
   projectTitle,
+  isPublished,
   initiallyStarred,
   initiallyInvited,
 }: {
@@ -78,6 +82,7 @@ function MatchedDeveloperCard({
   founderId: string;
   projectId: string;
   projectTitle: string;
+  isPublished: boolean;
   initiallyStarred: boolean;
   initiallyInvited: boolean;
 }) {
@@ -86,6 +91,7 @@ function MatchedDeveloperCard({
   const [saving, setSaving] = useState(false);
   const [invited, setInvited] = useState(initiallyInvited);
   const [inviting, setInviting] = useState(false);
+  const [inviteWarning, setInviteWarning] = useState(false);
 
   async function toggleStar() {
     if (saving) return;
@@ -109,6 +115,11 @@ function MatchedDeveloperCard({
 
   async function handleInvite() {
     if (inviting || invited) return;
+    // Taslak projeyi yazılımcı göremez (RLS) — davet bildirimi 404'e götürür.
+    if (!isPublished) {
+      setInviteWarning(true);
+      return;
+    }
     setInviting(true);
 
     const { error } = await supabase.from("notifications").insert({
@@ -195,6 +206,11 @@ function MatchedDeveloperCard({
           </a>
         )}
       </div>
+      {inviteWarning && (
+        <p className="mt-2 text-xs text-ink-soft">
+          Yazılımcı taslak projeyi göremez. Davet göndermek için önce projeyi yayınla.
+        </p>
+      )}
     </div>
   );
 }

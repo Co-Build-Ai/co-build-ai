@@ -294,6 +294,7 @@ export default async function ProjeDetay({
                     founderId={user.id}
                     projectId={project.id}
                     projectTitle={project.title}
+                    isPublished={project.status === "published"}
                     starredIds={matchedStarredIds}
                     invitedIds={matchedInvitedIds}
                   />
