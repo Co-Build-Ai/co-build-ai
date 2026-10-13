@@ -62,8 +62,8 @@ export default function NotificationBell({ userId, enabled = true }: { userId: s
     }
     setOpen(false);
     if (n.project_id) router.push(`/proje/${n.project_id}`);
-    // Projeye bağlı olmayan davet (Doğrudan Arama): davet edenin profiline git
-    else if (n.sender_id) router.push(`/profil/${n.sender_id}`);
+    // Projeye bağlı olmayan davet (Doğrudan Arama): davet edenle olan sohbete git
+    else if (n.sender_id) router.push(`/mesajlar/${n.sender_id}`);
   }
 
   return (
