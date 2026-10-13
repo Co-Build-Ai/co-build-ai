@@ -64,7 +64,7 @@ export default function DeveloperMatchRow({
       sender_id: founderId,
       project_id: null,
       type: "project_invite",
-      message: `${baglam} için seninle çalışmak istiyorlar — profilini inceleyip dilersen teklifini gönder.`,
+      message: `${baglam} için seni davet etti. İlgilenirsen profiline göz atıp mesaj gönderebilirsin.`,
     });
 
     if (!error) {
@@ -119,11 +119,11 @@ export default function DeveloperMatchRow({
         >
           {invited ? (
             <>
-              <Check size={13} /> Teklif Gönderildi
+              <Check size={13} /> Davet Gönderildi
             </>
           ) : (
             <>
-              <Send size={13} /> {inviting ? "Gönderiliyor..." : "Teklif Gönder"}
+              <Send size={13} /> {inviting ? "Gönderiliyor..." : "Davet Et"}
             </>
           )}
         </button>

@@ -66,7 +66,7 @@ export default async function GonderilenTeklifler() {
 
   return (
     <div>
-      <h1 className="text-2xl font-extrabold tracking-tight text-ink">Gönderilen Teklifler</h1>
+      <h1 className="text-2xl font-extrabold tracking-tight text-ink">Gönderilen Davetler</h1>
       <p className="mt-1 text-sm text-ink-soft">
         Doğrudan Arama ve PRD sonrası önerilen yazılımcılara gönderdiğin davetler.
       </p>
@@ -74,7 +74,7 @@ export default async function GonderilenTeklifler() {
       {satirlar.length === 0 ? (
         <div className="mt-8 rounded-xl border border-dashed border-black/15 bg-white/60 p-10 text-center">
           <p className="text-2xl">📨</p>
-          <p className="mt-2 text-sm text-ink-soft">Henüz kimseye teklif göndermedin.</p>
+          <p className="mt-2 text-sm text-ink-soft">Henüz kimseyi davet etmedin.</p>
         </div>
       ) : (
         <div className="mt-6 flex flex-col gap-3">
@@ -98,7 +98,7 @@ export default async function GonderilenTeklifler() {
                 <a href={`/profil/${satir.recipientId}`} className="font-semibold text-coral-dark hover:underline">
                   {satir.recipientName}
                 </a>
-                &apos;a teklif gönderildi.
+                &apos;a davet gönderildi.
               </p>
               <span className="shrink-0 text-xs text-ink-soft">
                 {new Date(satir.createdAt).toLocaleDateString("tr-TR")}

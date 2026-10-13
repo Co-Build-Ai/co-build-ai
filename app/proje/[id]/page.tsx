@@ -102,9 +102,18 @@ export default async function ProjeDetay({
   };
 
   if (!isFounder) {
-    // Sadece yayınlanmış projeler başka kullanıcılara açık
+    // Başka kullanıcılara sadece yayınlanmış projeler açık; taslak ise yalnızca
+    // founder'ın bu projeye davet ettiği yazılımcı görebilir.
     if (project.status !== "published") {
-      redirect("/panel");
+      const { data: invite } = await supabase
+        .from("notifications")
+        .select("id")
+        .eq("project_id", project.id)
+        .eq("user_id", user.id)
+        .eq("type", "project_invite")
+        .limit(1)
+        .maybeSingle();
+      if (!invite) redirect("/panel");
     }
 
     const { data: profile } = await supabase
@@ -294,7 +303,6 @@ export default async function ProjeDetay({
                     founderId={user.id}
                     projectId={project.id}
                     projectTitle={project.title}
-                    isPublished={project.status === "published"}
                     starredIds={matchedStarredIds}
                     invitedIds={matchedInvitedIds}
                   />

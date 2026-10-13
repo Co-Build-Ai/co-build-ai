@@ -63,7 +63,7 @@ export default async function DashboardLayout({
     miniStats = [
       { label: "Analiz Edilen Fikirler", value: projectCount, href: "/profil" },
       { label: "Gelen Teklifler", value: offersReceived, href: "/profil" },
-      { label: "Gönderilen Teklifler", value: gonderilenSayisi ?? 0, href: "/gonderilen-teklifler" },
+      { label: "Gönderilen Davetler", value: gonderilenSayisi ?? 0, href: "/gonderilen-teklifler" },
     ];
   } else if (userType === "developer") {
     const { data: offers } = await supabase
