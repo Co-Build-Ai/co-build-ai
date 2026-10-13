@@ -33,6 +33,8 @@ const TABS: { id: TabId; label: string }[] = [
   { id: "fixed", label: "Sabit Ücretli" },
 ];
 
+const SEARCH_STORAGE_KEY = "dev-direct-search";
+
 type SemanticProjectResult = {
   project_id: string;
   title: string;
@@ -55,6 +57,29 @@ export default function DeveloperProjects({
   const [searchStatus, setSearchStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [searchResults, setSearchResults] = useState<ProjectWithMatch[]>([]);
   const [submittedQuery, setSubmittedQuery] = useState("");
+
+  // Sayfadan ayrılıp (mesajlar, proje detayı...) geri dönünce ya da sayfa
+  // yenilenince arama sonuçları kaybolmasın: son aramayı sekme oturumunda tut.
+  // Sadece proje id + skor saklanır, kartlar güncel `projects` listesinden kurulur.
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(SEARCH_STORAGE_KEY);
+      if (!raw) return;
+      const saved: { query: string; submittedQuery: string; results: { id: string; matchScore: number }[] } =
+        JSON.parse(raw);
+      const restored = saved.results.flatMap((r) => {
+        const local = projects.find((p) => p.id === r.id);
+        return local ? [{ ...local, matchScore: r.matchScore }] : [];
+      });
+      setQuery(saved.query);
+      setSubmittedQuery(saved.submittedQuery);
+      setSearchResults(restored);
+      setSearchStatus("done");
+    } catch {
+      // sessionStorage kapalı/bozuksa sessizce boş başla
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     function handleKeydown(e: KeyboardEvent) {
@@ -93,6 +118,18 @@ export default function DeveloperProjects({
 
       setSearchResults(enriched);
       setSearchStatus("done");
+      try {
+        sessionStorage.setItem(
+          SEARCH_STORAGE_KEY,
+          JSON.stringify({
+            query,
+            submittedQuery: query,
+            results: enriched.map((r) => ({ id: r.id, matchScore: r.matchScore })),
+          })
+        );
+      } catch {
+        // saklama başarısızsa arama yine de çalışır
+      }
     } catch {
       setSearchStatus("error");
     }
